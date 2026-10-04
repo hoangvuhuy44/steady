@@ -1,0 +1,271 @@
+{
+  "@@locale": "en",
+  "today": "Today",
+  "checkIn": "Check in",
+  "rewards": "Rewards",
+  "profile": "Profile",
+  "meals": "Meals",
+  "movedToday": "You moved today.",
+  "makeTodayCount": "Make today count.",
+  "consistencyMessage": "Keep showing up. Every active day brings you closer to your goal.",
+  "movementMessage": "Walk, run, swim or choose an activity you enjoy. Start with a little movement today.",
+  "checkInComplete": "Daily check-in complete",
+  "noActivity": "No activity logged yet",
+  "anyMovement": "Every bit of movement counts.",
+  "logAnother": "Log another activity",
+  "thisWeek": "Last 7 days",
+  "dayStreak": "day streak",
+  "steadyPoints": "Steady points",
+  "consistencyTip": "Build a habit with activities you enjoy. Consistency earns points.",
+  "whatDidYouDo": "What did you do today?",
+  "activity": "Activity",
+  "duration": "Duration",
+  "manualActivity": "Log your activity and duration here. Your activity is recorded manually.",
+  "saveActivity": "Save activity",
+  "walk": "Walk",
+  "run": "Run",
+  "cycle": "Cycle",
+  "swim": "Swim",
+  "gym": "Gym",
+  "sport": "Sport",
+  "mma": "MMA",
+  "other": "Other",
+  "rewardsIntro": "Earn points by staying consistent.",
+  "previewRewards": "Reward preview",
+  "recoveryDay": "Recovery day",
+  "partnerPerk": "Partner perk",
+  "steadyBadge": "Steady badge",
+  "rewardsNote": "These sample rewards are a preview. Redemption is not available yet.",
+  "member": "Steady member",
+  "memberGoal": "Goal: stay active consistently",
+  "weeklyTarget": "Weekly target",
+  "fiveDays": "5 active days",
+  "reminders": "Reminders",
+  "notConnected": "Not connected yet",
+  "healthData": "Health data",
+  "manualCheckIns": "Activities entered manually",
+  "language": "Language",
+  "languageHelp": "Choose how Steady speaks to you.",
+  "systemLanguage": "Device language",
+  "languageSaveError": "Language changed for this session. Could not save your preference.",
+  "mealsTitle": "Your meals, made simple",
+  "mealsIntro": "Familiar Vietnamese dishes. A week planned around your routine.",
+  "setupTitle": "Let’s plan your week",
+  "setupIntro": "Three short steps to match your preferences, time and budget.",
+  "bodyGoal": "About you",
+  "health": "Health",
+  "preferences": "Preferences",
+  "bodyGoalHelp": "Start with your measurements and your goal.",
+  "age": "Age",
+  "height": "Height (cm)",
+  "weight": "Weight (kg)",
+  "goal": "Goal",
+  "dailyActivity": "Usual activity level",
+  "balanced": "Balanced eating",
+  "weightLoss": "Support weight loss",
+  "muscle": "Support muscle gain",
+  "sedentary": "Mostly sedentary",
+  "lightActivity": "Light: 1–2 sessions/week",
+  "moderateActivity": "Moderate: 3–4 sessions/week",
+  "highActivity": "High: 5+ sessions/week",
+  "cholesterolStatus": "High cholesterol diagnosis",
+  "unknown": "Not sure",
+  "confirmed": "Confirmed by a clinician",
+  "notDiagnosed": "Not diagnosed",
+  "healthHelp": "Optional readings can be left blank. Enter measured results only; Steady does not diagnose or interpret them.",
+  "optionalReadings": "Add blood pressure or lab results",
+  "optional": "Optional",
+  "systolic": "Systolic (mmHg)",
+  "diastolic": "Diastolic (mmHg)",
+  "ldl": "LDL (mmol/L)",
+  "hdl": "HDL (mmol/L)",
+  "triglycerides": "Triglycerides (mmol/L)",
+  "professionalLabel": "I need a specialist diet",
+  "professionalHelp": "Pregnancy, breastfeeding, kidney disease, an eating disorder or a prescribed therapeutic diet.",
+  "diet": "Diet",
+  "omnivore": "Varied diet",
+  "vegetarian": "Vegetarian",
+  "budget": "Daily food budget (VND)",
+  "cookingTime": "Max cooking time per meal (min)",
+  "allergens": "Allergies & exclusions",
+  "allergensHelp": "Selected ingredients stay excluded when you create or swap meals.",
+  "dislikes": "Ingredients you prefer to skip",
+  "soy": "Soy",
+  "fish": "Fish",
+  "gluten": "Gluten",
+  "milk": "Milk",
+  "egg": "Egg",
+  "peanut": "Peanut",
+  "nuts": "Tree nuts",
+  "shellfish": "Shellfish",
+  "sesame": "Sesame",
+  "consent": "Use my details for this session’s meal plan",
+  "privacyNote": "Your profile and plan stay in memory on this device. They are cleared when the app closes and are not sent to AI or a server.",
+  "createPlan": "Create my 7-day plan",
+  "updatePlan": "Update my plan",
+  "continueLabel": "Continue",
+  "back": "Back",
+  "cancel": "Cancel",
+  "integerError": "Enter a whole number",
+  "bloodPressurePairError": "Enter both blood pressure readings, or leave both blank.",
+  "bloodPressureOrderError": "Systolic pressure must be higher than diastolic pressure.",
+  "consentError": "Please agree to use your details for this meal plan.",
+  "planReady": "Your week is ready",
+  "planUpdated": "Meal plan updated",
+  "yourWeek": "Your 7-day plan",
+  "editProfile": "Edit preferences",
+  "dailyBudget": "Daily budget",
+  "estimatedCost": "Estimated cost",
+  "energy": "Energy",
+  "protein": "Protein",
+  "fibre": "Fibre",
+  "saturatedFat": "Saturated fat",
+  "estimatedDaily": "Estimated daily totals",
+  "breakfast": "Breakfast",
+  "lunch": "Lunch",
+  "dinner": "Dinner",
+  "ingredients": "Ingredients",
+  "preparation": "Preparation",
+  "recipeDetails": "Ingredients & recipe",
+  "swapMeal": "Swap meal",
+  "noAlternatives": "No alternatives available",
+  "swapTitle": "Choose another dish",
+  "swapHelp": "These dishes match your diet, exclusions, time and budget.",
+  "groceries": "Shopping list",
+  "groceriesWeek": "Shopping list · 7 days",
+  "groceriesHelp": "Amounts for the whole week. Beans labelled “cooked” use cooked weight. Other weights refer to raw edible ingredients.",
+  "planNotes": "About this sample plan",
+  "nutritionNote": "Fixed portions with estimated nutrition and prices. Snacks, drinks and condiments are excluded. Check package labels and cross-contact risks for allergies.",
+  "personalisationNote": "Measurements and lab readings are recorded but do not set calorie needs or treatment. Muscle support ranks protein; weight loss does not reduce portions. This sample plan is not a personalised or therapeutic diet.",
+  "unsupportedTitle": "A specialist plan is a better fit",
+  "unsupportedHelp": "Automatic plans are unavailable for under-18s or people who need a therapeutic diet. Work with a nutrition professional for a suitable plan.",
+  "emptyPlanTitle": "No matching plan yet",
+  "emptyPlanHelp": "Try a higher budget, more cooking time or fewer disliked ingredients. Allergy exclusions will stay in place.",
+  "deletePlan": "Delete profile & plan",
+  "deleteTitle": "Delete your meal details?",
+  "deleteHelp": "This clears your measurements, health readings, preferences and meal plan from this session. You can start again afterwards.",
+  "delete": "Delete",
+  "deleted": "Meal profile and plan deleted",
+  "close": "Close",
+  "mon": "Mon",
+  "tue": "Tue",
+  "wed": "Wed",
+  "thu": "Thu",
+  "fri": "Fri",
+  "sat": "Sat",
+  "sun": "Sun",
+  "completed": "Completed",
+  "notCompleted": "No activity",
+  "minutesValue": "{count} min",
+  "@minutesValue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pointsValue": "{count} points",
+  "@pointsValue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "activitySaved": "{activity} logged. +{points} points",
+  "@activitySaved": {
+    "placeholders": {
+      "activity": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "rangeError": "Enter a value from {min} to {max}",
+  "@rangeError": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "stepProgress": "Step {step} of 3",
+  "@stepProgress": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
+  "dayNumber": "Day {day}",
+  "@dayNumber": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "mealSwapped": "Changed to {meal}",
+  "@mealSwapped": {
+    "placeholders": {
+      "meal": {
+        "type": "String"
+      }
+    }
+  },
+  "itemsCount": "{count} ingredients",
+  "@itemsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "oatsIngredient": "Oats",
+  "banana": "Banana",
+  "soyMilk": "Unsweetened soy milk",
+  "sweetPotato": "Sweet potato",
+  "cookedSoybeans": "Cooked soybeans",
+  "guava": "Guava",
+  "mungBeans": "Mung beans",
+  "brownRice": "Brown rice",
+  "cookedRedBeans": "Cooked red beans",
+  "cucumber": "Cucumber",
+  "canolaOil": "Canola oil",
+  "tilapia": "Tilapia fillet",
+  "greens": "Leafy greens",
+  "tofuIngredient": "Tofu",
+  "tomato": "Tomato",
+  "carrot": "Carrot",
+  "chickenBreast": "Skinless chicken breast",
+  "mushrooms": "Mushrooms",
+  "oatsName": "Banana oat porridge",
+  "oatsRecipe": "Cook oats with soy milk and water for 5–7 minutes. Add banana. Do not add sugar.",
+  "sweetName": "Sweet potato, soybeans & fruit",
+  "sweetRecipe": "Steam sweet potato for 15–20 minutes. Serve with cooked soybeans and washed guava.",
+  "beanbreakfastName": "Mung bean porridge & banana",
+  "beanbreakfastRecipe": "Soak beans and rice beforehand. Cook in water until soft; use a pressure cooker to save time. Serve banana separately.",
+  "ricebreakfastName": "Brown rice, red beans & cucumber",
+  "ricebreakfastRecipe": "Use cooked rice and boiled beans. Reheat and serve with cucumber and canola oil.",
+  "fishName": "Steamed fish, brown rice & greens",
+  "fishRecipe": "Cook rice. Steam fish with ginger for 10–15 minutes until cooked. Boil greens and add canola oil. Seasonings and dipping sauces are counted separately.",
+  "tofuName": "Tomato tofu & brown rice",
+  "tofuRecipe": "Cook rice. Simmer tomatoes with a little water and oil, then add tofu. Serve with boiled greens. Avoid deep frying.",
+  "lentilName": "Mung beans, rice & vegetables",
+  "lentilRecipe": "Use soaked beans and cooked rice. Cook beans until soft, add carrot and greens, then mix with rice and oil.",
+  "chickenName": "Pan-seared chicken, rice & greens",
+  "chickenRecipe": "Cook rice. Pan-sear skinless chicken with oil until thoroughly cooked. Serve with steamed greens; limit bottled sauces.",
+  "beanDinnerName": "Red beans, sweet potato & greens",
+  "beanDinnerRecipe": "Steam sweet potato. Reheat cooked red beans and serve with boiled greens and canola oil.",
+  "fishDinnerName": "Steamed fish, sweet potato & greens",
+  "fishDinnerRecipe": "Steam sweet potato and fish until cooked, then boil greens. Use ginger and lime; dipping sauces are counted separately.",
+  "tofuDinnerName": "Steamed tofu, mushrooms & brown rice",
+  "tofuDinnerRecipe": "Steam tofu with mushrooms until hot and cooked. Serve with brown rice, greens and canola oil.",
+  "chickenDinnerName": "Skinless chicken, sweet potato & greens",
+  "chickenDinnerRecipe": "Steam sweet potato. Boil or pan-sear chicken until thoroughly cooked. Serve with boiled greens."
+}

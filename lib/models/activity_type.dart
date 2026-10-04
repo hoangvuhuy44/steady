@@ -1,38 +1,18 @@
 import 'package:flutter/material.dart';
 
-enum ActivityType {
-  walk,
-  run,
-  cycle,
-  swim,
-  gym,
-  sport,
-  mma,
-  other,
-}
+enum ActivityType { walk, run, cycle, swim, gym, sport, mma, other }
 
 extension ActivityTypeX on ActivityType {
-  String get label => switch (this) {
-        ActivityType.walk => 'Walk',
-        ActivityType.run => 'Run',
-        ActivityType.cycle => 'Cycle',
-        ActivityType.swim => 'Swim',
-        ActivityType.gym => 'Gym',
-        ActivityType.sport => 'Sport',
-        ActivityType.mma => 'MMA',
-        ActivityType.other => 'Other',
-      };
-
   IconData get icon => switch (this) {
-        ActivityType.walk => Icons.directions_walk,
-        ActivityType.run => Icons.directions_run,
-        ActivityType.cycle => Icons.directions_bike,
-        ActivityType.swim => Icons.pool,
-        ActivityType.gym => Icons.fitness_center,
-        ActivityType.sport => Icons.sports_basketball,
-        ActivityType.mma => Icons.sports_mma,
-        ActivityType.other => Icons.more_horiz,
-      };
+    ActivityType.walk => Icons.directions_walk,
+    ActivityType.run => Icons.directions_run,
+    ActivityType.cycle => Icons.directions_bike,
+    ActivityType.swim => Icons.pool,
+    ActivityType.gym => Icons.fitness_center,
+    ActivityType.sport => Icons.sports_basketball,
+    ActivityType.mma => Icons.sports_mma,
+    ActivityType.other => Icons.more_horiz,
+  };
 }
 
 class ActivityLog {

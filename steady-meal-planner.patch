@@ -1,0 +1,545 @@
+diff --git a/docs/meal-planner.md b/docs/meal-planner.md
+new file mode 100644
+index 0000000..047463d
+--- /dev/null
++++ b/docs/meal-planner.md
+@@ -0,0 +1,73 @@
++# Vietnam meal planner prototype
++
++The Meals tab extends Steady's existing Flutter app. It uses a deterministic,
++local recipe catalogue, not an AI service. No new dependencies are required.
++
++## Run and verify
++
++Use the Flutter SDK compatible with the existing pubspec.yaml (Dart ^3.13.4):
++
++```bash
++flutter pub get
++ dart format lib test
++flutter analyze
++flutter test
++flutter run
++```
++
++The implementation environment did not have Flutter/Dart installed. Tests are
++included but have not been executed; compilation and visual QA remain pending.
++The existing widget test contained invalid C#; it has been replaced.
++
++## Onboarding and selection
++
++Required: age, height (cm), weight (kg), goal, activity, daily VND budget,
++per-recipe cooking time and diet. Optional: clinician-reported cholesterol status,
++LDL/HDL/triglycerides in mmol/L, blood pressure in mmHg, allergens and dislikes.
++Only enter lab values in the indicated units. Paired BP fields are validated.
++The app does not diagnose or interpret readings. Those fields and activity are
++collected for future professional-reviewed personalisation, not used to prescribe
++energy intake. Muscle support ranks protein; other goals rank fibre. Weight loss
++currently does not change portions. All plans use the same cholesterol-conscious
++recipe catalogue regardless of reported diagnosis.
++
++Under-18s and users indicating pregnancy, breastfeeding, kidney disease, eating
++disorders or another therapeutic diet do not receive an automated plan.
++
++Hard filters: allergens, disliked ingredients, vegetarian diet, time, cost.
++Each recipe costs at most one third of the daily budget. Empty candidate pools
++produce an explicit no-plan state; no hard constraints are relaxed. Swaps use
++identical filters and recompute the grocery totals. Oats conservatively carry a
++gluten exclusion tag. Check all packaged ingredient labels and cross-contamination
++risks: catalogue matching cannot guarantee allergen-free preparation.
++
++## Data and limitations
++
++12 illustrative recipes, fixed portions, seven days, three meals/day. Nutrition
++and prices are developer estimates, not verified food-composition calculations or
++live Vietnam grocery pricing. Condiments, drinks and snacks are excluded. Timing
++may assume pre-cooked rice/beans; raw versus cooked bean weights are labelled.
++This is a sample menu, not an energy-complete or clinical prescription. No claims
++are made that a recipe meets a particular saturated-fat or fibre target.
++
++Profiles, lab readings and plans stay in memory with explicit session consent.
++Tab switching preserves the form; closing the app loses the data. Delete clears
++the profile and plan. Secure persistent health storage, clinician-set targets,
++portion calculations, lipid test dates, medications, and validated recipe data
++must be added before clinical use or a public health-personalisation launch.
++Existing activity persistence is unchanged.
++
++## Guidance informing the catalogue
++
++- American Heart Association: https://www.heart.org/en/health-topics/cholesterol/prevention-and-treatment-of-high-cholesterol-hyperlipidemia
++  Reduce saturated/trans fats; favour vegetables, whole grains, legumes,
++  unsaturated fats and lean proteins.
++- NHLBI: https://www.nhlbi.nih.gov/health/blood-cholesterol/diagnosis
++  Cholesterol diagnosis needs clinical assessment and blood testing; questionnaires
++  cannot establish it.
++
++## Next useful iteration
++
++Validate recipe nutrition and local prices, then add professionally reviewed
++portion/energy rules and secure consent-based storage. Do not infer clinical
++restrictions from body measurements alone.
+diff --git a/lib/app/steady_app.dart b/lib/app/steady_app.dart
+index fcb0e01..3df94d9 100644
+--- a/lib/app/steady_app.dart
++++ b/lib/app/steady_app.dart
+@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
+ 
+ import '../screens/check_in_screen.dart';
+ import '../screens/home_screen.dart';
++import '../screens/meals_screen.dart';
+ import '../screens/profile_screen.dart';
+ import '../screens/rewards_screen.dart';
+ import '../state/steady_store.dart';
+@@ -44,10 +45,11 @@ class _SteadyAppState extends State<SteadyApp> {
+             ),
+             RewardsScreen(store: store),
+             ProfileScreen(store: store),
++            MealsScreen(store: store),
+           ];
+ 
+           return Scaffold(
+-            body: SafeArea(child: screens[selectedIndex]),
++            body: SafeArea(child: IndexedStack(index: selectedIndex, children: screens)),
+             bottomNavigationBar: NavigationBar(
+               selectedIndex: selectedIndex,
+               onDestinationSelected: (index) {
+@@ -74,6 +76,7 @@ class _SteadyAppState extends State<SteadyApp> {
+                   selectedIcon: Icon(Icons.person),
+                   label: 'Profile',
+                 ),
++                NavigationDestination(icon: Icon(Icons.restaurant_outlined), selectedIcon: Icon(Icons.restaurant), label: 'Meals'),
+               ],
+             ),
+           );
+diff --git a/lib/nutrition/meal_planner.dart b/lib/nutrition/meal_planner.dart
+new file mode 100644
+index 0000000..da02225
+--- /dev/null
++++ b/lib/nutrition/meal_planner.dart
+@@ -0,0 +1,96 @@
++/// Prototype recipe values are estimates, not validated clinical nutrition data.
++class NutritionProfile {
++  final int age;
++  final double height, weight;
++  final String goal, activity, cholesterol, diet;
++  final int budget, minutes;
++  final Set<String> exclusions;
++  final String bloodPressure, lipidResults;
++  final bool needsProfessionalPlan;
++  const NutritionProfile({required this.age, required this.height, required this.weight,
++    required this.goal, required this.activity, required this.cholesterol,
++    required this.diet, required this.budget, required this.minutes,
++    required this.exclusions, this.bloodPressure = '', this.lipidResults = '',
++    this.needsProfessionalPlan = false});
++  bool get supported => age >= 18 && !needsProfessionalPlan;
++}
++
++class Meal {
++  final String id, name, slot, recipe;
++  final int minutes, cost, kcal, protein, fibre;
++  final double saturatedFat;
++  final Map<String, double> ingredients; // grams, raw edible weight
++  final Set<String> contains;
++  const Meal(this.id, this.name, this.slot, this.minutes, this.cost, this.kcal,
++    this.protein, this.fibre, this.saturatedFat, this.ingredients, this.contains, this.recipe);
++}
++
++const meals = <Meal>[
++  Meal('oats', 'Cháo yến mạch chuối', 'Sáng', 10, 18000, 410, 13, 9, 1.2,
++    {'Yến mạch': 70, 'Chuối': 100, 'Sữa đậu nành không đường': 200}, {'soy', 'gluten'},
++    'Nấu yến mạch với sữa đậu nành và nước 5–7 phút. Thêm chuối. Không thêm đường.'),
++  Meal('sweet', 'Khoai lang, đậu nành và trái cây', 'Sáng', 20, 22000, 430, 18, 10, 1,
++    {'Khoai lang': 250, 'Đậu nành chín': 100, 'Ổi': 100}, {'soy'},
++    'Hấp khoai lang 15–20 phút. Ăn cùng đậu nành đã nấu chín và ổi rửa sạch.'),
++  Meal('beanbreakfast', 'Cháo đậu xanh và chuối', 'Sáng', 25, 19000, 440, 15, 11, 0.5,
++    {'Đậu xanh': 60, 'Gạo lứt': 50, 'Chuối': 100}, {},
++    'Ngâm đậu và gạo trước. Nấu với nước đến mềm; dùng nồi áp suất để tiết kiệm thời gian. Ăn chuối riêng.'),
++  Meal('ricebreakfast', 'Cơm lứt đậu đỏ, dưa chuột', 'Sáng', 20, 22000, 460, 15, 12, 0.8,
++    {'Gạo lứt': 70, 'Đậu đỏ chín': 150, 'Dưa chuột': 150, 'Dầu cải': 5}, {},
++    'Dùng cơm đã nấu và đậu đã luộc. Hâm nóng, ăn cùng dưa chuột và dầu cải.'),
++  Meal('fish', 'Cơm lứt cá hấp và rau', 'Trưa', 25, 45000, 620, 38, 8, 1.5,
++    {'Gạo lứt': 90, 'Cá rô phi phi lê': 150, 'Rau cải': 250, 'Dầu cải': 10}, {'fish'},
++    'Nấu cơm. Hấp cá với gừng 10–15 phút đến chín. Luộc rau, thêm dầu cải. Gia vị và nước chấm tính riêng.'),
++  Meal('tofu', 'Đậu phụ sốt cà chua, cơm lứt', 'Trưa', 20, 32000, 590, 25, 10, 1.8,
++    {'Gạo lứt': 80, 'Đậu phụ': 200, 'Cà chua': 150, 'Rau cải': 200, 'Dầu cải': 5}, {'soy'},
++    'Nấu cơm. Đun cà chua với ít nước và dầu, thêm đậu phụ; ăn cùng rau luộc. Không chiên ngập dầu.'),
++  Meal('lentil', 'Cơm đậu xanh và rau củ', 'Trưa', 25, 29000, 610, 23, 15, 0.7,
++    {'Gạo lứt': 80, 'Đậu xanh': 70, 'Cà rốt': 150, 'Rau cải': 200, 'Dầu cải': 5}, {},
++    'Dùng đậu đã ngâm và cơm đã nấu. Nấu đậu chín mềm, thêm cà rốt và rau; trộn với cơm và dầu.'),
++  Meal('chicken', 'Ức gà áp chảo, cơm và rau', 'Trưa', 25, 42000, 630, 43, 8, 1.6,
++    {'Gạo lứt': 90, 'Ức gà bỏ da': 150, 'Rau cải': 250, 'Dầu cải': 10}, {'meat'},
++    'Nấu cơm. Áp chảo gà bỏ da với dầu đến chín kỹ. Ăn với rau hấp; hạn chế nước sốt đóng chai.'),
++  Meal('beanDinner', 'Đậu đỏ, khoai lang và rau xanh', 'Tối', 20, 30000, 560, 20, 16, 0.8,
++    {'Đậu đỏ chín': 200, 'Khoai lang': 250, 'Rau cải': 200, 'Dầu cải': 5}, {},
++    'Hấp khoai. Hâm đậu đỏ đã nấu chín; ăn với rau luộc và dầu cải.'),
++  Meal('fishDinner', 'Cá hấp, khoai lang và rau', 'Tối', 25, 43000, 580, 36, 9, 1.4,
++    {'Cá rô phi phi lê': 150, 'Khoai lang': 300, 'Rau cải': 250, 'Dầu cải': 10}, {'fish'},
++    'Hấp khoai và cá đến chín, luộc rau. Dùng gừng và chanh; nước chấm tính riêng.'),
++  Meal('tofuDinner', 'Đậu phụ hấp nấm và cơm lứt', 'Tối', 20, 33000, 570, 26, 10, 1.8,
++    {'Đậu phụ': 200, 'Nấm': 150, 'Gạo lứt': 70, 'Rau cải': 200, 'Dầu cải': 5}, {'soy'},
++    'Hấp đậu phụ với nấm đến nóng và chín. Ăn cùng cơm lứt, rau và dầu cải.'),
++  Meal('chickenDinner', 'Gà bỏ da, khoai và rau', 'Tối', 25, 40000, 590, 40, 9, 1.5,
++    {'Ức gà bỏ da': 150, 'Khoai lang': 300, 'Rau cải': 200, 'Dầu cải': 10}, {'meat'},
++    'Hấp khoai, luộc hoặc áp chảo gà đến chín kỹ. Ăn cùng rau luộc.'),
++];
++
++class MealPlanner {
++  static List<Meal> candidates(NutritionProfile p, String slot) {
++    if (!p.supported) return [];
++    return meals.where((m) => m.slot == slot && m.minutes <= p.minutes &&
++      m.cost <= p.budget / 3 && !m.contains.any(p.exclusions.contains) && !m.ingredients.keys.any(p.exclusions.contains) &&
++      (p.diet != 'Chay' || (!m.contains.contains('meat') && !m.contains.contains('fish'))))
++      .toList()..sort((a, b) {
++        if (p.goal == 'Hỗ trợ tăng cơ') return b.protein.compareTo(a.protein);
++        return b.fibre.compareTo(a.fibre);
++      });
++  }
++
++  static List<List<Meal>> generate(NutritionProfile p) {
++    final pools = ['Sáng', 'Trưa', 'Tối'].map((s) => candidates(p, s)).toList();
++    if (pools.any((pool) => pool.isEmpty)) return [];
++    return List.generate(7, (day) => List.generate(3,
++      (slot) => pools[slot][day % pools[slot].length]));
++  }
++
++  static Map<String, double> groceries(List<List<Meal>> plan) {
++    final result = <String, double>{};
++    for (final day in plan) {
++      for (final meal in day) {
++        meal.ingredients.forEach((name, grams) => result.update(name,
++          (value) => value + grams, ifAbsent: () => grams));
++      }
++    }
++    return result;
++  }
++}
+diff --git a/lib/screens/meals_screen.dart b/lib/screens/meals_screen.dart
+new file mode 100644
+index 0000000..af8028a
+--- /dev/null
++++ b/lib/screens/meals_screen.dart
+@@ -0,0 +1,174 @@
++import 'package:flutter/material.dart';
++import '../nutrition/meal_planner.dart';
++import '../state/steady_store.dart';
++
++class MealsScreen extends StatefulWidget {
++  const MealsScreen({super.key, required this.store});
++  final SteadyStore store;
++  @override
++  State<MealsScreen> createState() => _MealsScreenState();
++}
++
++class _MealsScreenState extends State<MealsScreen> {
++  final form = GlobalKey<FormState>();
++  final fields = <String, TextEditingController>{};
++  String goal = 'Ăn uống cân bằng', activity = 'Ít vận động',
++      cholesterol = 'Chưa biết', diet = 'Ăn đa dạng';
++  final exclusions = <String>{};
++  bool professional = false, consent = false, editing = false;
++  int day = 0;
++  @override
++  void initState() {
++    super.initState();
++    final p = widget.store.nutritionProfile;
++    for (final key in ['age', 'height', 'weight', 'budget', 'minutes', 'sys', 'dia', 'ldl', 'hdl', 'tg']) {
++      fields[key] = TextEditingController();
++    }
++    fields['budget']!.text = '${p?.budget ?? 120000}';
++    fields['minutes']!.text = '${p?.minutes ?? 30}';
++    if (p != null) {
++      fields['age']!.text = '${p.age}'; fields['height']!.text = '${p.height}';
++      fields['weight']!.text = '${p.weight}'; goal = p.goal; activity = p.activity;
++      cholesterol = p.cholesterol; diet = p.diet; exclusions.addAll(p.exclusions);
++      professional = p.needsProfessionalPlan;
++      final bp = p.bloodPressure.split('/');
++      if (bp.length == 2) { fields['sys']!.text = bp[0]; fields['dia']!.text = bp[1]; }
++      final lipid = p.lipidResults.split('/');
++      if (lipid.length == 3) { fields['ldl']!.text = lipid[0]; fields['hdl']!.text = lipid[1]; fields['tg']!.text = lipid[2]; }
++      consent = true;
++    }
++  }
++  @override
++  void dispose() { for (final c in fields.values) { c.dispose(); } super.dispose(); }
++
++  Widget number(String key, String label, double min, double max, {bool optional = false}) =>
++    Padding(padding: const EdgeInsets.only(bottom: 12), child: TextFormField(
++      controller: fields[key], keyboardType: const TextInputType.numberWithOptions(decimal: true),
++      decoration: InputDecoration(labelText: label), validator: (text) {
++        if (optional && (text == null || text.trim().isEmpty)) return null;
++        final value = double.tryParse((text ?? '').replaceAll(',', '.'));
++        if (value == null || !value.isFinite || value < min || value > max) return 'Nhập giá trị từ $min đến $max';
++        if (['age', 'budget', 'minutes'].contains(key) && value != value.roundToDouble()) return 'Nhập số nguyên';
++        return null;
++      }));
++  Widget choice(String label, String value, List<String> options, ValueChanged<String> update) =>
++    Padding(padding: const EdgeInsets.only(bottom: 12), child: DropdownButtonFormField<String>(
++      initialValue: value, decoration: InputDecoration(labelText: label), isExpanded: true,
++      items: options.map((o) => DropdownMenuItem(value: o, child: Text(o))).toList(),
++      onChanged: (v) { if (v != null) setState(() => update(v)); }));
++  double value(String key) => double.parse(fields[key]!.text.replaceAll(',', '.'));
++  void save() {
++    if (!form.currentState!.validate()) return;
++    final sys = fields['sys']!.text, dia = fields['dia']!.text;
++    String? error;
++    if (sys.isEmpty != dia.isEmpty) error = 'Nhập cả hai chỉ số huyết áp hoặc để trống cả hai.';
++    if (sys.isNotEmpty && dia.isNotEmpty && value('sys') <= value('dia')) error = 'Kiểm tra lại huyết áp: tâm thu cần lớn hơn tâm trương.';
++    if (!consent) error = 'Vui lòng đồng ý sử dụng thông tin cho kế hoạch ăn.';
++    if (error != null) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error))); return; }
++    final p = NutritionProfile(age: value('age').toInt(), height: value('height'), weight: value('weight'),
++      goal: goal, activity: activity, cholesterol: cholesterol, diet: diet,
++      budget: value('budget').toInt(), minutes: value('minutes').toInt(),
++      exclusions: Set.of(exclusions), bloodPressure: sys.isEmpty ? '' : '$sys/$dia',
++      lipidResults: '${fields['ldl']!.text}/${fields['hdl']!.text}/${fields['tg']!.text}',
++      needsProfessionalPlan: professional);
++    widget.store.setNutritionProfile(p);
++    setState(() { editing = false; day = 0; });
++  }
++  @override
++  Widget build(BuildContext context) {
++    final p = widget.store.nutritionProfile;
++    return ListView(padding: const EdgeInsets.all(20), children: [
++      Text('Bữa ăn của bạn', style: Theme.of(context).textTheme.headlineMedium),
++      const SizedBox(height: 8),
++      const Text('Món quen tại Việt Nam · kế hoạch 7 ngày · ngân sách VND'),
++      const SizedBox(height: 16),
++      if (p == null || editing) ...setup() else ...plan(p),
++    ]);
++  }
++  List<Widget> setup() => [Form(key: form, child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
++    const Text('1. Cơ thể và mục tiêu', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
++    const SizedBox(height: 12),
++    number('age', 'Tuổi', 1, 120), number('height', 'Chiều cao (cm)', 50, 250),
++    number('weight', 'Cân nặng (kg)', 10, 400),
++    choice('Mục tiêu', goal, ['Ăn uống cân bằng', 'Hỗ trợ giảm cân', 'Hỗ trợ tăng cơ'], (v) => goal = v),
++    choice('Mức vận động thường ngày', activity, ['Ít vận động', 'Nhẹ: 1–2 buổi/tuần', 'Vừa: 3–4 buổi/tuần', 'Nhiều: 5+ buổi/tuần'], (v) => activity = v),
++    const Text('2. Thông tin sức khoẻ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
++    const SizedBox(height: 12),
++    choice('Bác sĩ đã xác nhận cholesterol cao?', cholesterol,
++      ['Chưa biết', 'Đã xác nhận', 'Chưa được chẩn đoán'], (v) => cholesterol = v),
++    const Text('Không biết chỉ số? Có thể bỏ qua. Steady không chẩn đoán từ câu trả lời. Nhập kết quả xét nghiệm, không tự đoán.'),
++    const SizedBox(height: 12),
++    number('sys', 'Huyết áp tâm thu (mmHg, tuỳ chọn)', 50, 300, optional: true),
++    number('dia', 'Huyết áp tâm trương (mmHg, tuỳ chọn)', 30, 200, optional: true),
++    number('ldl', 'LDL (mmol/L, tuỳ chọn)', 0.1, 30, optional: true),
++    number('hdl', 'HDL (mmol/L, tuỳ chọn)', 0.1, 15, optional: true),
++    number('tg', 'Triglyceride (mmol/L, tuỳ chọn)', 0.1, 50, optional: true),
++    CheckboxListTile(contentPadding: EdgeInsets.zero, value: professional,
++      title: const Text('Mang thai/cho con bú, bệnh thận, rối loạn ăn uống, hoặc có chế độ ăn điều trị riêng'),
++      subtitle: const Text('Những trường hợp này cần kế hoạch từ chuyên gia.'),
++      onChanged: (v) => setState(() => professional = v ?? false)),
++    const Text('3. Ăn uống và sinh hoạt', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
++    const SizedBox(height: 12),
++    choice('Chế độ ăn', diet, ['Ăn đa dạng', 'Chay'], (v) => diet = v),
++    number('budget', 'Ngân sách ăn mỗi ngày (VND)', 10000, 2000000),
++    number('minutes', 'Thời gian tối đa mỗi món (phút)', 5, 180),
++    const Text('Dị ứng / thành phần cần loại trừ'),
++    Wrap(spacing: 8, children: {'soy': 'Đậu nành', 'fish': 'Cá', 'gluten': 'Gluten',
++      'milk': 'Sữa', 'egg': 'Trứng', 'peanut': 'Lạc', 'nuts': 'Hạt cây', 'shellfish': 'Hải sản có vỏ', 'sesame': 'Mè'}.entries.map((e) => FilterChip(
++      label: Text(e.value), selected: exclusions.contains(e.key), onSelected: (selected) => setState(() {
++        if (selected) { exclusions.add(e.key); } else { exclusions.remove(e.key); }
++      }))).toList()),
++    const SizedBox(height: 12), const Text('Nguyên liệu không thích'),
++    Wrap(spacing: 8, children: ['Ức gà bỏ da', 'Đậu phụ', 'Cá rô phi phi lê', 'Khoai lang', 'Yến mạch'].map((name) => FilterChip(
++      label: Text(name), selected: exclusions.contains(name), onSelected: (selected) => setState(() {
++        if (selected) { exclusions.add(name); } else { exclusions.remove(name); }
++      }))).toList()),
++    CheckboxListTile(contentPadding: EdgeInsets.zero, value: consent,
++      title: const Text('Đồng ý dùng thông tin để tạo kế hoạch trong phiên này'),
++      subtitle: const Text('Thông tin hiện chỉ giữ trong bộ nhớ, mất khi đóng ứng dụng. Không gửi tới AI hoặc máy chủ.'),
++      onChanged: (v) => setState(() => consent = v ?? false)),
++    FilledButton(onPressed: save, child: const Text('Tạo kế hoạch 7 ngày')),
++  ]))];
++
++  List<Widget> plan(NutritionProfile p) {
++    final week = widget.store.mealPlan;
++    return [
++      Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
++        Text('${p.goal} · ${p.activity}'), Text('${p.budget}đ/ngày · ${p.minutes} phút/món'),
++        const SizedBox(height: 8),
++        const Text('Ưu tiên chất xơ, đậu, ngũ cốc nguyên hạt và chất béo không bão hoà. Hạn chế mỡ bão hoà. Không thay thế điều trị cholesterol.'),
++        const Text('Chiều cao, cân nặng, huyết áp và xét nghiệm được ghi nhận; chưa dùng để kê mức calo hoặc điều chỉnh điều trị. Mục tiêu tăng cơ ưu tiên món nhiều protein; giảm cân chưa tự giảm khẩu phần.'),
++      ]))),
++      TextButton(onPressed: () => setState(() => editing = true), child: const Text('Chỉnh sửa hồ sơ')),
++      if (!p.supported) const Text('Chưa tạo kế hoạch tự động cho người dưới 18 tuổi hoặc cần chế độ điều trị riêng. Hãy làm việc với chuyên gia dinh dưỡng.')
++      else if (week.isEmpty) const Text('Chưa đủ món phù hợp với các giới hạn. Hãy tăng ngân sách/thời gian hoặc thay đổi món không thích. Steady sẽ giữ nguyên các loại trừ dị ứng.')
++      else ...[
++        Wrap(spacing: 6, children: List.generate(7, (i) => ChoiceChip(label: Text('Ngày ${i + 1}'), selected: day == i,
++          onSelected: (_) => setState(() => day = i)))),
++        const SizedBox(height: 12),
++        Text('Ước tính: ${week[day].fold<int>(0, (s, m) => s + m.kcal)} kcal · ${week[day].fold<int>(0, (s, m) => s + m.protein)}g protein · ${week[day].fold<int>(0, (s, m) => s + m.fibre)}g chất xơ'),
++        Text('Mỡ bão hoà: ${week[day].fold<double>(0, (s, m) => s + m.saturatedFat).toStringAsFixed(1)}g · ${week[day].fold<int>(0, (s, m) => s + m.cost)}đ'),
++        const Text('Đây là bộ 3 bữa mẫu, chưa phải khẩu phần đáp ứng nhu cầu năng lượng cá nhân. Giá và dinh dưỡng là ước tính chưa kiểm định; chưa tính đồ ăn thêm, gia vị hoặc nước chấm. Kiểm tra nhãn và nguy cơ nhiễm chéo nếu dị ứng.'),
++        ...List.generate(3, (slot) {
++          final m = week[day][slot];
++          final alternatives = MealPlanner.candidates(p, m.slot).where((a) => a.id != m.id).toList();
++          return Card(child: ExpansionTile(title: Text('${m.slot}: ${m.name}'), subtitle: Text('${m.minutes} phút · ${m.cost}đ · ~${m.kcal} kcal'),
++            children: [Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
++              ...m.ingredients.entries.map((e) => Text('${e.key}: ${e.value.toStringAsFixed(0)}g')),
++              const SizedBox(height: 12), Text(m.recipe),
++              TextButton(onPressed: alternatives.isEmpty ? null : () async {
++                final replacement = await showModalBottomSheet<Meal>(context: context, builder: (context) => SafeArea(child: ListView(shrinkWrap: true,
++                  children: alternatives.map((a) => ListTile(title: Text(a.name), subtitle: Text('~${a.kcal} kcal · ${a.cost}đ'), onTap: () => Navigator.pop(context, a))).toList())));
++                if (replacement != null && mounted) widget.store.swapMeal(day, slot, replacement);
++              }, child: Text(alternatives.isEmpty ? 'Chưa có món thay thế' : 'Đổi món')),
++            ]))]));
++        }),
++        ExpansionTile(title: const Text('Danh sách mua sắm · 7 ngày'), subtitle: const Text('Gram nguyên liệu; đậu ghi “chín” tính theo khối lượng đã nấu'),
++          children: MealPlanner.groceries(week).entries.map((e) => ListTile(title: Text(e.key), trailing: Text('${e.value.toStringAsFixed(0)}g'))).toList()),
++      ],
++      TextButton(onPressed: () { widget.store.clearNutrition(); setState(() { consent = false; editing = false; exclusions.clear(); professional = false; cholesterol = 'Chưa biết'; });
++        for (final key in ['age', 'height', 'weight', 'sys', 'dia', 'ldl', 'hdl', 'tg']) { fields[key]!.clear(); }
++      }, child: const Text('Xoá thông tin và kế hoạch')),
++    ];
++  }
++}
+diff --git a/lib/state/steady_store.dart b/lib/state/steady_store.dart
+index 872e2c7..88ad6a7 100644
+--- a/lib/state/steady_store.dart
++++ b/lib/state/steady_store.dart
+@@ -1,8 +1,28 @@
+ import 'package:flutter/foundation.dart';
+ 
+ import '../models/activity_type.dart';
++import '../nutrition/meal_planner.dart';
+ 
+ class SteadyStore extends ChangeNotifier {
++  NutritionProfile? nutritionProfile;
++  List<List<Meal>> mealPlan = [];
++  void setNutritionProfile(NutritionProfile profile) {
++    nutritionProfile = profile;
++    mealPlan = MealPlanner.generate(profile);
++    notifyListeners();
++  }
++  void swapMeal(int day, int slot, Meal meal) {
++    final profile = nutritionProfile;
++    if (profile == null || day < 0 || day >= mealPlan.length || slot < 0 || slot >= 3) return;
++    if (!MealPlanner.candidates(profile, ['Sáng', 'Trưa', 'Tối'][slot]).contains(meal)) return;
++    mealPlan[day][slot] = meal;
++    notifyListeners();
++  }
++  void clearNutrition() {
++    nutritionProfile = null;
++    mealPlan = [];
++    notifyListeners();
++  }
+   final List<ActivityLog> _logs = [];
+   int _points = 120;
+   int _streak = 3;
+diff --git a/test/meal_planner_test.dart b/test/meal_planner_test.dart
+new file mode 100644
+index 0000000..843ca4a
+--- /dev/null
++++ b/test/meal_planner_test.dart
+@@ -0,0 +1,57 @@
++import 'package:flutter_test/flutter_test.dart';
++import 'package:steady/nutrition/meal_planner.dart';
++import 'package:steady/state/steady_store.dart';
++
++NutritionProfile profile({Set<String> exclusions = const {}, int budget = 150000,
++  int minutes = 30, int age = 30, String diet = 'Ăn đa dạng', bool professional = false}) =>
++  NutritionProfile(age: age, height: 175, weight: 70, goal: 'Ăn uống cân bằng',
++    activity: 'Vừa: 3–4 buổi/tuần', cholesterol: 'Đã xác nhận', diet: diet,
++    budget: budget, minutes: minutes, exclusions: exclusions,
++    needsProfessionalPlan: professional);
++
++void main() {
++  test('allergy, dislike and vegetarian exclusions survive generation', () {
++    final p = profile(exclusions: {'soy', 'gluten', 'Ức gà bỏ da'}, diet: 'Chay');
++    final plan = MealPlanner.generate(p);
++    expect(plan, hasLength(7));
++    for (final meal in plan.expand((d) => d)) {
++      expect(meal.contains.intersection({'soy', 'gluten', 'fish', 'meat'}), isEmpty);
++      expect(meal.ingredients.containsKey('Ức gà bỏ da'), isFalse);
++    }
++  });
++  test('every day respects budget and every recipe respects time', () {
++    final p = profile(budget: 100000, minutes: 25);
++    final plan = MealPlanner.generate(p);
++    expect(plan, hasLength(7));
++    for (final day in plan) {
++      expect(day.fold<int>(0, (s, m) => s + m.cost), lessThanOrEqualTo(p.budget));
++      expect(day.every((m) => m.minutes <= p.minutes), isTrue);
++    }
++  });
++  test('infeasible constraints never silently relax allergies', () {
++    expect(MealPlanner.generate(profile(budget: 10000)), isEmpty);
++    expect(MealPlanner.generate(profile(minutes: 5)), isEmpty);
++    expect(MealPlanner.generate(profile(age: 17)), isEmpty);
++    expect(MealPlanner.generate(profile(professional: true)), isEmpty);
++  });
++  test('swap rejects incompatible meal and groceries reflect accepted swap', () {
++    final store = SteadyStore();
++    store.setNutritionProfile(profile(exclusions: {'fish'}));
++    final original = store.mealPlan[0][1];
++    store.swapMeal(0, 1, meals.firstWhere((m) => m.id == 'fish'));
++    expect(store.mealPlan[0][1], same(original));
++    final replacement = MealPlanner.candidates(store.nutritionProfile!, 'Trưa')
++      .firstWhere((m) => m.id != original.id);
++    final before = MealPlanner.groceries(store.mealPlan);
++    store.swapMeal(0, 1, replacement);
++    final after = MealPlanner.groceries(store.mealPlan);
++    for (final name in {...before.keys, ...after.keys}) {
++      expect(after[name] ?? 0, closeTo((before[name] ?? 0) -
++        (original.ingredients[name] ?? 0) + (replacement.ingredients[name] ?? 0), 0.001));
++    }
++    store.clearNutrition();
++    expect(store.nutritionProfile, isNull);
++    expect(store.mealPlan, isEmpty);
++    store.dispose();
++  });
++}
+diff --git a/test/widget_test.dart b/test/widget_test.dart
+index acf43aa..48feaa1 100644
+--- a/test/widget_test.dart
++++ b/test/widget_test.dart
+@@ -1,38 +1,18 @@
+-// This is a basic Flutter widget test.
+-//
+-// To perform an interaction with a widget in your test, use the WidgetTester
+-// utility in the flutter_test package. For example, you can send tap and scroll
+-// gestures. You can also use WidgetTester to find child widgets in the widget
+-// tree, read text, and verify that the values of widget properties are correct.
+-
+ import 'package:flutter/material.dart';
+ import 'package:flutter_test/flutter_test.dart';
+-
+-import 'package:steady/main.dart';
++import 'package:steady/app/steady_app.dart';
+ 
+ void main() {
+-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+-    // Build our app and trigger a frame.
+-    namespace MyApp;
+-
+-public partial class App : Steady.App
+-{
+-    public App()
+-    {
+-    }
+-}
+-    await tester.pumpWidget(const MyApp());
+-
+-    // Verify that our counter starts at 0.
+-    expect(find.text('0'), findsOneWidget);
+-    expect(find.text('1'), findsNothing);
+-
+-    // Tap the '+' icon and trigger a frame.
+-    await tester.tap(find.byIcon(Icons.add));
+-    await tester.pump();
+-
+-    // Verify that our counter has incremented.
+-    expect(find.text('0'), findsNothing);
+-    expect(find.text('1'), findsOneWidget);
++  testWidgets('Meals onboarding opens and survives tab switching', (tester) async {
++    await tester.pumpWidget(const SteadyApp());
++    await tester.tap(find.text('Meals'));
++    await tester.pumpAndSettle();
++    expect(find.text('Bữa ăn của bạn'), findsOneWidget);
++    await tester.enterText(find.widgetWithText(TextFormField, 'Tuổi'), '32');
++    await tester.tap(find.text('Today'));
++    await tester.pumpAndSettle();
++    await tester.tap(find.text('Meals'));
++    await tester.pumpAndSettle();
++    expect(find.text('32'), findsOneWidget);
+   });
+ }

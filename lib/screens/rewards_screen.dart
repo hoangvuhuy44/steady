@@ -1,40 +1,38 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/formatters.dart';
+
 import '../state/steady_store.dart';
 
 class RewardsScreen extends StatelessWidget {
-  const RewardsScreen({
-    super.key,
-    required this.store,
-  });
+  const RewardsScreen({super.key, required this.store});
 
   final SteadyStore store;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final l = context.l10n;
 
     final rewards = [
-      ('Recovery day', 100, Icons.spa_outlined),
-      ('Partner perk', 250, Icons.local_offer_outlined),
-      ('Steady badge', 500, Icons.workspace_premium_outlined),
+      (l.recoveryDay, 100, Icons.spa_outlined),
+      (l.partnerPerk, 250, Icons.local_offer_outlined),
+      (l.steadyBadge, 500, Icons.workspace_premium_outlined),
     ];
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
       children: [
         Text(
-          'Rewards',
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
+          l.rewards,
+          style: Theme.of(context).textTheme.headlineMedium
+              ?.copyWith(fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 8),
         Text(
-          'Earn points by staying consistent.',
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
+          l.rewardsIntro,
+          style: Theme.of(context).textTheme.bodyLarge
+              ?.copyWith(color: colors.onSurfaceVariant),
         ),
         const SizedBox(height: 22),
         Card(
@@ -44,20 +42,21 @@ class RewardsScreen extends StatelessWidget {
               children: [
                 Icon(Icons.stars_rounded, size: 34, color: colors.primary),
                 const SizedBox(width: 14),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${store.points}',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.w900,
-                          ),
-                    ),
-                    Text(
-                      'Steady points',
-                      style: TextStyle(color: colors.onSurfaceVariant),
-                    ),
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${store.points}',
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(fontWeight: FontWeight.w900),
+                      ),
+                      Text(
+                        l.steadyPoints,
+                        style: TextStyle(color: colors.onSurfaceVariant),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -65,11 +64,12 @@ class RewardsScreen extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         Text(
-          'Prototype rewards',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+          l.previewRewards,
+          style: Theme.of(context).textTheme.titleLarge
+              ?.copyWith(fontWeight: FontWeight.w800),
         ),
+        const SizedBox(height: 12),
+        Text(l.rewardsNote, style: TextStyle(color: colors.onSurfaceVariant)),
         const SizedBox(height: 12),
         ...rewards.map(
           (reward) => Padding(
@@ -88,7 +88,7 @@ class RewardsScreen extends StatelessWidget {
                   reward.$1,
                   style: const TextStyle(fontWeight: FontWeight.w700),
                 ),
-                subtitle: Text('${reward.$2} points'),
+                subtitle: Text(l.pointsValue(reward.$2)),
                 trailing: Icon(
                   store.points >= reward.$2
                       ? Icons.lock_open_outlined

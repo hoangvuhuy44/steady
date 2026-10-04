@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../models/activity_type.dart';
+import '../l10n/formatters.dart';
+
 import '../state/steady_store.dart';
 import '../widgets/consistency_week.dart';
 import '../widgets/metric_card.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({
-    super.key,
-    required this.store,
-    required this.onCheckIn,
-  });
+  const HomeScreen({super.key, required this.store, required this.onCheckIn});
 
   final SteadyStore store;
   final VoidCallback onCheckIn;
@@ -19,6 +16,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final latest = store.latestLog;
+    final l = context.l10n;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
@@ -26,29 +24,22 @@ class HomeScreen extends StatelessWidget {
         Text(
           'Steady',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: colors.primary,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 0.4,
-              ),
+            color: colors.primary,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.4,
+          ),
         ),
         const SizedBox(height: 10),
         Text(
-          store.checkedInToday
-              ? 'You moved today.'
-              : 'Make today count.',
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
+          store.checkedInToday ? l.movedToday : l.makeTodayCount,
+          style: Theme.of(context).textTheme.headlineMedium
+              ?.copyWith(fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 8),
         Text(
-          store.checkedInToday
-              ? 'The goal is not a perfect workout. The goal is staying active consistently.'
-              : 'Run, walk, swim, cycle, lift, play a sport or train MMA. Steady only cares that you show up.',
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: colors.onSurfaceVariant,
-                height: 1.45,
-              ),
+          store.checkedInToday ? l.consistencyMessage : l.movementMessage,
+          style: Theme.of(context).textTheme.bodyLarge
+              ?.copyWith(color: colors.onSurfaceVariant, height: 1.45),
         ),
         const SizedBox(height: 24),
         Card(
@@ -84,18 +75,16 @@ class HomeScreen extends StatelessWidget {
                         children: [
                           Text(
                             store.checkedInToday
-                                ? 'Daily check-in complete'
-                                : 'No activity logged yet',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
+                                ? l.checkInComplete
+                                : l.noActivity,
+                            style: Theme.of(context).textTheme.titleMedium
                                 ?.copyWith(fontWeight: FontWeight.w800),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             latest == null
-                                ? 'Any meaningful movement counts.'
-                                : '${latest.type.label} · ${latest.minutes} min',
+                                ? l.anyMovement
+                                : '${l.activityName(latest.type)} · ${l.minutesValue(latest.minutes)}',
                             style: TextStyle(color: colors.onSurfaceVariant),
                           ),
                         ],
@@ -109,11 +98,7 @@ class HomeScreen extends StatelessWidget {
                   icon: Icon(
                     store.checkedInToday ? Icons.add : Icons.check_circle,
                   ),
-                  label: Text(
-                    store.checkedInToday
-                        ? 'Log another activity'
-                        : 'Check in',
-                  ),
+                  label: Text(store.checkedInToday ? l.logAnother : l.checkIn),
                 ),
               ],
             ),
@@ -121,18 +106,15 @@ class HomeScreen extends StatelessWidget {
         ),
         const SizedBox(height: 22),
         Text(
-          'This week',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+          l.thisWeek,
+          style: Theme.of(context).textTheme.titleLarge
+              ?.copyWith(fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 12),
         Card(
           child: Padding(
             padding: const EdgeInsets.all(18),
-            child: ConsistencyWeek(
-              checkedInToday: store.checkedInToday,
-            ),
+            child: ConsistencyWeek(logs: store.logs),
           ),
         ),
         const SizedBox(height: 16),
@@ -141,13 +123,13 @@ class HomeScreen extends StatelessWidget {
             MetricCard(
               icon: Icons.local_fire_department_outlined,
               value: '${store.streak}',
-              label: 'day streak',
+              label: l.dayStreak,
             ),
             const SizedBox(width: 12),
             MetricCard(
               icon: Icons.stars_outlined,
               value: '${store.points}',
-              label: 'Steady points',
+              label: l.steadyPoints,
             ),
           ],
         ),
@@ -162,10 +144,9 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'MVP principle: reward consistency, not a specific type of exercise.',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          height: 1.45,
-                        ),
+                    l.consistencyTip,
+                    style: Theme.of(context).textTheme.bodyMedium
+                        ?.copyWith(height: 1.45),
                   ),
                 ),
               ],

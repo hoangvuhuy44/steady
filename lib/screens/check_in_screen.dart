@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/formatters.dart';
+
 import '../models/activity_type.dart';
 import '../state/steady_store.dart';
 
 class CheckInScreen extends StatefulWidget {
-  const CheckInScreen({
-    super.key,
-    required this.store,
-    required this.onSaved,
-  });
+  const CheckInScreen({super.key, required this.store, required this.onSaved});
 
   final SteadyStore store;
   final VoidCallback onSaved;
@@ -30,7 +28,10 @@ class _CheckInScreenState extends State<CheckInScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          '${selectedType.label} logged. +$pointsEarned points',
+          context.l10n.activitySaved(
+            context.l10n.activityName(selectedType),
+            pointsEarned,
+          ),
         ),
       ),
     );
@@ -41,29 +42,27 @@ class _CheckInScreenState extends State<CheckInScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final l = context.l10n;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
       children: [
         Text(
-          'Check in',
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
+          l.checkIn,
+          style: Theme.of(context).textTheme.headlineMedium
+              ?.copyWith(fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 8),
         Text(
-          'What did you do today?',
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
+          l.whatDidYouDo,
+          style: Theme.of(context).textTheme.bodyLarge
+              ?.copyWith(color: colors.onSurfaceVariant),
         ),
         const SizedBox(height: 24),
         Text(
-          'Activity',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+          l.activity,
+          style: Theme.of(context).textTheme.titleMedium
+              ?.copyWith(fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 12),
         Wrap(
@@ -74,26 +73,27 @@ class _CheckInScreenState extends State<CheckInScreen> {
               selected: type == selectedType,
               onSelected: (_) => setState(() => selectedType = type),
               avatar: Icon(type.icon, size: 18),
-              label: Text(type.label),
+              label: Text(l.activityName(type)),
             );
           }).toList(),
         ),
         const SizedBox(height: 28),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          spacing: 16,
+          runSpacing: 8,
           children: [
             Text(
-              'Duration',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+              l.duration,
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w800),
             ),
             Text(
-              '${minutes.round()} min',
+              l.minutesValue(minutes.round()),
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: colors.primary,
-                    fontWeight: FontWeight.w800,
-                  ),
+                color: colors.primary,
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ],
         ),
@@ -102,7 +102,7 @@ class _CheckInScreenState extends State<CheckInScreen> {
           min: 10,
           max: 120,
           divisions: 22,
-          label: '${minutes.round()} min',
+          label: l.minutesValue(minutes.round()),
           onChanged: (value) => setState(() => minutes = value),
         ),
         const SizedBox(height: 12),
@@ -113,11 +113,7 @@ class _CheckInScreenState extends State<CheckInScreen> {
               children: [
                 Icon(Icons.verified_outlined, color: colors.primary),
                 const SizedBox(width: 12),
-                const Expanded(
-                  child: Text(
-                    'For the first MVP, check-ins are manual. HealthKit / Google Health Connect verification can come later.',
-                  ),
-                ),
+                Expanded(child: Text(l.manualActivity)),
               ],
             ),
           ),
@@ -126,9 +122,9 @@ class _CheckInScreenState extends State<CheckInScreen> {
         FilledButton.icon(
           onPressed: save,
           icon: const Icon(Icons.check),
-          label: const Padding(
-            padding: EdgeInsets.symmetric(vertical: 14),
-            child: Text('Save activity'),
+          label: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            child: Text(l.saveActivity),
           ),
         ),
       ],
