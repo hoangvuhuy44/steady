@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../auth/auth_controller.dart';
 import '../l10n/formatters.dart';
+import '../widgets/screening_result_card.dart';
 import '../state/steady_store.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -9,10 +11,12 @@ class ProfileScreen extends StatelessWidget {
     required this.store,
     required this.locale,
     required this.onLanguageChanged,
+    this.auth,
   });
   final SteadyStore store;
   final Locale? locale;
   final ValueChanged<Locale?> onLanguageChanged;
+  final AuthController? auth;
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
@@ -42,7 +46,7 @@ class ProfileScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        l.member,
+                        auth?.email ?? l.member,
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
@@ -58,6 +62,36 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 18),
+        if (store.screeningEnforced) ...[
+          ScreeningResultCard(assessment: store.screeningAssessment),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            key: const ValueKey('profile-screening'),
+            onPressed: store.requestScreening,
+            icon: const Icon(Icons.assignment_outlined),
+            label: Text(l.screeningEdit),
+          ),
+          const SizedBox(height: 18),
+        ],
+        if (auth != null) ...[
+          OutlinedButton.icon(
+            key: const ValueKey('profile-sign-out'),
+            onPressed: () async {
+              try {
+                await auth!.signOut();
+              } catch (_) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(context.l10n.authSignOutError)),
+                  );
+                }
+              }
+            },
+            icon: const Icon(Icons.logout),
+            label: Text(l.signOut),
+          ),
+          const SizedBox(height: 18),
+        ],
         Card(
           child: Padding(
             padding: const EdgeInsets.all(20),

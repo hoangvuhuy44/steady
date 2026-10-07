@@ -51,6 +51,7 @@ extension SteadyLocalization on AppLocalizations {
     'Sáng' => breakfast,
     'Trưa' => lunch,
     'Tối' => dinner,
+    'Bữa phụ' => snack,
     _ => throw ArgumentError.value(slot, 'slot'),
   };
   String allergen(String key) => switch (key) {
@@ -84,6 +85,8 @@ extension SteadyLocalization on AppLocalizations {
     'Cà rốt' => carrot,
     'Ức gà bỏ da' => chickenBreast,
     'Nấm' => mushrooms,
+    'Trứng' => eggIngredient,
+    'Bơ quả' => avocadoIngredient,
     _ => throw ArgumentError.value(name, 'ingredient'),
   };
   String mealName(Meal meal) => switch (meal.id) {
@@ -99,6 +102,16 @@ extension SteadyLocalization on AppLocalizations {
     'fishDinner' => fishDinnerName,
     'tofuDinner' => tofuDinnerName,
     'chickenDinner' => chickenDinnerName,
+    'tofuScramble' => tofuScrambleName,
+    'eggPotato' => eggPotatoName,
+    'ketoEgg' => ketoEggName,
+    'ketoChicken' => ketoChickenName,
+    'ketoFish' => ketoFishName,
+    'ketoTofuLunch' => ketoTofuLunchName,
+    'ketoTofuDinner' => ketoTofuDinnerName,
+    'soySnack' => soySnackName,
+    'eggSnack' => eggSnackName,
+    'paleoChicken' => paleoChickenName,
     _ => throw ArgumentError.value(meal.id, 'meal'),
   };
   String mealRecipe(Meal meal) => switch (meal.id) {
@@ -114,6 +127,16 @@ extension SteadyLocalization on AppLocalizations {
     'fishDinner' => fishDinnerRecipe,
     'tofuDinner' => tofuDinnerRecipe,
     'chickenDinner' => chickenDinnerRecipe,
+    'tofuScramble' => tofuScrambleRecipe,
+    'eggPotato' => eggPotatoRecipe,
+    'ketoEgg' => ketoEggRecipe,
+    'ketoChicken' => ketoChickenRecipe,
+    'ketoFish' => ketoFishRecipe,
+    'ketoTofuLunch' => ketoTofuLunchRecipe,
+    'ketoTofuDinner' => ketoTofuDinnerRecipe,
+    'soySnack' => soySnackRecipe,
+    'eggSnack' => eggSnackRecipe,
+    'paleoChicken' => paleoChickenRecipe,
     _ => throw ArgumentError.value(meal.id, 'meal'),
   };
   List<String> get weekdays => [mon, tue, wed, thu, fri, sat, sun];

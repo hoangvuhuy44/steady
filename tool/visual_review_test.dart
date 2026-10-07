@@ -69,6 +69,7 @@ void main() {
           RepaintBoundary(
             key: boundary,
             child: SteadyApp(
+              requireAuthentication: false,
               key: UniqueKey(),
               initialLocale: Locale(code),
               store: store,

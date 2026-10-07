@@ -1,76 +1,30 @@
-# Vietnam meal planner prototype
+# Steady meal planner
 
-The Meals tab extends Steady's existing Flutter app. It uses a deterministic,
-local recipe catalogue, not an AI service. App localization uses the Flutter
-localization SDK and intl; shared_preferences stores only the language choice.
+Production sign-in collects measurements, health conditions, allergies/food
+preferences and training goals, then generates a portioned seven-day menu.
+See the [nutrition model, sources and limitations](nutrition-system.md).
 
-## Run and verify
+Goals, energy strategy, macros, food pattern/source and meal timing are separate.
+The local engine supports Lean bulk, Aggressive bulk, fat loss, recomposition,
+Keto, low-carb, low-fat, vegetarian/vegan and three/four-meal schedules. Medical
+screening and allergy filters take priority over generation and swaps.
 
-Use the Flutter SDK compatible with the existing pubspec.yaml (Dart ^3.13.4):
+The catalogue has 22 illustrative recipes with estimated nutrients and prices.
+Portions change ingredient grams, cost and nutrition together; groceries use
+actual portions. No feasible combination produces an explicit no-plan state.
+The generator is deterministic, with no AI API call. The old three-step Meals
+form remains for isolated component previews and legacy tests; authenticated
+production users use the five-step flow.
 
-```bash
-flutter pub get
+Health profiles, plans and activity stay in memory. Supabase Auth session
+persistence is unchanged; no health database write is implemented. Validated
+food-composition data, professional review, secure health persistence and
+adaptive weight/waist feedback remain necessary before clinical use.
+
+```sh
+flutter gen-l10n
 dart format lib test tool
 flutter analyze --no-pub
 flutter test --no-pub
-flutter run
+flutter build web --no-pub --dart-define-from-file=supabase-config.json
 ```
-
-The current review used Flutter 3.47.5 / Dart 3.13.4. Static analysis, unit/widget
-tests and the production web build pass. See app-review.md for native platform
-limitations and screenshot-based visual review.
-
-## Onboarding and selection
-
-Required: age, height (cm), weight (kg), goal, activity, daily VND budget,
-per-recipe cooking time and diet. Optional: clinician-reported cholesterol status,
-LDL/HDL/triglycerides in mmol/L, blood pressure in mmHg, allergens and dislikes.
-Only enter lab values in the indicated units. Paired BP fields are validated.
-The app does not diagnose or interpret readings. Those fields and activity are
-collected for future professional-reviewed personalisation, not used to prescribe
-energy intake. Muscle support ranks protein; other goals rank fibre. Weight loss
-currently does not change portions. All plans use the same cholesterol-conscious
-recipe catalogue regardless of reported diagnosis.
-
-Under-18s and users indicating pregnancy, breastfeeding, kidney disease, eating
-disorders or another therapeutic diet do not receive an automated plan.
-
-Hard filters: allergens, disliked ingredients, vegetarian diet, time, cost.
-Generation chooses three-meal combinations whose total cost fits the daily
-budget, rotating dishes to reduce repetition. Empty candidate pools or no
-affordable combinations produce an explicit no-plan state; no hard constraints
-are relaxed. Swaps use identical filters plus the remaining daily budget and
-recompute grocery totals. Oats conservatively carry a
-gluten exclusion tag. Check all packaged ingredient labels and cross-contamination
-risks: catalogue matching cannot guarantee allergen-free preparation.
-
-## Data and limitations
-
-12 illustrative recipes, fixed portions, seven days, three meals/day. Nutrition
-and prices are developer estimates, not verified food-composition calculations or
-live Vietnam grocery pricing. Condiments, drinks and snacks are excluded. Timing
-may assume pre-cooked rice/beans; raw versus cooked bean weights are labelled.
-This is a sample menu, not an energy-complete or clinical prescription. No claims
-are made that a recipe meets a particular saturated-fat or fibre target.
-
-Profiles, lab readings and plans stay in memory with explicit session consent.
-Tab switching preserves the form; closing the app loses the data. Delete clears
-the profile and plan. Secure persistent health storage, clinician-set targets,
-portion calculations, lipid test dates, medications, and validated recipe data
-must be added before clinical use or a public health-personalisation launch.
-Existing activity persistence is unchanged.
-
-## Guidance informing the catalogue
-
-- American Heart Association: https://www.heart.org/en/health-topics/cholesterol/prevention-and-treatment-of-high-cholesterol-hyperlipidemia
-  Reduce saturated/trans fats; favour vegetables, whole grains, legumes,
-  unsaturated fats and lean proteins.
-- NHLBI: https://www.nhlbi.nih.gov/health/blood-cholesterol/diagnosis
-  Cholesterol diagnosis needs clinical assessment and blood testing; questionnaires
-  cannot establish it.
-
-## Next useful iteration
-
-Validate recipe nutrition and local prices, then add professionally reviewed
-portion/energy rules and secure consent-based storage. Do not infer clinical
-restrictions from body measurements alone.

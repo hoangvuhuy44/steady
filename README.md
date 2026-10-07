@@ -3,6 +3,25 @@
 Ứng dụng Flutter ghi nhận vận động và lập thực đơn mẫu với món Việt. Giao diện
 hỗ trợ đầy đủ tiếng Anh và tiếng Việt, gồm cả công thức, nguyên liệu và thông báo.
 
+## Đăng nhập và sàng lọc sức khoẻ
+
+Steady dùng Supabase Auth (email/mật khẩu, Google và Facebook). Ưu tiên bật email
+trước; Google/Facebook chỉ hoạt động sau khi cấu hình provider tương ứng.
+Sau mỗi lần đăng nhập, người dùng
+hoàn thành screening về bệnh nền, dị ứng và tình trạng điều trị trước khi vào app.
+Kết quả xác định phạm vi hỗ trợ của mục Bữa ăn; dữ liệu sức khoẻ chỉ giữ trong phiên.
+
+Sao chép `supabase-config.example.json` thành `supabase-config.json`, điền URL và
+publishable key của project rồi chạy:
+
+```sh
+flutter run -d chrome --web-port=3000 --dart-define-from-file=supabase-config.json
+```
+
+Trong VS Code, chọn cấu hình **steady (Supabase email / Google / Facebook)**.
+Xem [hướng dẫn bật email, Google và Facebook](docs/auth-setup.md) và
+[quy tắc screening](docs/health-screening.md).
+
 ## Ngôn ngữ
 
 Mở **Hồ sơ → Ngôn ngữ** để chọn **Tiếng Việt**, **English** hoặc **Theo thiết bị**.
@@ -14,15 +33,16 @@ chạy `flutter gen-l10n`; không sửa trực tiếp các tệp Dart được s
 
 ## Meals
 
-- Thiết lập qua ba bước: thông tin cơ thể, sức khoẻ, thói quen ăn uống.
-- Thực đơn bảy ngày, ba bữa/ngày; xem chi phí và dinh dưỡng ước tính theo ngày.
-- Đổi món vẫn giữ giới hạn dị ứng, chế độ ăn, thời gian và tổng ngân sách ngày.
+- Kê khai cơ thể/body fat → bệnh lý → dị ứng và sở thích → mục tiêu tập luyện → xem lại và tạo thực đơn.
+- Tách mục tiêu, năng lượng, macro và kiểu ăn; có Lean bulk, Aggressive bulk, Keto, Low-carb, Low-fat, ăn chay và các lựa chọn khác.
+- Thực đơn bảy ngày, ba/bốn bữa hoặc lịch 16:8; khẩu phần theo mục tiêu calorie và macro ước tính.
+- Đổi món kiểm tra lại dinh dưỡng cả ngày cùng dị ứng, thời gian và ngân sách.
 - Danh sách mua sắm cộng nguyên liệu cả tuần và cho phép đánh dấu đã mua.
 - Có thể chỉnh sửa, huỷ chỉnh sửa hoặc xoá hồ sơ với hộp thoại xác nhận.
 
 Hồ sơ dinh dưỡng, thực đơn và hoạt động hiện giữ trong bộ nhớ, mất khi đóng app.
-Chỉ lựa chọn ngôn ngữ được lưu lâu dài. Công thức, dinh dưỡng và giá là dữ liệu
-mẫu; xem [chi tiết và giới hạn](docs/meal-planner.md).
+Lựa chọn ngôn ngữ và phiên Supabase Auth được khôi phục trên thiết bị. Công thức, dinh dưỡng và giá là dữ liệu
+mẫu; xem [mô hình dinh dưỡng, nguồn và giới hạn](docs/nutrition-system.md).
 Phần thưởng hiện là bản xem trước; nhắc nhở và kết nối dữ liệu sức khoẻ chưa được tích hợp.
 
 ## Chạy và kiểm tra

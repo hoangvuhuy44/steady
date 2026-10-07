@@ -1,0 +1,6 @@
+{
+  "SUPABASE_URL": "https://YOUR_PROJECT_REF.supabase.co",
+  "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_REPLACE_WITH_YOUR_KEY",
+  "AUTH_GOOGLE_ENABLED": false,
+  "AUTH_FACEBOOK_ENABLED": false
+}

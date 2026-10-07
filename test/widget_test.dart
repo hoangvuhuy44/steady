@@ -53,7 +53,8 @@ void main() {
     SharedPreferences.setMockInitialValues({LanguagePreferences.key: 'vi'});
     await app.main();
     await tester.pumpAndSettle();
-    expect(find.text('Hôm nay'), findsOneWidget);
+    expect(find.text('Ngôn ngữ'), findsOneWidget);
+    expect(find.byKey(const ValueKey('auth-unconfigured')), findsOneWidget);
     expect(find.text('Make today count.'), findsNothing);
   });
 
@@ -62,7 +63,7 @@ void main() {
     (tester) async {
       addTearDown(tester.platformDispatcher.clearLocalesTestValue);
       tester.platformDispatcher.localesTestValue = const [Locale('vi')];
-      await tester.pumpWidget(const SteadyApp());
+      await tester.pumpWidget(const SteadyApp(requireAuthentication: false));
       await tester.pumpAndSettle();
       expect(find.text('Hôm nay'), findsOneWidget);
       tester.platformDispatcher.localesTestValue = const [Locale('fr')];
@@ -74,7 +75,12 @@ void main() {
   testWidgets('existing validation messages switch language with the form', (
     tester,
   ) async {
-    await tester.pumpWidget(const SteadyApp(initialLocale: Locale('en')));
+    await tester.pumpWidget(
+      const SteadyApp(
+        requireAuthentication: false,
+        initialLocale: Locale('en'),
+      ),
+    );
     await tester.tap(find.text('Meals'));
     await tester.pumpAndSettle();
     await tapVisible(tester, find.byKey(const ValueKey('meal-next')));
@@ -91,7 +97,12 @@ void main() {
   testWidgets('Meals draft survives tab changes and language changes', (
     tester,
   ) async {
-    await tester.pumpWidget(const SteadyApp(initialLocale: Locale('en')));
+    await tester.pumpWidget(
+      const SteadyApp(
+        requireAuthentication: false,
+        initialLocale: Locale('en'),
+      ),
+    );
     await tester.tap(find.text('Meals'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const ValueKey('meal-age')), '32');
@@ -124,7 +135,11 @@ void main() {
       final store = SteadyStore();
       addTearDown(store.dispose);
       await tester.pumpWidget(
-        SteadyApp(store: store, initialLocale: const Locale('en')),
+        SteadyApp(
+          requireAuthentication: false,
+          store: store,
+          initialLocale: const Locale('en'),
+        ),
       );
       await tester.tap(find.text('Meals'));
       await tester.pumpAndSettle();
@@ -164,7 +179,11 @@ void main() {
     final store = SteadyStore()..setNutritionProfile(sampleProfile());
     addTearDown(store.dispose);
     await tester.pumpWidget(
-      SteadyApp(store: store, initialLocale: const Locale('vi')),
+      SteadyApp(
+        requireAuthentication: false,
+        store: store,
+        initialLocale: const Locale('vi'),
+      ),
     );
     await tester.tap(find.text('Bữa ăn'));
     await tester.pumpAndSettle();
@@ -189,7 +208,11 @@ void main() {
       final store = SteadyStore()..setNutritionProfile(sampleProfile());
       addTearDown(store.dispose);
       await tester.pumpWidget(
-        SteadyApp(store: store, initialLocale: const Locale('en')),
+        SteadyApp(
+          requireAuthentication: false,
+          store: store,
+          initialLocale: const Locale('en'),
+        ),
       );
       await tester.tap(find.text('Meals'));
       await tester.pumpAndSettle();
@@ -237,7 +260,11 @@ void main() {
       ..setNutritionProfile(sampleProfile(budget: 10000));
     addTearDown(store.dispose);
     await tester.pumpWidget(
-      SteadyApp(store: store, initialLocale: const Locale('en')),
+      SteadyApp(
+        requireAuthentication: false,
+        store: store,
+        initialLocale: const Locale('en'),
+      ),
     );
     await tester.tap(find.text('Meals'));
     await tester.pumpAndSettle();
@@ -261,7 +288,11 @@ void main() {
         final store = SteadyStore()..setNutritionProfile(sampleProfile());
         addTearDown(store.dispose);
         await tester.pumpWidget(
-          SteadyApp(store: store, initialLocale: Locale(code)),
+          SteadyApp(
+            requireAuthentication: false,
+            store: store,
+            initialLocale: Locale(code),
+          ),
         );
         for (var i = 0; i < 5; i++) {
           await tester.tap(find.byType(NavigationDestination).at(i));

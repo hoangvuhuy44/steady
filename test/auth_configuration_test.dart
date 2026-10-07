@@ -1,0 +1,74 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:steady/auth/auth_configuration.dart';
+import 'package:steady/auth/auth_controller.dart';
+
+void main() {
+  test(
+    'web callback keeps origin/path and removes previous auth parameters',
+    () {
+      for (final value in [
+        'http://localhost:3000/?code=old-code',
+        'http://localhost:3000/#access_token=old-token',
+        'http://localhost:3000/?error=access_denied#description=cancelled',
+      ]) {
+        expect(webAuthRedirectUrl(Uri.parse(value)), 'http://localhost:3000/');
+      }
+      expect(
+        webAuthRedirectUrl(Uri.parse('https://steady.example/app/?code=old')),
+        'https://steady.example/app/',
+      );
+    },
+  );
+
+  test('email needs a real URL and public client key', () {
+    expect(
+      const AuthConfiguration(url: '', publishableKey: '').isValid,
+      isFalse,
+    );
+    expect(
+      const AuthConfiguration(
+        url: 'https://YOUR_PROJECT_REF.supabase.co',
+        publishableKey: 'sb_publishable_REPLACE_WITH_YOUR_KEY',
+      ).isValid,
+      isFalse,
+    );
+    for (final key in [
+      'sb_secret_private',
+      'service_role',
+      'sb_publishable_',
+    ]) {
+      expect(
+        AuthConfiguration(
+          url: 'https://steady-test.supabase.co',
+          publishableKey: key,
+        ).isValid,
+        isFalse,
+      );
+    }
+    expect(
+      const AuthConfiguration(
+        url: 'https://steady-test.supabase.co',
+        publishableKey: 'sb_publishable_test',
+      ).isValid,
+      isTrue,
+    );
+  });
+
+  test('social providers are explicitly enabled independently', () {
+    const emailOnly = AuthConfiguration(url: '', publishableKey: '');
+    expect(emailOnly.socialProviders, isEmpty);
+    const google = AuthConfiguration(
+      url: '',
+      publishableKey: '',
+      googleEnabled: true,
+    );
+    expect(google.socialProviders, {SocialAuthProvider.google});
+    const both = AuthConfiguration(
+      url: '',
+      publishableKey: '',
+      googleEnabled: true,
+      facebookEnabled: true,
+    );
+    expect(both.socialProviders, SocialAuthProvider.values.toSet());
+  });
+}

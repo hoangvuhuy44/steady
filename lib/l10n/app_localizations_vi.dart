@@ -10,6 +10,357 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
+  String get screeningNext => 'Tiếp tục';
+
+  @override
+  String get screeningGuidance => 'Thói quen nên trao đổi với nhóm điều trị';
+
+  @override
+  String get screeningTipDiabetes =>
+      'Vì bạn khai báo đái tháo đường type 2: chọn nước lọc thay nước ngọt và trao đổi khẩu phần, giờ ăn với nhóm điều trị. Steady không tự đặt mục tiêu carbohydrate.';
+
+  @override
+  String get screeningTipSodium =>
+      'Vì bạn khai báo tăng huyết áp: so sánh natri trên nhãn thực phẩm và dùng ít nước chấm mặn hơn. Hỏi bác sĩ trước khi dùng muối thay thế chứa kali.';
+
+  @override
+  String screeningProgress(int step) {
+    return 'Bước $step/5';
+  }
+
+  @override
+  String get signIn => 'Đăng nhập';
+
+  @override
+  String get signUp => 'Tạo tài khoản';
+
+  @override
+  String get signOut => 'Đăng xuất';
+
+  @override
+  String get authIntro =>
+      'Đăng nhập để sàng lọc sức khoẻ và bắt đầu xây dựng thói quen cùng Steady.';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get password => 'Mật khẩu';
+
+  @override
+  String get emailError => 'Nhập địa chỉ email hợp lệ.';
+
+  @override
+  String get passwordError =>
+      'Nhập mật khẩu (ít nhất 8 ký tự khi tạo tài khoản).';
+
+  @override
+  String get authError =>
+      'Không thể đăng nhập. Kiểm tra thông tin và kết nối rồi thử lại.';
+
+  @override
+  String get authSignupError =>
+      'Không thể tạo tài khoản. Kiểm tra thông tin rồi thử lại.';
+
+  @override
+  String get authConfirmEmail =>
+      'Kiểm tra email để xác nhận tài khoản, sau đó quay lại đây đăng nhập.';
+
+  @override
+  String get authConfiguration =>
+      'Steady chưa được kết nối với dịch vụ đăng nhập. Cần thiết lập kết nối trước khi đăng nhập.';
+
+  @override
+  String get authInitializationError =>
+      'Không thể khởi động dịch vụ đăng nhập. Kiểm tra kết nối và mở lại Steady để thử lại.';
+
+  @override
+  String get continueWithGoogle => 'Tiếp tục với Google';
+
+  @override
+  String get continueWithFacebook => 'Tiếp tục với Facebook';
+
+  @override
+  String get authOrEmail => 'hoặc dùng email';
+
+  @override
+  String get authProvidersUnavailable =>
+      'Một số cách đăng nhập qua mạng xã hội chưa sẵn sàng. Bạn có thể dùng email.';
+
+  @override
+  String get authBrowserOpened =>
+      'Hoàn tất đăng nhập trong trình duyệt. Nếu đã đóng trình duyệt, hãy chọn cách đăng nhập để thử lại.';
+
+  @override
+  String get authSocialError =>
+      'Không thể bắt đầu đăng nhập qua mạng xã hội. Kiểm tra kết nối rồi thử lại, hoặc dùng email.';
+
+  @override
+  String get authCredentialsError =>
+      'Email hoặc mật khẩu không đúng. Vui lòng thử lại.';
+
+  @override
+  String get authRateLimitError =>
+      'Bạn đã thử quá nhiều lần. Vui lòng đợi vài phút rồi thử lại.';
+
+  @override
+  String get authNetworkError =>
+      'Không thể hoàn tất đăng nhập. Kiểm tra kết nối rồi thử lại.';
+
+  @override
+  String get authOffline =>
+      'Kết nối bị gián đoạn. Phiên vẫn đang mở; hãy kiểm tra kết nối.';
+
+  @override
+  String get authSignOutError => 'Không thể đăng xuất. Vui lòng thử lại.';
+
+  @override
+  String get alreadyHaveAccount => 'Đã có tài khoản? Đăng nhập';
+
+  @override
+  String get needAccount => 'Mới dùng Steady? Tạo tài khoản';
+
+  @override
+  String get screeningTitle => 'Cùng tìm hiểu sức khoẻ của bạn';
+
+  @override
+  String get screeningIntro =>
+      'Chỉ số cơ thể → bệnh lý → dị ứng và sở thích ăn uống → mục tiêu tập luyện → kiểm tra và thực đơn.';
+
+  @override
+  String get screeningPrivacy =>
+      'Câu trả lời chỉ giữ trong bộ nhớ ở phiên này, không tải lên mạng và được xoá khi đăng xuất hoặc đóng app. Bạn có thể chọn không chia sẻ.';
+
+  @override
+  String get screeningConditions => 'Bệnh nền và dị ứng';
+
+  @override
+  String get screeningConditionsHelp =>
+      'Chọn tất cả bệnh đã được thông báo cho bạn. Đây là thông tin tự khai, chưa được xác minh. Chỉ để trống khi bạn biết mình không có bệnh nền.';
+
+  @override
+  String get screeningConditionsKnown =>
+      'Tôi có thể khai báo bệnh nền (kể cả không có)';
+
+  @override
+  String get screeningAllergiesKnown =>
+      'Tôi có thể khai báo dị ứng thực phẩm (kể cả không có)';
+
+  @override
+  String get screeningOtherAllergies =>
+      'Dị ứng thực phẩm khác chưa có trong danh sách';
+
+  @override
+  String get screeningTreatment => 'Điều trị và khả năng ăn uống';
+
+  @override
+  String get screeningTreatmentHelp =>
+      'Chọn tất cả mục phù hợp. Chỉ để trống khi bạn biết không có mục nào áp dụng. Thông tin tuỳ chọn giúp giải thích khi cần chuyên gia.';
+
+  @override
+  String get screeningTreatmentKnown =>
+      'Tôi có thể khai báo tình trạng điều trị và ăn uống';
+
+  @override
+  String get screeningMedications => 'Thuốc đang dùng (tuỳ chọn)';
+
+  @override
+  String get screeningOrders => 'Chỉ định ăn uống của bác sĩ (tuỳ chọn)';
+
+  @override
+  String get screeningKidneyStage =>
+      'Giai đoạn bệnh thận và lịch lọc máu nếu biết (tuỳ chọn)';
+
+  @override
+  String get screeningLabNotes =>
+      'Xét nghiệm đã đo: giá trị, đơn vị, ngày và nguồn (tuỳ chọn)';
+
+  @override
+  String get screeningLabHelp =>
+      'Bệnh thận: eGFR, kali và phospho; đái tháo đường: HbA1c. Ghi chú này không được diễn giải hay dùng để đặt giới hạn dinh dưỡng.';
+
+  @override
+  String get screeningReview => 'Kết quả sàng lọc';
+
+  @override
+  String get screeningLifestyle => 'Hỗ trợ lối sống cơ bản';
+
+  @override
+  String get screeningMoreInformation => 'Cần bổ sung thông tin';
+
+  @override
+  String get screeningProfessional => 'Cần đánh giá chuyên môn';
+
+  @override
+  String get screeningReasonChild =>
+      'Thực đơn mẫu cho người lớn không áp dụng cho trẻ em và vị thành niên.';
+
+  @override
+  String get screeningReasonTreatment =>
+      'Tình trạng điều trị, ăn uống hoặc thay đổi sức khoẻ gần đây cần được đánh giá riêng.';
+
+  @override
+  String get screeningReasonComplex =>
+      'Một bệnh bạn khai báo nằm ngoài phạm vi tạo thực đơn mẫu tự động hiện tại của Steady.';
+
+  @override
+  String get screeningReasonOrders =>
+      'Dữ liệu món ăn mẫu chưa đủ để kiểm tra và đáp ứng giới hạn ăn uống do bác sĩ chỉ định.';
+
+  @override
+  String get screeningReasonMedication =>
+      'Tương tác thuốc–thực phẩm cần được rà soát. Steady không thay đổi hay diễn giải thuốc của bạn.';
+
+  @override
+  String get screeningReasonAllergy =>
+      'Danh mục món ăn mẫu chưa kiểm tra được những dị ứng khác bạn vừa nhập.';
+
+  @override
+  String get screeningReasonKidney =>
+      'Dinh dưỡng bệnh thận phụ thuộc giai đoạn, lọc máu, thuốc và xét nghiệm. Kể cả khi ghi chú đầy đủ, app vẫn không tự tạo chế độ điều trị.';
+
+  @override
+  String get screeningReasonWeightConflict =>
+      'Tạm dừng lập thực đơn giảm cân tự động vì điều trị ung thư, ăn kém hoặc sụt cân ngoài ý muốn có thể thay đổi ưu tiên dinh dưỡng.';
+
+  @override
+  String get screeningReasonUnknown =>
+      'Chưa đủ thông tin bệnh nền, dị ứng hoặc điều trị. Bạn vẫn có thể ghi nhận thói quen; thực đơn tự động được tạm dừng.';
+
+  @override
+  String get screeningReasonLifestyle =>
+      'Bạn có thể theo dõi thói quen và dùng thực đơn minh hoạ. Kết quả này không xác nhận món ăn phù hợp để điều trị bệnh.';
+
+  @override
+  String get screeningConsent =>
+      'Tôi đồng ý dùng các câu trả lời tự khai để hỗ trợ trong phiên này.';
+
+  @override
+  String get screeningConsentError =>
+      'Vui lòng đồng ý sử dụng trong phiên, hoặc tiếp tục mà không chia sẻ thông tin sức khoẻ.';
+
+  @override
+  String get screeningDecline => 'Tiếp tục mà không chia sẻ thông tin sức khoẻ';
+
+  @override
+  String get screeningDeclined =>
+      'Bạn chưa chia sẻ thông tin sức khoẻ. Thực đơn tự động được tạm dừng.';
+
+  @override
+  String get screeningContinue => 'Tiếp tục vào Steady';
+
+  @override
+  String get screeningEdit => 'Cập nhật sàng lọc sức khoẻ';
+
+  @override
+  String get screeningNote =>
+      'Sàng lọc xác định phạm vi hỗ trợ của app, không chẩn đoán, kê chế độ ăn hay thay thế nhóm điều trị.';
+
+  @override
+  String get screeningPaused => 'Tạm dừng lập thực đơn';
+
+  @override
+  String get screeningSources => 'Đối chiếu nguồn: 7 tháng 10 năm 2026';
+
+  @override
+  String get conditionType1 => 'Đái tháo đường type 1';
+
+  @override
+  String get conditionType2 => 'Đái tháo đường type 2';
+
+  @override
+  String get conditionLung => 'COPD hoặc bệnh phổi mạn tính';
+
+  @override
+  String get conditionCancer => 'Ung thư';
+
+  @override
+  String get conditionKidney => 'Bệnh thận mạn';
+
+  @override
+  String get conditionTransplant => 'Ghép tạng hoặc tế bào gốc';
+
+  @override
+  String get conditionObesity => 'Thừa cân hoặc béo phì';
+
+  @override
+  String get conditionHeart => 'Suy tim, bệnh mạch vành hoặc bệnh cơ tim';
+
+  @override
+  String get conditionStroke => 'Bệnh mạch máu não hoặc tiền sử đột quỵ';
+
+  @override
+  String get conditionDown => 'Hội chứng Down';
+
+  @override
+  String get conditionHiv => 'HIV/AIDS';
+
+  @override
+  String get conditionNeurological => 'Bệnh thần kinh hoặc sa sút trí tuệ';
+
+  @override
+  String get conditionBlood =>
+      'Hồng cầu hình liềm, thalassemia hoặc bệnh huyết học mạn';
+
+  @override
+  String get conditionAsthma => 'Hen phế quản';
+
+  @override
+  String get conditionHypertension => 'Tăng huyết áp';
+
+  @override
+  String get conditionImmunodeficiency => 'Thiếu hụt miễn dịch';
+
+  @override
+  String get conditionFattyLiver => 'Gan nhiễm mỡ do chuyển hoá';
+
+  @override
+  String get conditionOtherLiver => 'Xơ gan hoặc bệnh gan khác';
+
+  @override
+  String get conditionSubstance => 'Rối loạn do sử dụng chất gây nghiện';
+
+  @override
+  String get conditionImmunosuppression =>
+      'Điều trị corticosteroid hoặc thuốc ức chế miễn dịch';
+
+  @override
+  String get conditionSystemic => 'Bệnh hệ thống (ví dụ lupus)';
+
+  @override
+  String get conditionCongenital => 'Bệnh bẩm sinh hoặc bệnh lý nhi khoa';
+
+  @override
+  String get conditionOther => 'Bệnh khác hoặc chế độ ăn điều trị';
+
+  @override
+  String get flagPregnancy => 'Mang thai hoặc cho con bú';
+
+  @override
+  String get flagEatingDisorder => 'Rối loạn ăn uống';
+
+  @override
+  String get flagDialysis => 'Đang lọc máu';
+
+  @override
+  String get flagChemotherapy => 'Đang hoá trị';
+
+  @override
+  String get flagInsulin => 'Đang dùng insulin';
+
+  @override
+  String get flagSwallowing => 'Khó nuốt';
+
+  @override
+  String get flagWeightLoss => 'Sụt cân ngoài ý muốn gần đây';
+
+  @override
+  String get flagPoorIntake => 'Chán ăn hoặc không ăn đủ';
+
+  @override
+  String get flagComplications => 'Biến chứng nặng hoặc bệnh chưa ổn định';
+
+  @override
   String get today => 'Hôm nay';
 
   @override
@@ -434,11 +785,11 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get nutritionNote =>
-      'Khẩu phần cố định, dinh dưỡng và giá là ước tính. Chưa tính đồ ăn thêm, thức uống và gia vị. Nếu dị ứng, kiểm tra nhãn và nguy cơ nhiễm chéo.';
+      'Dinh dưỡng và giá món là ước tính, chưa phải dữ liệu lâm sàng kiểm chứng hay giá trực tiếp. Lượng nguyên liệu thay đổi theo khẩu phần; thời gian nấu giả định mẻ nhỏ tại nhà. Natri chưa gồm muối/nước chấm thêm: kiểm tra nhãn và tính cả gia vị. Thực đơn mẫu không bảo đảm phù hợp điều trị hoặc đủ mọi vi chất.';
 
   @override
   String get personalisationNote =>
-      'Số đo và xét nghiệm được ghi nhận nhưng chưa dùng để tính nhu cầu calo hoặc điều trị. Tăng cơ ưu tiên đạm; giảm cân chưa giảm khẩu phần. Đây là thực đơn mẫu, chưa phải chế độ ăn cá nhân hoá hay điều trị.';
+      'Cấu hình nhiều lớp đặt mục tiêu calorie/macro ước tính ban đầu. Khẩu phần được ghép theo mục tiêu, đồng thời giữ dị ứng, chế độ ăn, thời gian và ngân sách. Yêu cầu sức khoẻ luôn ưu tiên hơn sở thích tập luyện.';
 
   @override
   String get unsupportedTitle => 'Bạn cần thực đơn từ chuyên gia';
@@ -452,7 +803,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get emptyPlanHelp =>
-      'Thử tăng ngân sách, thời gian nấu hoặc giảm nguyên liệu không thích. Các loại trừ dị ứng vẫn được giữ nguyên.';
+      'Chưa có thực đơn đáp ứng đồng thời calorie, macro, dị ứng, thực phẩm, thời gian và ngân sách. Hãy chỉnh thông tin; Steady không tự bỏ ràng buộc.';
 
   @override
   String get deletePlan => 'Xoá hồ sơ và thực đơn';
@@ -677,4 +1028,303 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get chickenDinnerRecipe =>
       'Hấp khoai, luộc hoặc áp chảo gà đến chín kỹ. Ăn cùng rau luộc.';
+
+  @override
+  String get nutritionBodyMeasurements => 'Chỉ số cơ thể';
+
+  @override
+  String get nutritionBodyFat => 'Tỷ lệ mỡ cơ thể (%)';
+
+  @override
+  String get nutritionBodyFatHelp =>
+      'Nhập số đo nếu có; để trống nếu chưa biết. Steady không suy ra body fat từ BMI.';
+
+  @override
+  String get nutritionSex => 'Giới tính dùng để ước tính năng lượng';
+
+  @override
+  String get nutritionSexHelp =>
+      'Công thức Mifflin–St Jeor dùng giới tính, tuổi, chiều cao và cân nặng. Nếu bỏ qua giới tính, Steady không tự đoán mục tiêu calorie.';
+
+  @override
+  String get nutritionSexUnspecified => 'Bỏ qua ước tính năng lượng';
+
+  @override
+  String get nutritionSexFemale => 'Nữ';
+
+  @override
+  String get nutritionSexMale => 'Nam';
+
+  @override
+  String get nutritionFoodSource => 'Nguồn thực phẩm';
+
+  @override
+  String get nutritionFoodPattern => 'Kiểu thực phẩm';
+
+  @override
+  String get nutritionMacroStrategy => 'Chiến lược macro';
+
+  @override
+  String get nutritionMealTiming => 'Lịch ăn';
+
+  @override
+  String get nutritionEnergyStrategy => 'Chiến lược năng lượng';
+
+  @override
+  String get nutritionTrainingGoal => 'Tập luyện và mục tiêu cơ thể';
+
+  @override
+  String get nutritionTrainingSessions => 'Số buổi tập kháng lực/tuần';
+
+  @override
+  String get nutritionExperience => 'Kinh nghiệm tập luyện';
+
+  @override
+  String get nutritionBeginner => 'Mới tập / quay lại tập';
+
+  @override
+  String get nutritionIntermediate => 'Đã tập thường xuyên';
+
+  @override
+  String get nutritionAdvanced => 'Tập lâu năm';
+
+  @override
+  String get nutritionGoalHealth => 'Sức khoẻ tổng thể';
+
+  @override
+  String get nutritionGoalFatLoss => 'Giảm mỡ, giữ cơ';
+
+  @override
+  String get nutritionGoalMuscle => 'Tăng cơ';
+
+  @override
+  String get nutritionGoalRecomp => 'Giảm mỡ và tăng/giữ cơ';
+
+  @override
+  String get nutritionGoalPerformance => 'Sức mạnh / hiệu suất';
+
+  @override
+  String get nutritionGoalEndurance => 'Sức bền';
+
+  @override
+  String get nutritionMaintenance => 'Duy trì năng lượng';
+
+  @override
+  String get nutritionDeficit => 'Cut vừa phải';
+
+  @override
+  String get nutritionLeanBulk => 'Lean bulk — tăng cơ có kiểm soát';
+
+  @override
+  String get nutritionAggressiveBulk =>
+      'Aggressive bulk (thường gọi dirty bulk)';
+
+  @override
+  String get nutritionRecompEnergy => 'Recomp ở mức duy trì';
+
+  @override
+  String get nutritionBalancedMacro => 'Macro cân bằng';
+
+  @override
+  String get nutritionHighProtein => 'Cân bằng, ưu tiên protein';
+
+  @override
+  String get nutritionLowCarb => 'Ít carbohydrate';
+
+  @override
+  String get nutritionKeto => 'Keto';
+
+  @override
+  String get nutritionLowFat => 'Ít chất béo';
+
+  @override
+  String get nutritionBalancedPattern => 'Thực phẩm đa dạng';
+
+  @override
+  String get nutritionMediterranean => 'Phong cách Địa Trung Hải';
+
+  @override
+  String get nutritionDash => 'Phong cách DASH';
+
+  @override
+  String get nutritionPaleo => 'Paleo';
+
+  @override
+  String get nutritionVegan => 'Thuần chay';
+
+  @override
+  String get nutritionThreeMeals => '3 bữa/ngày';
+
+  @override
+  String get nutritionFourMeals => '3 bữa + 1 bữa phụ';
+
+  @override
+  String get nutritionTimeRestricted => '16:8 — ăn trong khung 12:00–20:00';
+
+  @override
+  String get nutritionPreferenceHelp =>
+      'Nguồn thực phẩm, macro và lịch ăn là các lựa chọn riêng. Dị ứng và yêu cầu sức khoẻ luôn được ưu tiên.';
+
+  @override
+  String get nutritionGenerate => 'Hoàn tất và tạo thực đơn';
+
+  @override
+  String get nutritionConfiguration => 'Cấu hình dinh dưỡng của bạn';
+
+  @override
+  String get nutritionMaintenanceEstimate => 'Ước tính năng lượng duy trì';
+
+  @override
+  String get nutritionDailyTarget => 'Mục tiêu ban đầu mỗi ngày';
+
+  @override
+  String get nutritionCarbs => 'Carbohydrate';
+
+  @override
+  String get nutritionFat => 'Chất béo';
+
+  @override
+  String get nutritionSodium => 'Natri';
+
+  @override
+  String get nutritionPortion => 'Hệ số khẩu phần';
+
+  @override
+  String get nutritionMedicalReview =>
+      'Thông tin sức khoẻ cần bổ sung hoặc đánh giá chuyên môn trước khi tạo thực đơn tự động.';
+
+  @override
+  String get nutritionInvalidMeasurements =>
+      'Kiểm tra chỉ số cơ thể và thông tin vận động trước khi ước tính thực đơn.';
+
+  @override
+  String get nutritionNeedSex =>
+      'Chưa ước tính năng lượng. Cập nhật giới tính dùng trong công thức để tạo thực đơn theo mục tiêu calorie ước tính.';
+
+  @override
+  String get nutritionGoalConflict =>
+      'Mục tiêu và chiến lược năng lượng đang mâu thuẫn. Hãy chọn lại trước khi tạo thực đơn.';
+
+  @override
+  String get nutritionLowWeightReview =>
+      'Thâm hụt năng lượng khi cân nặng thấp so với chiều cao cần đánh giá chuyên môn. Steady không tự tạo kế hoạch cut.';
+
+  @override
+  String get nutritionKetoReview =>
+      'Keto khi có bệnh lý đã khai hoặc dùng thuốc SGLT2 cần bác sĩ đánh giá. Steady không tạo thực đơn keto tự động.';
+
+  @override
+  String get nutritionBulkReview =>
+      'Aggressive bulk khi có bệnh lý đã khai cần đánh giá chuyên môn. Chọn chiến lược phù hợp cùng người điều trị.';
+
+  @override
+  String get nutritionPatternConflict =>
+      'Paleo loại các loại đậu và ngũ cốc của bộ món chay hiện có. Cần đổi lựa chọn; Steady không tự bỏ qua sở thích.';
+
+  @override
+  String get nutritionEstimateUnavailable =>
+      'Ước tính từ các thông tin này nằm ngoài phạm vi Steady hỗ trợ. Cập nhật thông tin hoặc xin đánh giá chuyên môn.';
+
+  @override
+  String get nutritionEstimateNote =>
+      'Calorie và macro là ước tính ban đầu, không phải chỉ định điều trị. Body fat được lưu riêng, không dùng để chẩn đoán. Điều chỉnh dựa trên xu hướng cân nặng và đáp ứng tập luyện.';
+
+  @override
+  String get nutritionBulkTradeoff =>
+      'Aggressive bulk là mức dư năng lượng lớn hơn, không phải ăn thực phẩm kém chất lượng. Tăng cân nhanh có thể kèm tăng mỡ; không bảo đảm cơ tăng nhanh hơn.';
+
+  @override
+  String get nutritionTrainingNote =>
+      'Tăng cơ và recomp còn cần tập kháng lực tiến bộ và hồi phục. Thực đơn không bảo đảm kết quả thay đổi cơ thể.';
+
+  @override
+  String get nutritionKetoPerformance =>
+      'Keto không phải lựa chọn ưu tiên cho tập cường độ hoặc khối lượng cao. Không bảo đảm lợi thế hiệu suất hay đạt ketosis.';
+
+  @override
+  String get nutritionVeganNote =>
+      'Thực đơn thuần chay cần chú ý B12, sắt, calcium, iodine và omega-3. Bộ món hiện tại chưa kiểm chứng đủ vi chất.';
+
+  @override
+  String get flagSglt2 =>
+      'Đang dùng thuốc SGLT2 (như dapagliflozin hoặc empagliflozin)';
+
+  @override
+  String get snack => 'Bữa phụ';
+
+  @override
+  String get eggIngredient => 'Trứng';
+
+  @override
+  String get avocadoIngredient => 'Bơ quả';
+
+  @override
+  String get tofuScrambleName => 'Đậu phụ xào rau';
+
+  @override
+  String get tofuScrambleRecipe =>
+      'Làm nóng đậu phụ và rau với dầu; dùng đậu phụ không tẩm ướp. Không thêm nước sốt mặn.';
+
+  @override
+  String get eggPotatoName => 'Trứng, khoai lang và rau';
+
+  @override
+  String get eggPotatoRecipe =>
+      'Luộc trứng chín kỹ, hấp khoai và rau; trộn rau với dầu. Không thêm muối.';
+
+  @override
+  String get ketoEggName => 'Trứng và bơ';
+
+  @override
+  String get ketoEggRecipe =>
+      'Lu?c tr?ng ch?n k?. ?n c?ng b? qu? v? d?a chu?t, tr?n rau v?i to?n b? l??ng d?u ghi trong nguy?n li?u; kh?ng th?m mu?i.';
+
+  @override
+  String get ketoChickenName => 'Salad gà và bơ';
+
+  @override
+  String get ketoChickenRecipe =>
+      'Nấu chín kỹ gà và rau. Ăn cùng bơ quả, dầu và chanh; không thêm sốt mặn.';
+
+  @override
+  String get ketoFishName => 'Cá hấp và rau ít tinh bột';
+
+  @override
+  String get ketoFishRecipe =>
+      'Hấp cá chín kỹ và luộc rau; ăn cùng dầu và chanh. Không thêm muối hay nước chấm.';
+
+  @override
+  String get ketoTofuLunchName => 'Đậu phụ và bơ quả';
+
+  @override
+  String get ketoTofuLunchRecipe =>
+      'Nấu chín đậu phụ không tẩm ướp. Ăn với bơ quả, dưa chuột và dầu; không thêm muối.';
+
+  @override
+  String get ketoTofuDinnerName => 'Đậu phụ, nấm và rau';
+
+  @override
+  String get ketoTofuDinnerRecipe =>
+      'Nấu chín đậu phụ, nấm và rau với dầu. Không thêm muối hay nước sốt.';
+
+  @override
+  String get soySnackName => 'Đậu nành và ổi';
+
+  @override
+  String get soySnackRecipe =>
+      'Hâm nóng đậu nành đã luộc không muối. Ăn cùng ổi rửa sạch.';
+
+  @override
+  String get eggSnackName => 'Trứng và dưa chuột';
+
+  @override
+  String get eggSnackRecipe =>
+      'Luộc trứng chín kỹ. Ăn cùng dưa chuột rửa sạch; không thêm muối.';
+
+  @override
+  String get paleoChickenName => 'G?, khoai lang v? rau c?';
+
+  @override
+  String get paleoChickenRecipe =>
+      'N?u ch?n k? g?, h?p khoai v? rau. D?ng to?n b? l??ng d?u ghi trong nguy?n li?u ?? tr?n rau; kh?ng th?m mu?i.';
 }

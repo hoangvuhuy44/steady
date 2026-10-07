@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/formatters.dart';
+import '../l10n/nutrition_localizations.dart';
 import '../nutrition/meal_planner.dart';
+import '../nutrition/nutrition_strategy.dart';
+import '../widgets/nutrition_summary_card.dart';
 import '../state/steady_store.dart';
+import '../widgets/screening_result_card.dart';
 
 class MealsScreen extends StatefulWidget {
   const MealsScreen({super.key, required this.store});
@@ -12,6 +16,22 @@ class MealsScreen extends StatefulWidget {
 }
 
 class _MealsScreenState extends State<MealsScreen> {
+  String _mealTime(MealTiming timing, String slot) {
+    if (timing == MealTiming.timeRestricted) {
+      return switch (slot) {
+        'Sáng' => '12:00',
+        'Trưa' => '16:00',
+        _ => '19:30',
+      };
+    }
+    return switch (slot) {
+      'Sáng' => '07:30',
+      'Trưa' => '12:30',
+      'Bữa phụ' => '16:00',
+      _ => '19:00',
+    };
+  }
+
   final form = GlobalKey<FormState>();
   final scroll = ScrollController();
   final readingsController = ExpansibleController();
@@ -67,18 +87,20 @@ class _MealsScreenState extends State<MealsScreen> {
 
   void restoreProfile() {
     final p = widget.store.nutritionProfile;
+    final screening = widget.store.healthScreening;
     for (final c in fields.values) {
       c.clear();
     }
     fields['budget']!.text = '${p?.budget ?? 120000}';
     fields['minutes']!.text = '${p?.minutes ?? 30}';
-    goal = p?.goal ?? 'Ăn uống cân bằng';
+    goal = screening?.goal ?? p?.goal ?? 'Ăn uống cân bằng';
     activity = p?.activity ?? 'Ít vận động';
     cholesterol = p?.cholesterol ?? 'Chưa biết';
     diet = p?.diet ?? 'Ăn đa dạng';
     exclusions
       ..clear()
       ..addAll(p?.exclusions ?? {});
+    exclusions.addAll(screening?.allergies ?? {});
     professional = p?.needsProfessionalPlan ?? false;
     consent = p != null;
     if (p != null) {
@@ -96,6 +118,11 @@ class _MealsScreenState extends State<MealsScreen> {
         fields['hdl']!.text = lipid[1];
         fields['tg']!.text = lipid[2];
       }
+    }
+    if (screening != null) {
+      fields['age']!.text = '${screening.age}';
+      fields['height']!.text = '${screening.height}';
+      fields['weight']!.text = '${screening.weight}';
     }
   }
 
@@ -125,6 +152,9 @@ class _MealsScreenState extends State<MealsScreen> {
       child: TextFormField(
         key: ValueKey('meal-$key'),
         controller: fields[key],
+        readOnly:
+            widget.store.healthScreening != null &&
+            ['age', 'height', 'weight'].contains(key),
         keyboardType: TextInputType.numberWithOptions(
           decimal: !['age', 'budget', 'minutes'].contains(key),
         ),
@@ -183,9 +213,12 @@ class _MealsScreenState extends State<MealsScreen> {
             ),
           )
           .toList(),
-      onChanged: (v) {
-        if (v != null) setState(() => update(v));
-      },
+      onChanged:
+          widget.store.healthScreening != null && label == context.l10n.goal
+          ? null
+          : (v) {
+              if (v != null) setState(() => update(v));
+            },
     ),
   );
 
@@ -275,6 +308,11 @@ class _MealsScreenState extends State<MealsScreen> {
   }
 
   void edit() {
+    if (widget.store.screeningEnforced &&
+        widget.store.nutritionProfile?.strategy != null) {
+      widget.store.requestScreening();
+      return;
+    }
     setState(() {
       restoreProfile();
       editing = true;
@@ -324,6 +362,24 @@ class _MealsScreenState extends State<MealsScreen> {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
+    if (!widget.store.mealPlanningAllowed) {
+      return ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Text(
+            l.screeningPaused,
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          const SizedBox(height: 16),
+          ScreeningResultCard(assessment: widget.store.screeningAssessment),
+          const SizedBox(height: 16),
+          OutlinedButton(
+            onPressed: widget.store.requestScreening,
+            child: Text(l.screeningEdit),
+          ),
+        ],
+      );
+    }
     final p = widget.store.nutritionProfile;
     return ListView(
       controller: scroll,
@@ -526,6 +582,11 @@ class _MealsScreenState extends State<MealsScreen> {
     final l = context.l10n;
     return [
       number('age', l.age, 1, 120),
+      if (widget.store.healthScreening != null)
+        TextButton(
+          onPressed: widget.store.requestScreening,
+          child: Text(l.screeningEdit),
+        ),
       LayoutBuilder(
         builder: (context, constraints) {
           final height = number('height', l.height, 50, 250);
@@ -633,7 +694,11 @@ class _MealsScreenState extends State<MealsScreen> {
               (key) => FilterChip(
                 label: Text(l.allergen(key)),
                 selected: exclusions.contains(key),
-                onSelected: (v) => exclude(key, v),
+                onSelected:
+                    widget.store.healthScreening?.allergies.contains(key) ==
+                        true
+                    ? null
+                    : (v) => exclude(key, v),
               ),
             )
             .toList(),
@@ -732,6 +797,10 @@ class _MealsScreenState extends State<MealsScreen> {
         ),
       ),
       const SizedBox(height: 24),
+      if (p.strategy != null) ...[
+        NutritionSummaryCard(profile: p),
+        const SizedBox(height: 16),
+      ],
       if (!p.supported)
         emptyState(
           Icons.health_and_safety_outlined,
@@ -739,7 +808,13 @@ class _MealsScreenState extends State<MealsScreen> {
           l.unsupportedHelp,
         )
       else if (week.isEmpty)
-        emptyState(Icons.restaurant_menu, l.emptyPlanTitle, l.emptyPlanHelp)
+        emptyState(
+          Icons.restaurant_menu,
+          l.emptyPlanTitle,
+          widget.store.mealPlanReason == null
+              ? l.emptyPlanHelp
+              : l.nutritionMessage(widget.store.mealPlanReason!),
+        )
       else ...[
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -848,6 +923,20 @@ class _MealsScreenState extends State<MealsScreen> {
       (l.energy, '${l.number(meals.fold<int>(0, (s, m) => s + m.kcal))} kcal'),
       (l.protein, l.grams(meals.fold<int>(0, (s, m) => s + m.protein))),
       (l.fibre, l.grams(meals.fold<int>(0, (s, m) => s + m.fibre))),
+      if (p.strategy != null) ...[
+        (
+          l.nutritionCarbs,
+          l.grams(meals.fold<double>(0, (s, m) => s + m.carbs).round()),
+        ),
+        (
+          l.nutritionFat,
+          l.grams(meals.fold<double>(0, (s, m) => s + m.fat).round()),
+        ),
+        (
+          l.nutritionSodium,
+          '${l.number(meals.fold<double>(0, (s, m) => s + m.sodium).round())} mg',
+        ),
+      ],
       (
         l.saturatedFat,
         l.grams(meals.fold<double>(0, (s, m) => s + m.saturatedFat)),
@@ -934,20 +1023,23 @@ class _MealsScreenState extends State<MealsScreen> {
                 Row(
                   children: [
                     Icon(
-                      [
-                        Icons.wb_sunny_outlined,
-                        Icons.light_mode_outlined,
-                        Icons.nightlight_outlined,
-                      ][slot],
+                      switch (meal.slot) {
+                        'Sáng' => Icons.wb_sunny_outlined,
+                        'Trưa' => Icons.light_mode_outlined,
+                        'Tối' => Icons.nightlight_outlined,
+                        _ => Icons.apple_outlined,
+                      },
                       color: colors.primary,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
-                    Text(
-                      l.mealSlot(meal.slot),
-                      style: TextStyle(
-                        color: colors.primary,
-                        fontWeight: FontWeight.w700,
+                    Expanded(
+                      child: Text(
+                        '${l.mealSlot(meal.slot)}${p.strategy == null ? '' : ' · ${_mealTime(p.strategy!.timing, meal.slot)}'}',
+                        style: TextStyle(
+                          color: colors.primary,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ],
@@ -966,6 +1058,10 @@ class _MealsScreenState extends State<MealsScreen> {
                     Text(l.minutesValue(meal.minutes)),
                     Text(l.money(meal.cost)),
                     Text('~${l.number(meal.kcal)} kcal'),
+                    if (p.strategy != null)
+                      Text(
+                        '${l.nutritionPortion}: ${l.number(meal.servings)}×',
+                      ),
                   ],
                 ),
                 const SizedBox(height: 12),

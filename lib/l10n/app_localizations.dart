@@ -98,6 +98,618 @@ abstract class AppLocalizations {
     Locale('vi'),
   ];
 
+  /// No description provided for @screeningNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get screeningNext;
+
+  /// No description provided for @screeningGuidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Habits to discuss with your care team'**
+  String get screeningGuidance;
+
+  /// No description provided for @screeningTipDiabetes.
+  ///
+  /// In en, this message translates to:
+  /// **'Because you reported type 2 diabetes: choose water instead of sugary drinks and discuss meal portions and timing with your care team. Estimated macro targets do not replace carbohydrate targets set by your care team.'**
+  String get screeningTipDiabetes;
+
+  /// No description provided for @screeningTipSodium.
+  ///
+  /// In en, this message translates to:
+  /// **'Because you reported hypertension: compare sodium on food labels and use less salty sauce. Check with your clinician before using potassium-based salt substitutes.'**
+  String get screeningTipSodium;
+
+  /// No description provided for @screeningProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {step} of 5'**
+  String screeningProgress(int step);
+
+  /// No description provided for @signIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get signIn;
+
+  /// No description provided for @signUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get signUp;
+
+  /// No description provided for @signOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get signOut;
+
+  /// No description provided for @authIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to start your health screening and build your Steady routine.'**
+  String get authIntro;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// No description provided for @emailError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address.'**
+  String get emailError;
+
+  /// No description provided for @passwordError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password (at least 8 characters for a new account).'**
+  String get passwordError;
+
+  /// No description provided for @authError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not sign in. Check your details and connection, then try again.'**
+  String get authError;
+
+  /// No description provided for @authSignupError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not create an account. Check your details and try again.'**
+  String get authSignupError;
+
+  /// No description provided for @authConfirmEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your email to confirm your account, then return here to sign in.'**
+  String get authConfirmEmail;
+
+  /// No description provided for @authConfiguration.
+  ///
+  /// In en, this message translates to:
+  /// **'Steady has not been connected to its sign-in service. Set up the connection before signing in.'**
+  String get authConfiguration;
+
+  /// No description provided for @authInitializationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not start the sign-in service. Check your connection and restart Steady to try again.'**
+  String get authInitializationError;
+
+  /// No description provided for @continueWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
+  String get continueWithGoogle;
+
+  /// No description provided for @continueWithFacebook.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Facebook'**
+  String get continueWithFacebook;
+
+  /// No description provided for @authOrEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'or use email'**
+  String get authOrEmail;
+
+  /// No description provided for @authProvidersUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Some social sign-in options are not available yet. You can use email instead.'**
+  String get authProvidersUnavailable;
+
+  /// No description provided for @authBrowserOpened.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete sign-in in your browser. If you closed it, select a sign-in option to try again.'**
+  String get authBrowserOpened;
+
+  /// No description provided for @authSocialError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not start social sign-in. Check your connection and try again, or use email.'**
+  String get authSocialError;
+
+  /// No description provided for @authCredentialsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Email or password is incorrect. Please try again.'**
+  String get authCredentialsError;
+
+  /// No description provided for @authRateLimitError.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Please wait a few minutes and try again.'**
+  String get authRateLimitError;
+
+  /// No description provided for @authNetworkError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not complete sign-in. Check your connection and try again.'**
+  String get authNetworkError;
+
+  /// No description provided for @authOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection interrupted. Your session is still open; please check your connection.'**
+  String get authOffline;
+
+  /// No description provided for @authSignOutError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not sign out. Please try again.'**
+  String get authSignOutError;
+
+  /// No description provided for @alreadyHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? Sign in'**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @needAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'New to Steady? Create an account'**
+  String get needAccount;
+
+  /// No description provided for @screeningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Let’s understand your health'**
+  String get screeningTitle;
+
+  /// No description provided for @screeningIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Measurements → medical history → allergies and food preferences → training goal → review and menu.'**
+  String get screeningIntro;
+
+  /// No description provided for @screeningPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your answers stay in memory for this session, are not uploaded, and are cleared when you sign out or close the app. You can choose not to share them.'**
+  String get screeningPrivacy;
+
+  /// No description provided for @screeningConditions.
+  ///
+  /// In en, this message translates to:
+  /// **'Conditions and allergies'**
+  String get screeningConditions;
+
+  /// No description provided for @screeningConditionsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Select every condition you have been told you have. These are self-reported, not verified diagnoses. Leave empty only if you know of none.'**
+  String get screeningConditionsHelp;
+
+  /// No description provided for @screeningConditionsKnown.
+  ///
+  /// In en, this message translates to:
+  /// **'I can report my conditions (including none)'**
+  String get screeningConditionsKnown;
+
+  /// No description provided for @screeningAllergiesKnown.
+  ///
+  /// In en, this message translates to:
+  /// **'I can report my food allergies (including none)'**
+  String get screeningAllergiesKnown;
+
+  /// No description provided for @screeningOtherAllergies.
+  ///
+  /// In en, this message translates to:
+  /// **'Other food allergies, not listed above'**
+  String get screeningOtherAllergies;
+
+  /// No description provided for @screeningTreatment.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment and eating needs'**
+  String get screeningTreatment;
+
+  /// No description provided for @screeningTreatmentHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Select all that apply. Leave empty only if you know none apply. Optional details help explain why a specialist may be needed.'**
+  String get screeningTreatmentHelp;
+
+  /// No description provided for @screeningTreatmentKnown.
+  ///
+  /// In en, this message translates to:
+  /// **'I can report my treatment and eating needs'**
+  String get screeningTreatmentKnown;
+
+  /// No description provided for @screeningMedications.
+  ///
+  /// In en, this message translates to:
+  /// **'Current medicines (optional)'**
+  String get screeningMedications;
+
+  /// No description provided for @screeningOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Dietary instructions from your clinician (optional)'**
+  String get screeningOrders;
+
+  /// No description provided for @screeningKidneyStage.
+  ///
+  /// In en, this message translates to:
+  /// **'Kidney stage and dialysis schedule, if known (optional)'**
+  String get screeningKidneyStage;
+
+  /// No description provided for @screeningLabNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Measured lab results: value, unit, date and source (optional)'**
+  String get screeningLabNotes;
+
+  /// No description provided for @screeningLabHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'For kidney disease: eGFR, potassium and phosphorus; for diabetes: HbA1c. These notes are not interpreted or used to set nutrient limits.'**
+  String get screeningLabHelp;
+
+  /// No description provided for @screeningReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Your screening result'**
+  String get screeningReview;
+
+  /// No description provided for @screeningLifestyle.
+  ///
+  /// In en, this message translates to:
+  /// **'General lifestyle support'**
+  String get screeningLifestyle;
+
+  /// No description provided for @screeningMoreInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'More information needed'**
+  String get screeningMoreInformation;
+
+  /// No description provided for @screeningProfessional.
+  ///
+  /// In en, this message translates to:
+  /// **'Professional assessment needed'**
+  String get screeningProfessional;
+
+  /// No description provided for @screeningReasonChild.
+  ///
+  /// In en, this message translates to:
+  /// **'Adult meal templates do not apply to children and adolescents.'**
+  String get screeningReasonChild;
+
+  /// No description provided for @screeningReasonTreatment.
+  ///
+  /// In en, this message translates to:
+  /// **'Your treatment, eating needs or recent health changes need an individual assessment.'**
+  String get screeningReasonTreatment;
+
+  /// No description provided for @screeningReasonComplex.
+  ///
+  /// In en, this message translates to:
+  /// **'A reported condition is outside Steady’s current scope for automatic meal templates.'**
+  String get screeningReasonComplex;
+
+  /// No description provided for @screeningReasonOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Steady cannot validate or fulfil clinician-set dietary limits with its sample recipe data.'**
+  String get screeningReasonOrders;
+
+  /// No description provided for @screeningReasonMedication.
+  ///
+  /// In en, this message translates to:
+  /// **'Medicine–food interactions need review. Steady does not change or interpret your medication.'**
+  String get screeningReasonMedication;
+
+  /// No description provided for @screeningReasonAllergy.
+  ///
+  /// In en, this message translates to:
+  /// **'The sample catalogue cannot check the additional allergies you entered.'**
+  String get screeningReasonAllergy;
+
+  /// No description provided for @screeningReasonKidney.
+  ///
+  /// In en, this message translates to:
+  /// **'Kidney nutrition depends on stage, dialysis, medicines and measured results. Even complete notes do not unlock an automatic therapeutic plan.'**
+  String get screeningReasonKidney;
+
+  /// No description provided for @screeningReasonWeightConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic weight-loss planning is paused because cancer treatment, poor intake or unintended weight loss may change your nutrition priorities.'**
+  String get screeningReasonWeightConflict;
+
+  /// No description provided for @screeningReasonUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Conditions, allergies or treatment are not yet known. General tracking is available; automatic meal templates remain paused.'**
+  String get screeningReasonUnknown;
+
+  /// No description provided for @screeningReasonLifestyle.
+  ///
+  /// In en, this message translates to:
+  /// **'You can use general habit support and illustrative meal templates. This result does not certify a meal as suitable for a medical condition.'**
+  String get screeningReasonLifestyle;
+
+  /// No description provided for @screeningConsent.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to use these self-reported answers for support during this session.'**
+  String get screeningConsent;
+
+  /// No description provided for @screeningConsentError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please agree to session use, or continue without sharing health details.'**
+  String get screeningConsentError;
+
+  /// No description provided for @screeningDecline.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue without sharing health details'**
+  String get screeningDecline;
+
+  /// No description provided for @screeningDeclined.
+  ///
+  /// In en, this message translates to:
+  /// **'Health details not shared. Automatic meal templates are paused.'**
+  String get screeningDeclined;
+
+  /// No description provided for @screeningContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to Steady'**
+  String get screeningContinue;
+
+  /// No description provided for @screeningEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Update health screening'**
+  String get screeningEdit;
+
+  /// No description provided for @screeningNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Screening guides the app’s scope. It does not diagnose disease, prescribe a diet or replace your care team.'**
+  String get screeningNote;
+
+  /// No description provided for @screeningPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Meal planning is paused'**
+  String get screeningPaused;
+
+  /// No description provided for @screeningSources.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence reviewed: 7 October 2026'**
+  String get screeningSources;
+
+  /// No description provided for @conditionType1.
+  ///
+  /// In en, this message translates to:
+  /// **'Type 1 diabetes'**
+  String get conditionType1;
+
+  /// No description provided for @conditionType2.
+  ///
+  /// In en, this message translates to:
+  /// **'Type 2 diabetes'**
+  String get conditionType2;
+
+  /// No description provided for @conditionLung.
+  ///
+  /// In en, this message translates to:
+  /// **'COPD or chronic lung disease'**
+  String get conditionLung;
+
+  /// No description provided for @conditionCancer.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancer'**
+  String get conditionCancer;
+
+  /// No description provided for @conditionKidney.
+  ///
+  /// In en, this message translates to:
+  /// **'Chronic kidney disease'**
+  String get conditionKidney;
+
+  /// No description provided for @conditionTransplant.
+  ///
+  /// In en, this message translates to:
+  /// **'Organ or stem cell transplant'**
+  String get conditionTransplant;
+
+  /// No description provided for @conditionObesity.
+  ///
+  /// In en, this message translates to:
+  /// **'Overweight or obesity'**
+  String get conditionObesity;
+
+  /// No description provided for @conditionHeart.
+  ///
+  /// In en, this message translates to:
+  /// **'Heart failure, coronary disease or cardiomyopathy'**
+  String get conditionHeart;
+
+  /// No description provided for @conditionStroke.
+  ///
+  /// In en, this message translates to:
+  /// **'Cerebrovascular disease or previous stroke'**
+  String get conditionStroke;
+
+  /// No description provided for @conditionDown.
+  ///
+  /// In en, this message translates to:
+  /// **'Down syndrome'**
+  String get conditionDown;
+
+  /// No description provided for @conditionHiv.
+  ///
+  /// In en, this message translates to:
+  /// **'HIV/AIDS'**
+  String get conditionHiv;
+
+  /// No description provided for @conditionNeurological.
+  ///
+  /// In en, this message translates to:
+  /// **'Neurological disease or dementia'**
+  String get conditionNeurological;
+
+  /// No description provided for @conditionBlood.
+  ///
+  /// In en, this message translates to:
+  /// **'Sickle cell disease, thalassaemia or chronic blood disorder'**
+  String get conditionBlood;
+
+  /// No description provided for @conditionAsthma.
+  ///
+  /// In en, this message translates to:
+  /// **'Asthma'**
+  String get conditionAsthma;
+
+  /// No description provided for @conditionHypertension.
+  ///
+  /// In en, this message translates to:
+  /// **'Hypertension'**
+  String get conditionHypertension;
+
+  /// No description provided for @conditionImmunodeficiency.
+  ///
+  /// In en, this message translates to:
+  /// **'Immunodeficiency'**
+  String get conditionImmunodeficiency;
+
+  /// No description provided for @conditionFattyLiver.
+  ///
+  /// In en, this message translates to:
+  /// **'Metabolic fatty liver disease'**
+  String get conditionFattyLiver;
+
+  /// No description provided for @conditionOtherLiver.
+  ///
+  /// In en, this message translates to:
+  /// **'Cirrhosis or other liver disease'**
+  String get conditionOtherLiver;
+
+  /// No description provided for @conditionSubstance.
+  ///
+  /// In en, this message translates to:
+  /// **'Substance use disorder'**
+  String get conditionSubstance;
+
+  /// No description provided for @conditionImmunosuppression.
+  ///
+  /// In en, this message translates to:
+  /// **'Corticosteroid or immunosuppressive treatment'**
+  String get conditionImmunosuppression;
+
+  /// No description provided for @conditionSystemic.
+  ///
+  /// In en, this message translates to:
+  /// **'Systemic disease (such as lupus)'**
+  String get conditionSystemic;
+
+  /// No description provided for @conditionCongenital.
+  ///
+  /// In en, this message translates to:
+  /// **'Congenital or paediatric condition'**
+  String get conditionCongenital;
+
+  /// No description provided for @conditionOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other condition or therapeutic diet'**
+  String get conditionOther;
+
+  /// No description provided for @flagPregnancy.
+  ///
+  /// In en, this message translates to:
+  /// **'Pregnant or breastfeeding'**
+  String get flagPregnancy;
+
+  /// No description provided for @flagEatingDisorder.
+  ///
+  /// In en, this message translates to:
+  /// **'Eating disorder'**
+  String get flagEatingDisorder;
+
+  /// No description provided for @flagDialysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently receiving dialysis'**
+  String get flagDialysis;
+
+  /// No description provided for @flagChemotherapy.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently receiving chemotherapy'**
+  String get flagChemotherapy;
+
+  /// No description provided for @flagInsulin.
+  ///
+  /// In en, this message translates to:
+  /// **'Using insulin'**
+  String get flagInsulin;
+
+  /// No description provided for @flagSwallowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Difficulty swallowing'**
+  String get flagSwallowing;
+
+  /// No description provided for @flagWeightLoss.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent unintended weight loss'**
+  String get flagWeightLoss;
+
+  /// No description provided for @flagPoorIntake.
+  ///
+  /// In en, this message translates to:
+  /// **'Poor appetite or difficulty eating enough'**
+  String get flagPoorIntake;
+
+  /// No description provided for @flagComplications.
+  ///
+  /// In en, this message translates to:
+  /// **'Severe complications or unstable disease'**
+  String get flagComplications;
+
   /// No description provided for @today.
   ///
   /// In en, this message translates to:
@@ -911,13 +1523,13 @@ abstract class AppLocalizations {
   /// No description provided for @nutritionNote.
   ///
   /// In en, this message translates to:
-  /// **'Fixed portions with estimated nutrition and prices. Snacks, drinks and condiments are excluded. Check package labels and cross-contact risks for allergies.'**
+  /// **'Recipe nutrition and prices are estimates, not verified clinical data or live prices. Quantities scale with each portion; cooking time assumes small home batches. Sodium estimates exclude added salt/sauces: check labels and account for any seasoning. A sample menu does not guarantee therapeutic suitability or complete micronutrients.'**
   String get nutritionNote;
 
   /// No description provided for @personalisationNote.
   ///
   /// In en, this message translates to:
-  /// **'Measurements and lab readings are recorded but do not set calorie needs or treatment. Muscle support ranks protein; weight loss does not reduce portions. This sample plan is not a personalised or therapeutic diet.'**
+  /// **'The layered configuration sets starting calorie/macro estimates. Portion sizes are matched to them while keeping allergies, diet, time and budget as hard constraints. Clinical restrictions override training preferences.'**
   String get personalisationNote;
 
   /// No description provided for @unsupportedTitle.
@@ -941,7 +1553,7 @@ abstract class AppLocalizations {
   /// No description provided for @emptyPlanHelp.
   ///
   /// In en, this message translates to:
-  /// **'Try a higher budget, more cooking time or fewer disliked ingredients. Allergy exclusions will stay in place.'**
+  /// **'No menu meets all calorie, macro, allergy, food, time and budget requirements. Edit preferences; no constraint has been silently removed.'**
   String get emptyPlanHelp;
 
   /// No description provided for @deletePlan.
@@ -1333,6 +1945,546 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Steam sweet potato. Boil or pan-sear chicken until thoroughly cooked. Serve with boiled greens.'**
   String get chickenDinnerRecipe;
+
+  /// No description provided for @nutritionBodyMeasurements.
+  ///
+  /// In en, this message translates to:
+  /// **'Body measurements'**
+  String get nutritionBodyMeasurements;
+
+  /// No description provided for @nutritionBodyFat.
+  ///
+  /// In en, this message translates to:
+  /// **'Body fat (%)'**
+  String get nutritionBodyFat;
+
+  /// No description provided for @nutritionBodyFatHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional: enter a measured value, or leave blank if unknown. Steady does not infer it from BMI.'**
+  String get nutritionBodyFatHelp;
+
+  /// No description provided for @nutritionSex.
+  ///
+  /// In en, this message translates to:
+  /// **'Sex used for energy estimation'**
+  String get nutritionSex;
+
+  /// No description provided for @nutritionSexHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'The Mifflin–St Jeor equation uses sex, age, height and weight. If you skip sex, Steady will not invent a calorie target.'**
+  String get nutritionSexHelp;
+
+  /// No description provided for @nutritionSexUnspecified.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip energy estimation'**
+  String get nutritionSexUnspecified;
+
+  /// No description provided for @nutritionSexFemale.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get nutritionSexFemale;
+
+  /// No description provided for @nutritionSexMale.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get nutritionSexMale;
+
+  /// No description provided for @nutritionFoodSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Food sources'**
+  String get nutritionFoodSource;
+
+  /// No description provided for @nutritionFoodPattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Food pattern'**
+  String get nutritionFoodPattern;
+
+  /// No description provided for @nutritionMacroStrategy.
+  ///
+  /// In en, this message translates to:
+  /// **'Macronutrient strategy'**
+  String get nutritionMacroStrategy;
+
+  /// No description provided for @nutritionMealTiming.
+  ///
+  /// In en, this message translates to:
+  /// **'Meal schedule'**
+  String get nutritionMealTiming;
+
+  /// No description provided for @nutritionEnergyStrategy.
+  ///
+  /// In en, this message translates to:
+  /// **'Energy strategy'**
+  String get nutritionEnergyStrategy;
+
+  /// No description provided for @nutritionTrainingGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Training and body goal'**
+  String get nutritionTrainingGoal;
+
+  /// No description provided for @nutritionTrainingSessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Resistance-training sessions/week'**
+  String get nutritionTrainingSessions;
+
+  /// No description provided for @nutritionExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Training experience'**
+  String get nutritionExperience;
+
+  /// No description provided for @nutritionBeginner.
+  ///
+  /// In en, this message translates to:
+  /// **'Beginner / returning'**
+  String get nutritionBeginner;
+
+  /// No description provided for @nutritionIntermediate.
+  ///
+  /// In en, this message translates to:
+  /// **'Intermediate'**
+  String get nutritionIntermediate;
+
+  /// No description provided for @nutritionAdvanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced'**
+  String get nutritionAdvanced;
+
+  /// No description provided for @nutritionGoalHealth.
+  ///
+  /// In en, this message translates to:
+  /// **'General health'**
+  String get nutritionGoalHealth;
+
+  /// No description provided for @nutritionGoalFatLoss.
+  ///
+  /// In en, this message translates to:
+  /// **'Lose fat, preserve muscle'**
+  String get nutritionGoalFatLoss;
+
+  /// No description provided for @nutritionGoalMuscle.
+  ///
+  /// In en, this message translates to:
+  /// **'Build muscle'**
+  String get nutritionGoalMuscle;
+
+  /// No description provided for @nutritionGoalRecomp.
+  ///
+  /// In en, this message translates to:
+  /// **'Body recomposition'**
+  String get nutritionGoalRecomp;
+
+  /// No description provided for @nutritionGoalPerformance.
+  ///
+  /// In en, this message translates to:
+  /// **'Strength / performance'**
+  String get nutritionGoalPerformance;
+
+  /// No description provided for @nutritionGoalEndurance.
+  ///
+  /// In en, this message translates to:
+  /// **'Endurance'**
+  String get nutritionGoalEndurance;
+
+  /// No description provided for @nutritionMaintenance.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintenance'**
+  String get nutritionMaintenance;
+
+  /// No description provided for @nutritionDeficit.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate cut'**
+  String get nutritionDeficit;
+
+  /// No description provided for @nutritionLeanBulk.
+  ///
+  /// In en, this message translates to:
+  /// **'Lean bulk'**
+  String get nutritionLeanBulk;
+
+  /// No description provided for @nutritionAggressiveBulk.
+  ///
+  /// In en, this message translates to:
+  /// **'Aggressive bulk (often called dirty bulk)'**
+  String get nutritionAggressiveBulk;
+
+  /// No description provided for @nutritionRecompEnergy.
+  ///
+  /// In en, this message translates to:
+  /// **'Recomp at maintenance'**
+  String get nutritionRecompEnergy;
+
+  /// No description provided for @nutritionBalancedMacro.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced macros'**
+  String get nutritionBalancedMacro;
+
+  /// No description provided for @nutritionHighProtein.
+  ///
+  /// In en, this message translates to:
+  /// **'High-protein balanced'**
+  String get nutritionHighProtein;
+
+  /// No description provided for @nutritionLowCarb.
+  ///
+  /// In en, this message translates to:
+  /// **'Low carbohydrate'**
+  String get nutritionLowCarb;
+
+  /// No description provided for @nutritionKeto.
+  ///
+  /// In en, this message translates to:
+  /// **'Ketogenic'**
+  String get nutritionKeto;
+
+  /// No description provided for @nutritionLowFat.
+  ///
+  /// In en, this message translates to:
+  /// **'Lower fat'**
+  String get nutritionLowFat;
+
+  /// No description provided for @nutritionBalancedPattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Varied whole foods'**
+  String get nutritionBalancedPattern;
+
+  /// No description provided for @nutritionMediterranean.
+  ///
+  /// In en, this message translates to:
+  /// **'Mediterranean style'**
+  String get nutritionMediterranean;
+
+  /// No description provided for @nutritionDash.
+  ///
+  /// In en, this message translates to:
+  /// **'DASH style'**
+  String get nutritionDash;
+
+  /// No description provided for @nutritionPaleo.
+  ///
+  /// In en, this message translates to:
+  /// **'Paleo'**
+  String get nutritionPaleo;
+
+  /// No description provided for @nutritionVegan.
+  ///
+  /// In en, this message translates to:
+  /// **'Vegan'**
+  String get nutritionVegan;
+
+  /// No description provided for @nutritionThreeMeals.
+  ///
+  /// In en, this message translates to:
+  /// **'3 meals/day'**
+  String get nutritionThreeMeals;
+
+  /// No description provided for @nutritionFourMeals.
+  ///
+  /// In en, this message translates to:
+  /// **'3 meals + 1 snack'**
+  String get nutritionFourMeals;
+
+  /// No description provided for @nutritionTimeRestricted.
+  ///
+  /// In en, this message translates to:
+  /// **'16:8 — meals within 12:00–20:00'**
+  String get nutritionTimeRestricted;
+
+  /// No description provided for @nutritionPreferenceHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Food sources, macros and meal timing are separate choices. Allergies and medical requirements always take priority.'**
+  String get nutritionPreferenceHelp;
+
+  /// No description provided for @nutritionGenerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish and generate menu'**
+  String get nutritionGenerate;
+
+  /// No description provided for @nutritionConfiguration.
+  ///
+  /// In en, this message translates to:
+  /// **'Your nutrition configuration'**
+  String get nutritionConfiguration;
+
+  /// No description provided for @nutritionMaintenanceEstimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated maintenance'**
+  String get nutritionMaintenanceEstimate;
+
+  /// No description provided for @nutritionDailyTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting daily target'**
+  String get nutritionDailyTarget;
+
+  /// No description provided for @nutritionCarbs.
+  ///
+  /// In en, this message translates to:
+  /// **'Carbohydrate'**
+  String get nutritionCarbs;
+
+  /// No description provided for @nutritionFat.
+  ///
+  /// In en, this message translates to:
+  /// **'Fat'**
+  String get nutritionFat;
+
+  /// No description provided for @nutritionSodium.
+  ///
+  /// In en, this message translates to:
+  /// **'Sodium'**
+  String get nutritionSodium;
+
+  /// No description provided for @nutritionPortion.
+  ///
+  /// In en, this message translates to:
+  /// **'Portion multiplier'**
+  String get nutritionPortion;
+
+  /// No description provided for @nutritionMedicalReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Your medical answers require more information or professional review before automatic menu generation.'**
+  String get nutritionMedicalReview;
+
+  /// No description provided for @nutritionInvalidMeasurements.
+  ///
+  /// In en, this message translates to:
+  /// **'Check measurements and activity information before estimating a menu.'**
+  String get nutritionInvalidMeasurements;
+
+  /// No description provided for @nutritionNeedSex.
+  ///
+  /// In en, this message translates to:
+  /// **'Energy estimation is skipped. Update the sex input to generate a menu matched to an estimated calorie target.'**
+  String get nutritionNeedSex;
+
+  /// No description provided for @nutritionGoalConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected goal and energy strategy conflict. Choose a compatible strategy before generating a menu.'**
+  String get nutritionGoalConflict;
+
+  /// No description provided for @nutritionLowWeightReview.
+  ///
+  /// In en, this message translates to:
+  /// **'A deficit with a low weight-for-height needs professional assessment. Steady will not automatically create a cut plan.'**
+  String get nutritionLowWeightReview;
+
+  /// No description provided for @nutritionKetoReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Keto with your medical conditions or SGLT2 medication needs clinician review. No automatic keto menu will be generated.'**
+  String get nutritionKetoReview;
+
+  /// No description provided for @nutritionBulkReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Aggressive bulk with your reported medical conditions needs professional review. Choose a safer strategy with your care team.'**
+  String get nutritionBulkReview;
+
+  /// No description provided for @nutritionPatternConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'Paleo excludes the legumes and grains used by this plant-based catalogue. Change one preference; Steady will not silently ignore it.'**
+  String get nutritionPatternConflict;
+
+  /// No description provided for @nutritionEstimateUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'These inputs produce an estimate outside Steady’s supported range. Update the information or seek professional assessment.'**
+  String get nutritionEstimateUnavailable;
+
+  /// No description provided for @nutritionEstimateNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Calories and macros are starting estimates, not a clinical prescription. Body fat is recorded separately and is not a diagnosis. Adjust using weight trends and training response.'**
+  String get nutritionEstimateNote;
+
+  /// No description provided for @nutritionBulkTradeoff.
+  ///
+  /// In en, this message translates to:
+  /// **'Aggressive bulk means a larger energy surplus, not lower-quality food. Faster weight gain can include more fat; it does not guarantee faster muscle growth.'**
+  String get nutritionBulkTradeoff;
+
+  /// No description provided for @nutritionTrainingNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Muscle gain and recomp also depend on progressive resistance training and recovery. This menu cannot guarantee body-composition changes.'**
+  String get nutritionTrainingNote;
+
+  /// No description provided for @nutritionKetoPerformance.
+  ///
+  /// In en, this message translates to:
+  /// **'Keto is not the first recommendation for high-volume or high-intensity training. No performance advantage or ketosis is guaranteed.'**
+  String get nutritionKetoPerformance;
+
+  /// No description provided for @nutritionVeganNote.
+  ///
+  /// In en, this message translates to:
+  /// **'A vegan menu needs attention to B12, iron, calcium, iodine and omega-3. This catalogue does not verify full micronutrient coverage.'**
+  String get nutritionVeganNote;
+
+  /// No description provided for @flagSglt2.
+  ///
+  /// In en, this message translates to:
+  /// **'Taking an SGLT2 inhibitor (such as dapagliflozin or empagliflozin)'**
+  String get flagSglt2;
+
+  /// No description provided for @snack.
+  ///
+  /// In en, this message translates to:
+  /// **'Snack'**
+  String get snack;
+
+  /// No description provided for @eggIngredient.
+  ///
+  /// In en, this message translates to:
+  /// **'Egg'**
+  String get eggIngredient;
+
+  /// No description provided for @avocadoIngredient.
+  ///
+  /// In en, this message translates to:
+  /// **'Avocado'**
+  String get avocadoIngredient;
+
+  /// No description provided for @tofuScrambleName.
+  ///
+  /// In en, this message translates to:
+  /// **'Tofu and vegetable scramble'**
+  String get tofuScrambleName;
+
+  /// No description provided for @tofuScrambleRecipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Heat plain tofu and vegetables with oil. Use unseasoned tofu; do not add salty sauces.'**
+  String get tofuScrambleRecipe;
+
+  /// No description provided for @eggPotatoName.
+  ///
+  /// In en, this message translates to:
+  /// **'Eggs, sweet potato and greens'**
+  String get eggPotatoName;
+
+  /// No description provided for @eggPotatoRecipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Cook eggs thoroughly. Steam sweet potato and greens; dress greens with oil. Do not add salt.'**
+  String get eggPotatoRecipe;
+
+  /// No description provided for @ketoEggName.
+  ///
+  /// In en, this message translates to:
+  /// **'Eggs and avocado'**
+  String get ketoEggName;
+
+  /// No description provided for @ketoEggRecipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Boil eggs thoroughly. Serve with avocado and cucumber dressed with the full amount of oil listed in the ingredients; do not add salt.'**
+  String get ketoEggRecipe;
+
+  /// No description provided for @ketoChickenName.
+  ///
+  /// In en, this message translates to:
+  /// **'Chicken and avocado salad'**
+  String get ketoChickenName;
+
+  /// No description provided for @ketoChickenRecipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Cook chicken and greens thoroughly. Serve with avocado, oil and lemon; do not add salty dressing.'**
+  String get ketoChickenRecipe;
+
+  /// No description provided for @ketoFishName.
+  ///
+  /// In en, this message translates to:
+  /// **'Steamed fish with non-starchy vegetables'**
+  String get ketoFishName;
+
+  /// No description provided for @ketoFishRecipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Steam fish thoroughly and cook greens. Serve with oil and lemon; do not add salt or dipping sauce.'**
+  String get ketoFishRecipe;
+
+  /// No description provided for @ketoTofuLunchName.
+  ///
+  /// In en, this message translates to:
+  /// **'Tofu and avocado'**
+  String get ketoTofuLunchName;
+
+  /// No description provided for @ketoTofuLunchRecipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Cook unseasoned tofu. Serve with avocado, cucumber and oil; do not add salt.'**
+  String get ketoTofuLunchRecipe;
+
+  /// No description provided for @ketoTofuDinnerName.
+  ///
+  /// In en, this message translates to:
+  /// **'Tofu, mushrooms and greens'**
+  String get ketoTofuDinnerName;
+
+  /// No description provided for @ketoTofuDinnerRecipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Cook tofu, mushrooms and greens with oil. Do not add salt or sauces.'**
+  String get ketoTofuDinnerRecipe;
+
+  /// No description provided for @soySnackName.
+  ///
+  /// In en, this message translates to:
+  /// **'Soybeans and guava'**
+  String get soySnackName;
+
+  /// No description provided for @soySnackRecipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Reheat cooked unsalted soybeans. Serve with washed guava.'**
+  String get soySnackRecipe;
+
+  /// No description provided for @eggSnackName.
+  ///
+  /// In en, this message translates to:
+  /// **'Eggs and cucumber'**
+  String get eggSnackName;
+
+  /// No description provided for @eggSnackRecipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Cook eggs thoroughly. Serve with washed cucumber; do not add salt.'**
+  String get eggSnackRecipe;
+
+  /// No description provided for @paleoChickenName.
+  ///
+  /// In en, this message translates to:
+  /// **'Chicken, sweet potato and greens'**
+  String get paleoChickenName;
+
+  /// No description provided for @paleoChickenRecipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Cook chicken thoroughly; steam sweet potato and greens. Dress the greens with the full amount of oil listed in the ingredients; do not add salt.'**
+  String get paleoChickenRecipe;
 }
 
 class _AppLocalizationsDelegate
