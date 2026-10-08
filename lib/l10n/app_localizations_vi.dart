@@ -1327,4 +1327,8 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get paleoChickenRecipe =>
       'N?u ch?n k? g?, h?p khoai v? rau. D?ng to?n b? l??ng d?u ghi trong nguy?n li?u ?? tr?n rau; kh?ng th?m mu?i.';
+
+  @override
+  String get authInvalidConfiguration =>
+      'Cấu hình dịch vụ đăng nhập không hợp lệ hoặc key không thuộc project đang dùng. Hãy cập nhật cấu hình rồi khởi động lại ứng dụng.';
 }

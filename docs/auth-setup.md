@@ -4,17 +4,17 @@
 có trong dự án; không cần thêm Firebase hay SDK đăng nhập riêng.
 
 Project hiện dùng: **Steady** (`bgcczipzseddvnwpvkhz`), URL
-`https://bgcczipzseddvnwpvkhz.supabase.co`. File `supabase-config.json` cục bộ đã
-được điền URL và publishable key thật, và vẫn được gitignore. Kiểm tra dịch vụ
-Auth ngày 7/10/2026: email và đăng ký đã bật, cần xác nhận email; Google/Facebook
+`https://bgcczipzseddvnwpvkhz.supabase.co`. URL và publishable key công khai nằm
+trong `lib/auth/public_auth_config.dart`, đi kèm bản clone/build. Kiểm tra dịch vụ
+Auth ngày 8/10/2026: email và đăng ký đã bật, cần xác nhận email; Google/Facebook
 chưa bật nên các nút tương ứng tiếp tục bị vô hiệu hoá.
 Endpoint đăng nhập mật khẩu đã kiểm tra với tài khoản giả không tồn tại:
 publishable key được chấp nhận và trả `invalid_credentials` như dự kiến.
 Không tạo tài khoản hay gửi email trong phép kiểm tra này.
 
-Nếu vẫn thấy thông báo chưa kết nối, **dừng hẳn phiên Flutter rồi chạy lại F5**.
-Hot reload và hot restart của phiên cũ không nhận dart defines mới. Khi đã có
-file cấu hình thật, không sao chép đè bằng file example.
+Lỗi trước đây: `flutter run` không có dart defines khiến app dùng controller chưa
+cấu hình; file cấu hình gitignored không đi theo bản clone. Nay chạy bình thường
+hoặc F5 đều dùng project Steady mặc định. Xem [hướng dẫn cho tester](testing-on-other-devices.md).
 
 ## 1. Bật email trước
 
@@ -27,20 +27,20 @@ file cấu hình thật, không sao chép đè bằng file example.
    - Web phát triển: `http://localhost:3000/`.
    - Web production: URL chính xác nơi triển khai Steady, gồm đường dẫn nếu có.
    - Android/iOS/macOS: `io.steady.app://login-callback/`.
-4. Sao chép `supabase-config.example.json` thành `supabase-config.json`. Điền
+4. **Chỉ khi muốn dùng project khác**, sao chép `supabase-config.example.json` thành `supabase-config.json`. Điền
    `SUPABASE_URL` và `SUPABASE_PUBLISHABLE_KEY` (`sb_publishable_...`) từ project.
    Để hai cờ Google/Facebook là `false` trong bước đầu.
 
 ```powershell
-Copy-Item supabase-config.example.json supabase-config.json
-flutter run -d chrome --web-port=3000 --dart-define-from-file=supabase-config.json
+flutter run -d chrome --web-port=3000
 ```
 
 Chỉ sao chép khi chưa có file cấu hình; giữ cấu hình đang dùng nếu file đã tồn tại.
 Trong VS Code, chọn **steady (Supabase email / Google / Facebook)** rồi nhấn F5.
-Các cấu hình chạy Steady trong VS Code đều đã truyền file cấu hình này.
-Sau khi sửa file cấu hình, dừng và chạy lại app; hot reload không thay đổi dart defines.
-Khi build, cũng truyền `--dart-define-from-file=supabase-config.json`.
+Các cấu hình mặc định trong VS Code không yêu cầu file cục bộ. Để đổi project,
+truyền `--dart-define-from-file=supabase-config.json` khi run/build và dừng, chạy
+lại app. URL/key phải được thay cùng nhau; override thiếu/sai bị từ chối và không
+tự quay về project khác. Cờ provider có thể bật qua dart define tương ứng.
 
 Tạo tài khoản bằng email, xác nhận thư nếu được yêu cầu, rồi đăng nhập. Liên kết
 xác nhận có thể mở lại app trên thiết bị đăng ký; có thể quay lại và đăng nhập
@@ -74,7 +74,9 @@ Xem [hướng dẫn Facebook chính thức](https://supabase.com/docs/guides/aut
 
 Client Secret/App Secret chỉ nhập ở dashboard Supabase, không đưa vào Flutter,
 file JSON hay Git. `supabase-config.json` đã được gitignore; ứng dụng chỉ nhận
-publishable key, không nhận service-role/secret key.
+publishable key, không nhận service-role/secret key. Publishable key vốn được
+phân phối trong client; URL/key mặc định được theo dõi trong Git để bản clone
+hoạt động. Xem [tài liệu API keys](https://supabase.com/docs/guides/api/api-keys).
 
 ## Callback và phạm vi hỗ trợ
 
@@ -116,3 +118,8 @@ nhận, thông báo lỗi, screening, và hai ngôn ngữ trên màn hình hẹp
 Đã kiểm tra ngày 7/10/2026: 47 unit/widget test pass; static analysis không báo lỗi;
 bản build web thành công. Ảnh đăng nhập tiếng Việt/Anh được dựng bằng phiên giả lập
 và kiểm tra trực quan. Chưa thử đăng nhập trên project thật hoặc thiết bị Android/iOS.
+
+Kiểm tra bổ sung ngày 08/10/2026: 80 test pass, analyze sạch và build web thành
+công với cấu hình mặc định. SDK thật kết nối Auth của project Steady, nhận đúng
+`invalid_credentials` khi gửi thông tin giả; chưa dùng mật khẩu của người dùng để
+kiểm tra đăng nhập tài khoản thật. Xem [hướng dẫn test trên máy khác](testing-on-other-devices.md).

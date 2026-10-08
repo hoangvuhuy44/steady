@@ -6,7 +6,8 @@ import 'package:steady/auth/auth_controller.dart';
 import 'package:steady/screening/health_screening.dart';
 import 'package:steady/nutrition/nutrition_strategy.dart';
 import 'package:steady/state/steady_store.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
+import 'package:supabase_flutter/supabase_flutter.dart'
+    show AuthException, AuthRetryableFetchException;
 
 import 'health_screening_test.dart' show screening, mealProfile;
 import 'widget_test.dart' show tapVisible;
@@ -198,6 +199,52 @@ void main() {
     }
   });
   for (final code in ['vi', 'en']) {
+    testWidgets(
+      'network and invalid-key failures remain distinct from credentials ($code)',
+      (tester) async {
+        final auth = FakeAuth();
+        addTearDown(auth.dispose);
+        await tester.pumpWidget(
+          SteadyApp(auth: auth, initialLocale: Locale(code)),
+        );
+        await tester.enterText(
+          find.byKey(const ValueKey('auth-email')),
+          'user@example.com',
+        );
+        await tester.enterText(
+          find.byKey(const ValueKey('auth-password')),
+          'password',
+        );
+        for (final failure in [
+          AuthRetryableFetchException(message: 'Network unreachable'),
+          const AuthException('Service unavailable', statusCode: '503'),
+          const AuthException('Invalid API key', statusCode: '401'),
+        ]) {
+          auth.signInError = failure;
+          await tapVisible(tester, find.byKey(const ValueKey('auth-submit')));
+          final message = tester
+              .widget<Text>(find.byKey(const ValueKey('auth-error')))
+              .data!;
+          if (failure.message == 'Invalid API key') {
+            expect(
+              message,
+              contains(
+                code == 'vi' ? 'Cấu hình dịch vụ' : 'configuration is invalid',
+              ),
+            );
+          } else {
+            expect(message, contains(code == 'vi' ? 'kết nối' : 'connection'));
+          }
+          expect(find.byType(NavigationBar), findsNothing);
+          expect(
+            tester
+                .widget<FilledButton>(find.byKey(const ValueKey('auth-submit')))
+                .onPressed,
+            isNotNull,
+          );
+        }
+      },
+    );
     testWidgets('sign-in fits narrow screen with large text ($code)', (
       tester,
     ) async {

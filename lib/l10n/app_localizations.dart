@@ -2485,6 +2485,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cook chicken thoroughly; steam sweet potato and greens. Dress the greens with the full amount of oil listed in the ingredients; do not add salt.'**
   String get paleoChickenRecipe;
+
+  /// No description provided for @authInvalidConfiguration.
+  ///
+  /// In en, this message translates to:
+  /// **'The sign-in service configuration is invalid, or the key belongs to a different project. Update the configuration and restart the app.'**
+  String get authInvalidConfiguration;
 }
 
 class _AppLocalizationsDelegate

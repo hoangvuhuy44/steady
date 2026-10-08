@@ -11,16 +11,18 @@ Sau mỗi lần đăng nhập, người dùng
 hoàn thành screening về bệnh nền, dị ứng và tình trạng điều trị trước khi vào app.
 Kết quả xác định phạm vi hỗ trợ của mục Bữa ăn; dữ liệu sức khoẻ chỉ giữ trong phiên.
 
-Sao chép `supabase-config.example.json` thành `supabase-config.json`, điền URL và
-publishable key của project rồi chạy:
+Cấu hình công khai của project Steady đã có sẵn trong app. Clone sang máy khác
+không cần file JSON cục bộ; chạy:
 
 ```sh
-flutter run -d chrome --web-port=3000 --dart-define-from-file=supabase-config.json
+flutter run -d chrome --web-port=3000
 ```
 
 Trong VS Code, chọn cấu hình **steady (Supabase email / Google / Facebook)**.
 Xem [hướng dẫn bật email, Google và Facebook](docs/auth-setup.md) và
 [quy tắc screening](docs/health-screening.md).
+Xem [cách cho máy khác đăng nhập và test](docs/testing-on-other-devices.md) để
+chạy qua IP LAN hoặc build bản web độc lập với phiên debug.
 
 ## Ngôn ngữ
 

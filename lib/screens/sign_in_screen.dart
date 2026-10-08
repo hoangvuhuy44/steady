@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
+import 'package:supabase_flutter/supabase_flutter.dart'
+    show AuthException, AuthRetryableFetchException;
 
 import '../auth/auth_controller.dart';
 import '../l10n/formatters.dart';
@@ -28,7 +31,17 @@ class _SignInScreenState extends State<SignInScreen> {
   bool browserOpened = false;
 
   String failureMessage(Object error, String fallback) {
+    if (error is TimeoutException || error is AuthRetryableFetchException) {
+      return 'network';
+    }
     if (error is AuthException) {
+      if (error.code == 'invalid_api_key' ||
+          error.message.toLowerCase().contains('invalid api key')) {
+        return 'configuration';
+      }
+      if ((int.tryParse(error.statusCode ?? '') ?? 0) >= 500) {
+        return 'network';
+      }
       return switch (error.code) {
         'invalid_credentials' => 'credentials',
         'email_not_confirmed' => 'unconfirmed',
@@ -117,6 +130,8 @@ class _SignInScreenState extends State<SignInScreen> {
       'credentials' => l.authCredentialsError,
       'unconfirmed' => l.authConfirmEmail,
       'rateLimit' => l.authRateLimitError,
+      'network' => l.authNetworkError,
+      'configuration' => l.authInvalidConfiguration,
       _ => l.authError,
     };
     return Scaffold(

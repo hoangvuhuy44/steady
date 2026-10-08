@@ -16,7 +16,7 @@ Future<void> main() async {
     // Start with the device language if local settings are unavailable.
   }
   AuthController auth = UnconfiguredAuthController();
-  const configuration = AuthConfiguration.fromEnvironment();
+  final configuration = AuthConfiguration.fromEnvironment();
   // Only modern public client keys are accepted in the app configuration.
   if (configuration.isValid) {
     try {
@@ -28,7 +28,8 @@ Future<void> main() async {
         Supabase.instance.client,
         socialProviders: configuration.socialProviders,
       );
-    } catch (_) {
+    } catch (error) {
+      debugPrint('Supabase initialization failed (${error.runtimeType}).');
       // Fail closed. Configuration/network failures never bypass sign-in.
       auth = UnconfiguredAuthController(initializationFailed: true);
     }

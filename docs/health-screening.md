@@ -5,19 +5,20 @@ Implemented from the [shared Steady research](https://chatgpt.com/s/t_6ac5e1e604
 ## Connect Supabase
 
 See [the sign-in setup guide](auth-setup.md) for email, Google, Facebook, and
-native/web callback configuration. Use a Supabase project with email/password authentication enabled. Copy
-`supabase-config.example.json` to `supabase-config.json` and replace the URL and
-publishable key from the project dashboard. The local file is gitignored. Never
+native/web callback configuration. The public Steady URL/key are bundled, so
+plain `flutter run` works on fresh clones. For a different project, optionally
+copy `supabase-config.example.json` to `supabase-config.json` and replace both
+connection settings, then pass it with `--dart-define-from-file`. Never
 put a service-role or secret key in the Flutter client.
 The production entry point accepts modern `sb_publishable_` keys only.
 
 ```sh
 flutter pub get
-flutter run -d chrome --web-port=3000 --dart-define-from-file=supabase-config.json
+flutter run -d chrome --web-port=3000
 ```
 
-Use the same `--dart-define-from-file` argument for builds. Without configuration,
-the production entry point shows the sign-in setup state and does not open home.
+Use the same optional override for builds if switching projects. Invalid or
+partial overrides show the sign-in setup state and do not open home.
 `requireAuthentication: false` is an explicit component-test/preview option;
 `main.dart` never sets it.
 
@@ -30,7 +31,7 @@ is not implemented. Android production INTERNET permission and
 macOS network-client entitlements are included.
 
 The user selected the Steady project (`bgcczipzseddvnwpvkhz`) by supplying its
-URL. Its public client key is stored in the gitignored local configuration.
+URL. Its public client key is now bundled in the tracked public configuration.
 Live Auth settings confirm email/signup enabled with email confirmation;
 Google/Facebook are not enabled yet. No remote schema, Auth settings, user
 accounts or existing project data are changed by this patch.

@@ -1328,4 +1328,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get paleoChickenRecipe =>
       'Cook chicken thoroughly; steam sweet potato and greens. Dress the greens with the full amount of oil listed in the ingredients; do not add salt.';
+
+  @override
+  String get authInvalidConfiguration =>
+      'The sign-in service configuration is invalid, or the key belongs to a different project. Update the configuration and restart the app.';
 }
