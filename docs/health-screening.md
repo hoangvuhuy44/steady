@@ -1,4 +1,9 @@
-# Screening after Supabase sign-in
+# Screening research (outside the MVP)
+
+As of 9 October 2026, the shipped Meals tab is **Recipes**. The flow below is
+retained research, mounted only by test/tool harnesses through
+`lib/research/research_meals_screen.dart`. Its rules remain enforced; they have
+not been weakened to make the catalogue available. See [MVP scope](product-scope.md).
 
 Implemented from the [shared Steady research](https://chatgpt.com/s/t_6ac5e1e604e0819193143ceead43579f), reviewed on 7 October 2026.
 
@@ -17,14 +22,14 @@ flutter pub get
 flutter run -d chrome --web-port=3000
 ```
 
-Use the same optional override for builds if switching projects. Invalid or
-partial overrides show the sign-in setup state and do not open home.
-`requireAuthentication: false` is an explicit component-test/preview option;
-`main.dart` never sets it.
+Use the same optional override for builds if switching projects. Home and local
+check-ins remain available with missing/invalid configuration or initialization
+failure. Authentication is optional and opened from Profile; there is no preview
+flag or authentication gate around the application.
 
 Email/password sign-in and sign-up use real Supabase Auth APIs. When email
-confirmation is enabled, sign-up shows instructions and remains outside the app
-until the user confirms the email and a validated session is available. Signup
+confirmation is enabled, sign-up shows instructions on the optional sign-in
+route. The user can dismiss it and continue as a guest. Signup
 passes the same web/native redirect as OAuth. Native callbacks and Google/Facebook
 browser sign-in are supported as described in the setup guide; password recovery
 is not implemented. Android production INTERNET permission and
@@ -40,10 +45,13 @@ accounts or existing project data are changed by this patch.
 
 `SupabaseAuthController` detects a new authenticated session by user ID and the
 JWT's `session_id`. Token refresh and repeated events for the same session do not
-restart screening. A fresh sign-in, different account, or app restart with a
-restored session requires screening. Sign-out resets all session-only health,
-nutrition, activity and point data. The app does not enter its navigation shell
-until the user submits screening with consent or declines to share health data.
+restart screening. A fresh sign-in or different session clears health and
+nutrition state, keeps the current tab and closes old routes without opening screening. App restarts
+start with unassessed nutrition state. Activity logs persist in SQLite, separately
+for the device guest and each account; signing out restores guest history.
+See [activity storage](activity-storage.md). The MVP has no setup/edit action
+for screening. Research harnesses explicitly mount the retained Meals screen;
+completing, declining or cancelling screening returns to that research screen.
 
 Auth session credentials follow Supabase Flutter's default local persistence;
 health answers are kept only in memory, never placed in auth metadata or uploaded.
@@ -81,9 +89,10 @@ override the pause. Cancer, poor intake or unintended weight loss also explicitl
 override a weight-loss goal. These are MVP product rules, not a validated clinical
 screening instrument.
 
-Refusing consent or choosing not to share details opens general tracking, with
-meal planning paused. The Profile screen shows the result and supports screening
-updates. Updating screening clears old plans before any new answer takes effect.
+Refusing consent or choosing not to share details keeps general tracking available,
+with meal planning paused. Meals shows the result and supports screening updates.
+Updating screening clears old plans before any new answer takes effect. Cancelling
+an edit leaves meal planning paused until screening is completed again.
 The store enforces the decision, retains screened allergy exclusions and uses
 screened measurements/goal even if a caller supplies different meal preferences.
 Meals displays the resulting configuration and offers a screening-update action.

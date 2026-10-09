@@ -1,14 +1,21 @@
-# Kê khai và tạo thực đơn Steady
+# Kê khai và tạo thực đơn Steady — tài liệu nghiên cứu
+
+Từ 09/10/2026, luồng bên dưới được giữ để nghiên cứu, không có đường vào từ UI
+MVP. Tab **Món ăn / Recipes** chỉ xem công thức mẫu; ẩn giá và dinh dưỡng, không
+ước tính khẩu phần hay gọi planner. Xem [phạm vi MVP](product-scope.md).
 
 Áp dụng cấu trúc trong [chat log người dùng cung cấp](https://chatgpt.com/s/t_6ac5f957a3288191b99409e456c4c046), đối chiếu các nguồn dưới đây ngày 07/10/2026. Chat log là yêu cầu thiết kế, không phải bằng chứng lâm sàng.
 
-## Luồng sau đăng nhập
+## Luồng thiết lập từ Meals
+
+Khách và tài khoản đều vào Home trước. Chỉ nút thiết lập/chỉnh sửa trong Meals mở
+khai báo; đăng nhập không tự mở luồng này. Huỷ quay về Meals, sau đó có thể chọn Home.
 
 1. Tuổi, chiều cao, cân nặng, body fat nếu đã đo, giới tính dùng trong công thức năng lượng.
 2. Bệnh lý tự khai, điều trị, thuốc, chỉ định của bác sĩ và ghi chú xét nghiệm.
 3. Dị ứng, nguyên liệu không thích, nguồn thực phẩm, kiểu ăn, tỷ lệ macro, lịch bữa ăn, ngân sách và thời gian nấu.
 4. Mục tiêu tập luyện, chiến lược năng lượng, mức vận động tổng thể, số buổi tập kháng lực và kinh nghiệm.
-5. Xem lại phạm vi hỗ trợ, mục tiêu ước tính và đồng ý sử dụng dữ liệu trong phiên. App tạo thực đơn rồi mở tab Bữa ăn.
+5. Xem lại phạm vi hỗ trợ, mục tiêu ước tính và đồng ý sử dụng dữ liệu trong phiên. Nếu đủ điều kiện, app tạo thực đơn rồi đóng màn hình khai báo để trở về Meals.
 
 Body fat tùy chọn, không suy ra từ BMI và không dùng để chẩn đoán hay chọn ngưỡng bulk/cut. Có thể bỏ qua giới tính; khi đó app không tự ước tính calorie. Chỉnh sửa quay về cùng luồng với các câu trả lời trước.
 

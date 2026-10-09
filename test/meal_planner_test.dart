@@ -2,6 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:steady/nutrition/meal_planner.dart';
 import 'package:steady/state/steady_store.dart';
 
+import 'health_screening_test.dart' show screening;
+
 NutritionProfile profile({
   Set<String> exclusions = const {},
   int budget = 150000,
@@ -60,7 +62,7 @@ void main() {
   test(
     'swap rejects incompatible meal and groceries reflect accepted swap',
     () {
-      final store = SteadyStore();
+      final store = SteadyStore()..completeScreening(screening());
       store.setNutritionProfile(profile(exclusions: {'fish'}));
       final original = store.mealPlan[0][1];
       store.swapMeal(0, 1, meals.firstWhere((m) => m.id == 'fish'));
@@ -99,7 +101,9 @@ void main() {
     }
   });
   test('swapping never exceeds the remaining daily budget', () {
-    final store = SteadyStore()..setNutritionProfile(profile(budget: 80000));
+    final store = SteadyStore()
+      ..completeScreening(screening())
+      ..setNutritionProfile(profile(budget: 80000));
     addTearDown(store.dispose);
     final original = store.mealPlan[0][1];
     expect(

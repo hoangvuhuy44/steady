@@ -4,6 +4,8 @@ import 'package:steady/nutrition/meal_planner.dart';
 import 'package:steady/screening/health_screening.dart';
 import 'package:steady/state/steady_store.dart';
 
+import 'helpers/fake_activity_repository.dart';
+
 HealthScreening screening({
   int age = 35,
   Set<HealthCondition> conditions = const {},
@@ -49,6 +51,15 @@ const mealProfile = NutritionProfile(
 );
 
 void main() {
+  test('a new guest store cannot create or swap meals without assessment', () {
+    final store = SteadyStore();
+    addTearDown(store.dispose);
+    expect(store.mealPlanningAllowed, isFalse);
+    store.setNutritionProfile(mealProfile);
+    expect(store.nutritionProfile, isNull);
+    expect(store.mealPlan, isEmpty);
+    expect(store.swapMeal(0, 0, meals.first), isFalse);
+  });
   test('compatible MVP conditions allow illustrative templates only', () {
     final assessment = ScreeningRules.assess(
       screening(
@@ -137,18 +148,20 @@ void main() {
   });
   test(
     'declining or starting a new account session cannot expose old health data',
-    () {
-      final store = SteadyStore()..beginSession();
+    () async {
+      final store = SteadyStore(activityRepository: FakeActivityRepository())
+        ..beginSession();
       addTearDown(store.dispose);
       store.completeScreening(screening());
       store.setNutritionProfile(mealProfile);
-      store.logActivity(ActivityType.walk, 20);
+      await store.setActivityOwner('A');
+      await store.logActivity(ActivityType.walk, 20);
       store.declineScreening();
       expect(store.healthScreening, isNull);
       expect(store.mealPlanningAllowed, isFalse);
       store.beginSession();
-      expect(store.logs, isEmpty);
-      expect(store.points, 0);
+      expect(store.logs, hasLength(1));
+      expect(store.points, 20);
       expect(store.screeningRequired, isTrue);
     },
   );

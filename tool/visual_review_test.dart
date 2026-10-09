@@ -8,11 +8,14 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:steady/app/steady_app.dart';
-import 'package:steady/nutrition/meal_planner.dart';
+import 'package:steady/l10n/app_localizations.dart';
 import 'package:steady/state/steady_store.dart';
 
+import '../test/helpers/fake_activity_repository.dart';
+import '../test/widget_test.dart' show tapVisible;
+
 void main() {
-  testWidgets('capture Meals on phone and desktop for visual review', (
+  testWidgets('capture MVP recipes on phone and with large text', (
     tester,
   ) async {
     await (FontLoader(
@@ -46,30 +49,14 @@ void main() {
     }
 
     for (final code in ['en', 'vi']) {
-      for (final planned in [false, true]) {
-        final store = SteadyStore();
-        if (planned) {
-          store.setNutritionProfile(
-            const NutritionProfile(
-              age: 32,
-              height: 170,
-              weight: 65,
-              goal: 'Ăn uống cân bằng',
-              activity: 'Ít vận động',
-              cholesterol: 'Chưa biết',
-              diet: 'Ăn đa dạng',
-              budget: 120000,
-              minutes: 30,
-              exclusions: {},
-            ),
-          );
-        }
+      for (final largeText in [false, true]) {
+        final store = SteadyStore(activityRepository: FakeActivityRepository());
+        tester.platformDispatcher.textScaleFactorTestValue = largeText ? 2 : 1;
         tester.view.physicalSize = const Size(390, 844);
         await tester.pumpWidget(
           RepaintBoundary(
             key: boundary,
             child: SteadyApp(
-              requireAuthentication: false,
               key: UniqueKey(),
               initialLocale: Locale(code),
               store: store,
@@ -78,20 +65,31 @@ void main() {
         );
         await tester.pumpAndSettle();
         await tester.tap(find.byType(NavigationDestination).at(2));
-        await capture('meals-$code-${planned ? 'plan' : 'setup'}');
-        if (planned) {
-          await tester.drag(
-            find.byType(ListView).hitTestable().first,
-            const Offset(0, -540),
-          );
-          await capture('meals-$code-recipes');
-          tester.view.physicalSize = const Size(1280, 900);
-          await capture('meals-$code-desktop');
-        }
+        final suffix = largeText ? 'large-text' : 'phone';
+        await capture('recipes-$code-catalogue-$suffix');
+        final l = await AppLocalizations.delegate.load(Locale(code));
+        await tapVisible(tester, find.text(l.recipesFilters));
+        await tapVisible(
+          tester,
+          find.byKey(const ValueKey('recipe-avoid-label-soy')),
+        );
+        await capture('recipes-$code-filters-$suffix');
+        await tapVisible(
+          tester,
+          find.byKey(const ValueKey('recipe-clear-filters')),
+        );
+        await tapVisible(tester, find.text(l.recipesFilters));
+        await tapVisible(
+          tester,
+          find.byKey(const ValueKey('recipe-card-oats')),
+        );
+        await capture('recipes-$code-detail-$suffix');
+        expect(tester.takeException(), isNull);
         await tester.pumpWidget(const SizedBox.shrink());
         store.dispose();
       }
     }
+    tester.platformDispatcher.clearTextScaleFactorTestValue();
     expect(tester.takeException(), isNull);
   });
 }

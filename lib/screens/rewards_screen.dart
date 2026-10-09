@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../l10n/formatters.dart';
 
 import '../state/steady_store.dart';
+import '../widgets/activity_status.dart';
 
 class RewardsScreen extends StatelessWidget {
   const RewardsScreen({super.key, required this.store});
@@ -23,6 +24,7 @@ class RewardsScreen extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
       children: [
+        ActivityStatus(store: store),
         Text(
           l.rewards,
           style: Theme.of(context).textTheme.headlineMedium

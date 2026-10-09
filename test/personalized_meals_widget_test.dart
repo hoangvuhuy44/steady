@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:steady/app/steady_app.dart';
 import 'package:steady/nutrition/nutrition_strategy.dart';
 import 'package:steady/state/steady_store.dart';
 
-import 'auth_screening_widget_test.dart' show FakeAuth;
+import 'helpers/research_meals_harness.dart';
+import 'helpers/fake_activity_repository.dart';
 import 'nutrition_strategy_test.dart' show healthProfile;
 import 'widget_test.dart' show tapVisible;
 
@@ -21,12 +21,10 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
-      final auth = FakeAuth()..login('first');
-      final store = SteadyStore();
-      addTearDown(auth.dispose);
+      final store = SteadyStore(activityRepository: FakeActivityRepository());
       addTearDown(store.dispose);
       await tester.pumpWidget(
-        SteadyApp(auth: auth, store: store, initialLocale: Locale(code)),
+        ResearchMealsHarness(store: store, locale: Locale(code)),
       );
       store.completeScreening(
         healthProfile(
@@ -40,6 +38,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
       await tester.pumpAndSettle();
       expect(store.mealPlan, hasLength(7));
       expect(store.mealPlan.first, hasLength(4));

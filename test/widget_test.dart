@@ -10,6 +10,10 @@ import 'package:steady/nutrition/meal_planner.dart';
 import 'package:steady/state/language_preferences.dart';
 import 'package:steady/state/steady_store.dart';
 
+import 'health_screening_test.dart' show screening;
+import 'helpers/fake_activity_repository.dart';
+import 'helpers/research_meals_harness.dart';
+
 NutritionProfile sampleProfile({int budget = 120000, int age = 32}) =>
     NutritionProfile(
       age: age,
@@ -49,20 +53,18 @@ Future<void> setLanguage(WidgetTester tester, String name) async {
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
-
   testWidgets('startup restores saved language', (tester) async {
     SharedPreferences.setMockInitialValues({LanguagePreferences.key: 'vi'});
     await tester.runAsync(app.main);
     try {
       await tester.pumpAndSettle();
-      expect(find.text('Đăng nhập'), findsWidgets);
-      expect(find.byType(NavigationBar), findsNothing);
+      expect(find.byType(NavigationBar), findsOneWidget);
       expect(
-        tester
-            .widget<FilledButton>(find.byKey(const ValueKey('auth-submit')))
-            .onPressed,
-        isNotNull,
+        tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+        0,
       );
+      expect(find.byKey(const ValueKey('auth-submit')), findsNothing);
+      expect(find.byKey(const ValueKey('screening-age')), findsNothing);
     } finally {
       // Dispose the real SDK before Flutter checks for pending refresh timers.
       await tester.pumpWidget(const SizedBox());
@@ -75,7 +77,11 @@ void main() {
     (tester) async {
       addTearDown(tester.platformDispatcher.clearLocalesTestValue);
       tester.platformDispatcher.localesTestValue = const [Locale('vi')];
-      await tester.pumpWidget(const SteadyApp(requireAuthentication: false));
+      await tester.pumpWidget(
+        SteadyApp(
+          store: SteadyStore(activityRepository: FakeActivityRepository()),
+        ),
+      );
       await tester.pumpAndSettle();
       expect(find.text('Hôm nay'), findsOneWidget);
       tester.platformDispatcher.localesTestValue = const [Locale('fr')];
@@ -84,149 +90,78 @@ void main() {
     },
   );
 
-  testWidgets('existing validation messages switch language with the form', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      const SteadyApp(
-        requireAuthentication: false,
-        initialLocale: Locale('en'),
-      ),
-    );
-    await tester.tap(find.text('Meals'));
-    await tester.pumpAndSettle();
-    await tapVisible(tester, find.byKey(const ValueKey('meal-next')));
-    expect(find.text('Enter a value from 1 to 120'), findsOneWidget);
-    await tester.tap(find.text('Profile'));
-    await tester.pumpAndSettle();
-    await setLanguage(tester, 'Tiếng Việt');
-    await tester.tap(find.text('Bữa ăn'));
-    await tester.pumpAndSettle();
-    expect(find.text('Nhập giá trị từ 1 đến 120'), findsOneWidget);
-    expect(find.text('Enter a value from 1 to 120'), findsNothing);
-  });
-
-  testWidgets('Meals draft survives tab changes and language changes', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      const SteadyApp(
-        requireAuthentication: false,
-        initialLocale: Locale('en'),
-      ),
-    );
-    await tester.tap(find.text('Meals'));
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byKey(const ValueKey('meal-age')), '32');
-    await tester.tap(find.text('Profile'));
-    await tester.pumpAndSettle();
-    await setLanguage(tester, 'Tiếng Việt');
-    expect(find.text('Ngôn ngữ'), findsWidgets);
-    await tester.tap(find.text('Bữa ăn'));
-    await tester.pumpAndSettle();
-    expect(find.text('Bữa ăn dễ dàng hơn'), findsOneWidget);
-    expect(find.text('32'), findsOneWidget);
-    expect(
-      (await SharedPreferences.getInstance()).getString(
-        LanguagePreferences.key,
-      ),
-      'vi',
-    );
-    await tester.tap(find.text('Hồ sơ').last);
-    await tester.pumpAndSettle();
-    await setLanguage(tester, 'English');
-    await tester.tap(find.text('Meals'));
-    await tester.pumpAndSettle();
-    expect(find.text('32'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
-
   testWidgets(
-    'three-step form validates, creates a plan and preserves data on cancelled edits',
+    'Recipes is available to guests while research planning stays paused',
     (tester) async {
-      final store = SteadyStore();
+      final store = SteadyStore(activityRepository: FakeActivityRepository());
       addTearDown(store.dispose);
       await tester.pumpWidget(
-        SteadyApp(
-          requireAuthentication: false,
-          store: store,
-          initialLocale: const Locale('en'),
-        ),
+        SteadyApp(store: store, initialLocale: const Locale('en')),
       );
-      await tester.tap(find.text('Meals'));
       await tester.pumpAndSettle();
-      await tapVisible(tester, find.byKey(const ValueKey('meal-next')));
-      expect(store.nutritionProfile, isNull);
-      expect(find.text('Enter a value from 1 to 120'), findsOneWidget);
-      await tester.enterText(find.byKey(const ValueKey('meal-age')), '32');
-      await tester.enterText(find.byKey(const ValueKey('meal-height')), '170');
-      await tester.enterText(find.byKey(const ValueKey('meal-weight')), '65,5');
-      await tapVisible(tester, find.byKey(const ValueKey('meal-next')));
-      expect(find.text('Step 2 of 3'), findsOneWidget);
-      await tapVisible(tester, find.byKey(const ValueKey('meal-next')));
-      await tapVisible(tester, find.byKey(const ValueKey('meal-next')));
       expect(
-        find.text('Please agree to use your details for this meal plan.'),
-        findsOneWidget,
+        tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+        0,
       );
-      await tapVisible(tester, find.byKey(const ValueKey('meal-consent')));
-      await tapVisible(tester, find.byKey(const ValueKey('meal-next')));
-      expect(store.mealPlan, hasLength(7));
-      expect(store.nutritionProfile!.weight, 65.5);
-      expect(find.text('Your 7-day plan'), findsOneWidget);
-      await tapVisible(tester, find.text('Edit preferences'));
-      await tester.enterText(find.byKey(const ValueKey('meal-age')), '45');
-      await tapVisible(tester, find.text('Cancel'));
-      expect(store.nutritionProfile!.age, 32);
-      await tapVisible(tester, find.text('Edit preferences'));
-      expect(find.text('32'), findsOneWidget);
-      expect(find.text('45'), findsNothing);
+      await tester.tap(find.text('Recipes'));
+      await tester.pumpAndSettle();
+      expect(find.text('Recipe ideas'), findsOneWidget);
+      expect(find.byKey(const ValueKey('screening-age')), findsNothing);
+      expect(find.byKey(const ValueKey('meals-setup')), findsNothing);
+      expect(store.mealPlanningAllowed, isFalse);
+      expect(store.nutritionProfile, isNull);
+      await tester.tap(find.text('Today'));
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+        0,
+      );
       expect(tester.takeException(), isNull);
     },
   );
 
-  testWidgets('blood pressure pair validation prevents advancing', (
-    tester,
-  ) async {
-    final store = SteadyStore()..setNutritionProfile(sampleProfile());
-    addTearDown(store.dispose);
-    await tester.pumpWidget(
-      SteadyApp(
-        requireAuthentication: false,
-        store: store,
-        initialLocale: const Locale('vi'),
-      ),
-    );
-    await tester.tap(find.text('Bữa ăn'));
-    await tester.pumpAndSettle();
-    await tapVisible(tester, find.text('Chỉnh sửa thông tin'));
-    await tapVisible(tester, find.byKey(const ValueKey('meal-next')));
-    await tapVisible(tester, find.text('Thêm huyết áp hoặc xét nghiệm'));
-    await tester.enterText(find.byKey(const ValueKey('meal-sys')), '120');
-    await tapVisible(tester, find.byKey(const ValueKey('meal-next')));
-    expect(find.text('Bước 2/3'), findsOneWidget);
-    expect(
-      find.text('Nhập cả hai chỉ số huyết áp hoặc để trống cả hai.'),
-      findsWidgets,
-    );
-    await tester.enterText(find.byKey(const ValueKey('meal-dia')), '80');
-    await tapVisible(tester, find.byKey(const ValueKey('meal-next')));
-    expect(find.text('Bước 3/3'), findsOneWidget);
-  });
+  testWidgets(
+    'guest check-in survives app remount and profile language change',
+    (tester) async {
+      final repo = FakeActivityRepository();
+      var store = SteadyStore(activityRepository: repo);
+      await tester.pumpWidget(
+        SteadyApp(store: store, initialLocale: const Locale('en')),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(NavigationDestination).at(1));
+      await tester.pumpAndSettle();
+      await tapVisible(tester, find.byKey(const ValueKey('activity-save')));
+      expect(store.logs, hasLength(1));
+      expect(
+        tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+        0,
+      );
+      await tester.tap(find.byType(NavigationDestination).at(4));
+      await tester.pumpAndSettle();
+      expect(find.text('Guest'), findsOneWidget);
+      await setLanguage(tester, 'English');
+      await tester.pumpWidget(const SizedBox());
+      store.dispose();
+      store = SteadyStore(activityRepository: repo);
+      addTearDown(store.dispose);
+      await tester.pumpWidget(
+        SteadyApp(store: store, initialLocale: const Locale('en')),
+      );
+      await tester.pumpAndSettle();
+      expect(store.logs, hasLength(1));
+      expect(store.points, 20);
+    },
+  );
 
   testWidgets(
     'plan swaps, grocery checklist, locale switch and confirmed delete work',
     (tester) async {
-      final store = SteadyStore()..setNutritionProfile(sampleProfile());
+      final store = SteadyStore(activityRepository: FakeActivityRepository())
+        ..completeScreening(screening())
+        ..setNutritionProfile(sampleProfile());
       addTearDown(store.dispose);
-      await tester.pumpWidget(
-        SteadyApp(
-          requireAuthentication: false,
-          store: store,
-          initialLocale: const Locale('en'),
-        ),
-      );
-      await tester.tap(find.text('Meals'));
+      await tester.pumpWidget(ResearchMealsHarness(store: store));
       await tester.pumpAndSettle();
       final old = store.mealPlan[0][0];
       await tapVisible(tester, find.byKey(const ValueKey('swap-0')));
@@ -244,10 +179,9 @@ void main() {
       await tester.tap(find.byTooltip('Close'));
       await tester.pumpAndSettle();
       final ids = store.mealPlan.expand((d) => d).map((m) => m.id).toList();
-      await tester.tap(find.text('Profile'));
-      await tester.pumpAndSettle();
-      await setLanguage(tester, 'Tiếng Việt');
-      await tester.tap(find.text('Bữa ăn'));
+      await tester.pumpWidget(
+        ResearchMealsHarness(store: store, locale: const Locale('vi')),
+      );
       await tester.pumpAndSettle();
       expect(store.mealPlan.expand((d) => d).map((m) => m.id), ids);
       await tapVisible(tester, find.text('Xoá hồ sơ và thực đơn'));
@@ -259,60 +193,35 @@ void main() {
       await tester.pumpAndSettle();
       expect(store.nutritionProfile, isNull);
       expect(store.mealPlan, isEmpty);
-      expect(find.text('Bước 1/3'), findsOneWidget);
+      expect(find.byKey(const ValueKey('meals-setup')), findsOneWidget);
       expect(find.text('32'), findsNothing);
       expect(tester.takeException(), isNull);
     },
   );
 
-  testWidgets('empty and unsupported plan states provide recovery actions', (
-    tester,
-  ) async {
-    final store = SteadyStore()
-      ..setNutritionProfile(sampleProfile(budget: 10000));
-    addTearDown(store.dispose);
-    await tester.pumpWidget(
-      SteadyApp(
-        requireAuthentication: false,
-        store: store,
-        initialLocale: const Locale('en'),
-      ),
-    );
-    await tester.tap(find.text('Meals'));
-    await tester.pumpAndSettle();
-    expect(find.text('No matching plan yet'), findsOneWidget);
-    store.setNutritionProfile(sampleProfile(age: 17));
-    await tester.pumpAndSettle();
-    expect(find.text('A specialist plan is a better fit'), findsOneWidget);
-    expect(find.text('Edit preferences'), findsWidgets);
-  });
-
   for (final code in ['en', 'vi']) {
-    testWidgets(
-      'all tabs and Meals plan fit a narrow screen with large text ($code)',
-      (tester) async {
-        tester.view.physicalSize = const Size(360, 800);
-        tester.view.devicePixelRatio = 1;
-        addTearDown(tester.view.resetPhysicalSize);
-        addTearDown(tester.view.resetDevicePixelRatio);
-        tester.platformDispatcher.textScaleFactorTestValue = 1.6;
-        addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
-        final store = SteadyStore()..setNutritionProfile(sampleProfile());
-        addTearDown(store.dispose);
-        await tester.pumpWidget(
-          SteadyApp(
-            requireAuthentication: false,
-            store: store,
-            initialLocale: Locale(code),
-          ),
-        );
-        for (var i = 0; i < 5; i++) {
-          await tester.tap(find.byType(NavigationDestination).at(i));
-          await tester.pumpAndSettle();
-          expect(tester.takeException(), isNull, reason: 'Tab $i in $code');
-        }
-      },
-    );
+    testWidgets('all MVP tabs fit a narrow screen with large text ($code)', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(360, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      tester.platformDispatcher.textScaleFactorTestValue = 1.6;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      final store = SteadyStore(activityRepository: FakeActivityRepository())
+        ..completeScreening(screening())
+        ..setNutritionProfile(sampleProfile());
+      addTearDown(store.dispose);
+      await tester.pumpWidget(
+        SteadyApp(store: store, initialLocale: Locale(code)),
+      );
+      for (var i = 0; i < 5; i++) {
+        await tester.tap(find.byType(NavigationDestination).at(i));
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull, reason: 'Tab $i in $code');
+      }
+    });
   }
 
   test(

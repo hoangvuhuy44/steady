@@ -5,7 +5,7 @@
 - Trước đây `main.dart` chỉ lấy URL/key từ dart defines. `flutter run` không có cờ cấu hình hiện màn hình login nhưng nút bị khóa. File JSON gitignored không có trên bản clone mới.
 - Nay `AuthConfiguration` mặc định dùng cấu hình công khai của project Steady. Chạy từ terminal, VS Code hoặc bản build đều nhận cùng project, không cần chép file cục bộ. Override project khác phải có đủ URL/key; secret key bị từ chối.
 - `127.0.0.1` là chính thiết bị đang mở trình duyệt. Máy B mở địa chỉ đó không thể truy cập server trên máy A. Server chỉ chạy khi tiến trình còn hoạt động; localhost không phải một website đã được triển khai.
-- App phân biệt lỗi mạng/dịch vụ, cấu hình key, sai thông tin đăng nhập và email chưa xác nhận. Không bỏ qua Auth để vào tính năng.
+- App phân biệt lỗi mạng/dịch vụ, cấu hình key, sai thông tin đăng nhập và email chưa xác nhận. Từ bản sửa 09/10/2026, Home/check-in dùng được với tư cách khách; đăng nhập là lựa chọn trong Hồ sơ. Xem [lưu nhật ký và kiểm thử trên thiết bị](activity-storage.md).
 
 ## Máy khác tự chạy source
 
@@ -97,7 +97,8 @@ trong dashboard; việc có cấu hình client không tự cấu hình dịch v�
 
 Kiểm thử dùng SDK thật với HTTP fixture cho password login/session/logout, thêm
 kiểm tra cấu hình mặc định, override thiếu/sai, lỗi mạng/key và server static.
-Main entry point được kiểm tra khởi tạo SDK, bật đăng nhập và giữ Auth gate.
+Main entry point mở Home; test kiểm tra đăng nhập tuỳ chọn không tự chuyển tab,
+Món ăn / Recipes dùng được cho khách và không mở khai báo sức khoẻ. Xem [phạm vi MVP](product-scope.md).
 Kiểm tra backend thực tế dùng public settings và một đăng nhập giả bị từ chối;
 không sử dụng mật khẩu hay truy cập tài khoản riêng của người dùng.
 

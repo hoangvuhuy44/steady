@@ -17,12 +17,27 @@ extension ActivityTypeX on ActivityType {
 
 class ActivityLog {
   const ActivityLog({
+    required this.id,
+    required this.ownerId,
     required this.type,
     required this.minutes,
     required this.createdAt,
+    required this.localDate,
   });
 
+  final String id;
+  final String ownerId;
   final ActivityType type;
   final int minutes;
+
+  /// The instant of recording, in UTC.
   final DateTime createdAt;
+
+  /// Calendar date at the recording location; never recalculate on travel.
+  final String localDate;
+
+  static String dateKey(DateTime date) =>
+      '${date.year.toString().padLeft(4, '0')}-'
+      '${date.month.toString().padLeft(2, '0')}-'
+      '${date.day.toString().padLeft(2, '0')}';
 }

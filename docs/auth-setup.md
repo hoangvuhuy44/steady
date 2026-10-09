@@ -91,13 +91,17 @@ ký callback cho hai nền tảng này. Xem
 [tài liệu deep link](https://supabase.com/docs/guides/auth/native-mobile-deep-linking?platform=flutter).
 
 Mở trình duyệt chưa tạo phiên đăng nhập. Chỉ sau khi callback trả về phiên được
-Supabase xác thực, app mới mở screening sức khoẻ hiện có. Đóng trình duyệt hoặc
-huỷ đăng nhập có thể thử lại hay dùng email. Provider chưa bật sẽ có nút bị vô hiệu
+Supabase xác thực, app đóng route đăng nhập và giữ tab hiện tại với tài khoản đã
+đăng nhập. MVP không có đường vào screening; tab Món ăn / Recipes mở danh mục
+công thức. Đóng trình duyệt hoặc huỷ màn hình đăng nhập vẫn
+tiếp tục dùng app với tư cách khách. Provider chưa bật sẽ có nút bị vô hiệu
 hoá; cờ cấu hình không tự bật provider trên dashboard.
 
 Nếu thiếu/sai cấu hình, app ghi rõ chưa kết nối dịch vụ đăng nhập. Nếu khởi tạo
-dịch vụ thất bại, app đề nghị kiểm tra kết nối và mở lại. App không đăng nhập giả
-hay bỏ qua sàng lọc. Đăng nhập mới cần internet; phiên cũ có thể được khôi phục
+dịch vụ thất bại, Home và check-in vẫn dùng SQLite trên Android/iOS. Danh mục
+công thức dùng được cho khách và tài khoản. Planner/screening chỉ còn trong mã
+và harness nghiên cứu, vẫn giữ các quy tắc của chúng. Đăng nhập mới cần internet;
+phiên cũ có thể được khôi phục
 và báo lỗi khi không làm mới được token. Khôi phục mật khẩu chưa nằm trong luồng này.
 
 ## Kiểm thử

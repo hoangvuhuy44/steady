@@ -10,6 +10,23 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get activityLoading => 'Loading activity history…';
+
+  @override
+  String get activitySaving => 'Saving…';
+
+  @override
+  String get activityLoadError =>
+      'Could not load activity history. Your saved data is kept. Try again before logging an activity.';
+
+  @override
+  String get activitySaveError =>
+      'Could not save this activity. Your choices are kept. Tap Save activity to try again.';
+
+  @override
+  String get activityRetry => 'Try again';
+
+  @override
   String get screeningNext => 'Next';
 
   @override
@@ -39,7 +56,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authIntro =>
-      'Sign in to start your health screening and build your Steady routine.';
+      'Sign in to use your account. You can cancel and continue checking in as a guest.';
 
   @override
   String get email => 'Email';
@@ -68,11 +85,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authConfiguration =>
-      'Steady has not been connected to its sign-in service. Set up the connection before signing in.';
+      'Sign-in is not configured. Home and check-ins are available as a guest.';
 
   @override
   String get authInitializationError =>
-      'Could not start the sign-in service. Check your connection and restart Steady to try again.';
+      'Could not start sign-in. You can continue using Home and check-ins, or restart Steady to retry sign-in.';
 
   @override
   String get continueWithGoogle => 'Continue with Google';
@@ -375,7 +392,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile => 'Profile';
 
   @override
-  String get meals => 'Meals';
+  String get meals => 'Recipes';
 
   @override
   String get movedToday => 'You moved today.';
@@ -404,7 +421,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get logAnother => 'Log another activity';
 
   @override
-  String get thisWeek => 'Last 7 days';
+  String get thisWeek => 'Last 7 days, including today';
+
+  @override
+  String get activeDays => 'Active days';
+
+  @override
+  String get totalMovementMinutes => 'Total active minutes';
+
+  @override
+  String get activityTargetReached => 'Goal reached';
+
+  @override
+  String get activityTargetInProgress => 'Keep going';
+
+  @override
+  String activeDaysProgress(int count) {
+    return '$count/5 active days';
+  }
+
+  @override
+  String get streakRule =>
+      'A streak counts consecutive active days. If you have not logged today, a streak ending yesterday stays until the end of today. Missing a full day resets it. The 5/7 goal counts active days, regardless of your streak.';
 
   @override
   String get dayStreak => 'day streak';
@@ -485,7 +523,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weeklyTarget => 'Weekly target';
 
   @override
-  String get fiveDays => '5 active days';
+  String get fiveDays => '5 active days in the last 7 days';
 
   @override
   String get reminders => 'Reminders';
@@ -863,8 +901,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String activitySaved(String activity, int points) {
-    return '$activity logged. +$points points';
+  String activitySaved(String activity, int minutes) {
+    return '$activity logged · $minutes minutes';
   }
 
   @override
@@ -1332,4 +1370,75 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get authInvalidConfiguration =>
       'The sign-in service configuration is invalid, or the key belongs to a different project. Update the configuration and restart the app.';
+
+  @override
+  String get mealsSetup => 'Set up meals';
+
+  @override
+  String get guest => 'Guest';
+
+  @override
+  String get localActivityStorage =>
+      'Activity logs are saved on this device, separately for guests and each account. No server backup or sync is available.';
+
+  @override
+  String get recipesTitle => 'Recipe ideas';
+
+  @override
+  String get recipesIntro =>
+      'Browse recipes for everyday cooking. No health details or sign-in needed.';
+
+  @override
+  String get recipesFilters => 'Recipe filters';
+
+  @override
+  String get recipesMealType => 'Meal type';
+
+  @override
+  String get recipesAll => 'All meals';
+
+  @override
+  String get recipesCookingTime => 'Estimated cooking time';
+
+  @override
+  String get recipesAnyTime => 'Any time';
+
+  @override
+  String recipesWithinMinutes(int count) {
+    return 'Up to $count min';
+  }
+
+  @override
+  String recipesEstimatedMinutes(int count) {
+    return 'About $count min';
+  }
+
+  @override
+  String get recipesAllergyFilter => 'Avoid allergy labels';
+
+  @override
+  String get recipesAllergyLimit =>
+      'This filter only excludes recipes with the selected labels. Labels may be incomplete and do not cover substitutions, sauces or cross-contact. Results are not confirmed safe for allergies. Check ingredients and product labels yourself.';
+
+  @override
+  String get recipesAvoidIngredients => 'Ingredients to avoid';
+
+  @override
+  String get recipesClearFilters => 'Clear filters';
+
+  @override
+  String recipesResultCount(int count) {
+    return '$count recipes';
+  }
+
+  @override
+  String get recipesEmptyTitle => 'No matching recipes';
+
+  @override
+  String get recipesEmptyHelp =>
+      'Your filters are kept. Change a selection or clear the filters to browse more recipes.';
+
+  @override
+  String get recipesSampleQuantities =>
+      'Amounts belong to this sample recipe, not a personal serving recommendation. Beans labelled “cooked” use cooked weight; other amounts refer to raw edible ingredients.';
 }

@@ -1,25 +1,21 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/formatters.dart';
-import '../models/activity_type.dart';
+import '../models/activity_metrics.dart';
 
 class ConsistencyWeek extends StatelessWidget {
-  const ConsistencyWeek({super.key, required this.logs});
+  const ConsistencyWeek({super.key, required this.metrics});
 
-  final List<ActivityLog> logs;
+  final ActivityMetrics metrics;
 
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
     final colors = Theme.of(context).colorScheme;
-
-    final completed = List.generate(7, (index) {
-      final date = DateTime(now.year, now.month, now.day - 6 + index);
-      return logs.any((log) => DateUtils.isSameDay(log.createdAt, date));
-    });
+    final days = metrics.days;
+    final completed = days.map(metrics.isActiveOn).toList();
 
     final dayNames = List.generate(7, (index) {
-      final date = DateTime(now.year, now.month, now.day - 6 + index);
+      final date = days[index];
       final labels = context.l10n.weekdays;
       return labels[date.weekday - 1];
     });

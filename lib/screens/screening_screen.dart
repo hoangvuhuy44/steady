@@ -14,11 +14,10 @@ class ScreeningScreen extends StatefulWidget {
     super.key,
     required this.onCompleted,
     required this.onDeclined,
-    required this.onSignOut,
     this.initial,
   });
   final ValueChanged<HealthScreening> onCompleted;
-  final VoidCallback onDeclined, onSignOut;
+  final VoidCallback onDeclined;
   final HealthScreening? initial;
   @override
   State<ScreeningScreen> createState() => _ScreeningScreenState();
@@ -520,8 +519,9 @@ class _ScreeningScreenState extends State<ScreeningScreen> {
       l.screeningReview,
     ];
     return PopScope(
-      canPop: false,
+      canPop: true,
       child: Scaffold(
+        appBar: AppBar(title: Text(l.screeningTitle)),
         body: SafeArea(
           child: Center(
             child: ConstrainedBox(
@@ -533,15 +533,6 @@ class _ScreeningScreenState extends State<ScreeningScreen> {
                   controller: scroll,
                   padding: const EdgeInsets.all(24),
                   children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton.icon(
-                        key: const ValueKey('screening-sign-out'),
-                        onPressed: widget.onSignOut,
-                        icon: const Icon(Icons.logout),
-                        label: Text(l.signOut),
-                      ),
-                    ),
                     Text(
                       l.screeningTitle,
                       style: Theme.of(context).textTheme.headlineMedium,

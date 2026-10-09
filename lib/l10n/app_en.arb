@@ -1,4 +1,9 @@
 {
+  "activityLoading": "Loading activity history…",
+  "activitySaving": "Saving…",
+  "activityLoadError": "Could not load activity history. Your saved data is kept. Try again before logging an activity.",
+  "activitySaveError": "Could not save this activity. Your choices are kept. Tap Save activity to try again.",
+  "activityRetry": "Try again",
   "@@locale": "en",
   "screeningNext": "Next",
   "screeningGuidance": "Habits to discuss with your care team",
@@ -15,7 +20,7 @@
   "signIn": "Sign in",
   "signUp": "Create account",
   "signOut": "Sign out",
-  "authIntro": "Sign in to start your health screening and build your Steady routine.",
+  "authIntro": "Sign in to use your account. You can cancel and continue checking in as a guest.",
   "email": "Email",
   "password": "Password",
   "emailError": "Enter a valid email address.",
@@ -23,8 +28,8 @@
   "authError": "Could not sign in. Check your details and connection, then try again.",
   "authSignupError": "Could not create an account. Check your details and try again.",
   "authConfirmEmail": "Check your email to confirm your account, then return here to sign in.",
-  "authConfiguration": "Steady has not been connected to its sign-in service. Set up the connection before signing in.",
-  "authInitializationError": "Could not start the sign-in service. Check your connection and restart Steady to try again.",
+  "authConfiguration": "Sign-in is not configured. Home and check-ins are available as a guest.",
+  "authInitializationError": "Could not start sign-in. You can continue using Home and check-ins, or restart Steady to retry sign-in.",
   "continueWithGoogle": "Continue with Google",
   "continueWithFacebook": "Continue with Facebook",
   "authOrEmail": "or use email",
@@ -113,7 +118,7 @@
   "checkIn": "Check in",
   "rewards": "Rewards",
   "profile": "Profile",
-  "meals": "Meals",
+  "meals": "Recipes",
   "movedToday": "You moved today.",
   "makeTodayCount": "Make today count.",
   "consistencyMessage": "Keep showing up. Every active day brings you closer to your goal.",
@@ -122,7 +127,18 @@
   "noActivity": "No activity logged yet",
   "anyMovement": "Every bit of movement counts.",
   "logAnother": "Log another activity",
-  "thisWeek": "Last 7 days",
+  "thisWeek": "Last 7 days, including today",
+  "activeDays": "Active days",
+  "totalMovementMinutes": "Total active minutes",
+  "activityTargetReached": "Goal reached",
+  "activityTargetInProgress": "Keep going",
+  "activeDaysProgress": "{count}/5 active days",
+  "@activeDaysProgress": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "streakRule": "A streak counts consecutive active days. If you have not logged today, a streak ending yesterday stays until the end of today. Missing a full day resets it. The 5/7 goal counts active days, regardless of your streak.",
   "dayStreak": "day streak",
   "steadyPoints": "Steady points",
   "consistencyTip": "Build a habit with activities you enjoy. Consistency earns points.",
@@ -148,7 +164,7 @@
   "member": "Steady member",
   "memberGoal": "Goal: stay active consistently",
   "weeklyTarget": "Weekly target",
-  "fiveDays": "5 active days",
+  "fiveDays": "5 active days in the last 7 days",
   "reminders": "Reminders",
   "notConnected": "Not connected yet",
   "healthData": "Health data",
@@ -281,13 +297,13 @@
       }
     }
   },
-  "activitySaved": "{activity} logged. +{points} points",
+  "activitySaved": "{activity} logged · {minutes} minutes",
   "@activitySaved": {
     "placeholders": {
       "activity": {
         "type": "String"
       },
-      "points": {
+      "minutes": {
         "type": "int"
       }
     }
@@ -467,5 +483,28 @@
   "eggSnackRecipe": "Cook eggs thoroughly. Serve with washed cucumber; do not add salt.",
   "paleoChickenName": "Chicken, sweet potato and greens",
   "paleoChickenRecipe": "Cook chicken thoroughly; steam sweet potato and greens. Dress the greens with the full amount of oil listed in the ingredients; do not add salt.",
-  "authInvalidConfiguration": "The sign-in service configuration is invalid, or the key belongs to a different project. Update the configuration and restart the app."
+  "authInvalidConfiguration": "The sign-in service configuration is invalid, or the key belongs to a different project. Update the configuration and restart the app.",
+  "mealsSetup": "Set up meals",
+  "guest": "Guest",
+  "localActivityStorage": "Activity logs are saved on this device, separately for guests and each account. No server backup or sync is available.",
+  "recipesTitle": "Recipe ideas",
+  "recipesIntro": "Browse recipes for everyday cooking. No health details or sign-in needed.",
+  "recipesFilters": "Recipe filters",
+  "recipesMealType": "Meal type",
+  "recipesAll": "All meals",
+  "recipesCookingTime": "Estimated cooking time",
+  "recipesAnyTime": "Any time",
+  "recipesWithinMinutes": "Up to {count} min",
+  "recipesEstimatedMinutes": "About {count} min",
+  "recipesAllergyFilter": "Avoid allergy labels",
+  "recipesAllergyLimit": "This filter only excludes recipes with the selected labels. Labels may be incomplete and do not cover substitutions, sauces or cross-contact. Results are not confirmed safe for allergies. Check ingredients and product labels yourself.",
+  "recipesAvoidIngredients": "Ingredients to avoid",
+  "recipesClearFilters": "Clear filters",
+  "recipesResultCount": "{count} recipes",
+  "recipesEmptyTitle": "No matching recipes",
+  "recipesEmptyHelp": "Your filters are kept. Change a selection or clear the filters to browse more recipes.",
+  "recipesSampleQuantities": "Amounts belong to this sample recipe, not a personal serving recommendation. Beans labelled “cooked” use cooked weight; other amounts refer to raw edible ingredients.",
+  "@recipesWithinMinutes": {"placeholders": {"count": {"type": "int"}}},
+  "@recipesEstimatedMinutes": {"placeholders": {"count": {"type": "int"}}},
+  "@recipesResultCount": {"placeholders": {"count": {"type": "int"}}}
 }

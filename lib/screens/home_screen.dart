@@ -5,6 +5,8 @@ import '../l10n/formatters.dart';
 import '../state/steady_store.dart';
 import '../widgets/consistency_week.dart';
 import '../widgets/metric_card.dart';
+import '../widgets/activity_status.dart';
+import '../widgets/activity_goal.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key, required this.store, required this.onCheckIn});
@@ -15,12 +17,14 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final latest = store.latestLog;
+    final metrics = store.activityMetrics;
+    final latest = metrics.latestToday;
     final l = context.l10n;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
       children: [
+        ActivityStatus(store: store),
         Text(
           'Steady',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -31,13 +35,13 @@ class HomeScreen extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         Text(
-          store.checkedInToday ? l.movedToday : l.makeTodayCount,
+          metrics.checkedInToday ? l.movedToday : l.makeTodayCount,
           style: Theme.of(context).textTheme.headlineMedium
               ?.copyWith(fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 8),
         Text(
-          store.checkedInToday ? l.consistencyMessage : l.movementMessage,
+          metrics.checkedInToday ? l.consistencyMessage : l.movementMessage,
           style: Theme.of(context).textTheme.bodyLarge
               ?.copyWith(color: colors.onSurfaceVariant, height: 1.45),
         ),
@@ -55,15 +59,15 @@ class HomeScreen extends StatelessWidget {
                       height: 48,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: store.checkedInToday
+                        color: metrics.checkedInToday
                             ? colors.primaryContainer
                             : colors.secondaryContainer,
                       ),
                       child: Icon(
-                        store.checkedInToday
+                        metrics.checkedInToday
                             ? Icons.check_rounded
                             : Icons.bolt_rounded,
-                        color: store.checkedInToday
+                        color: metrics.checkedInToday
                             ? colors.onPrimaryContainer
                             : colors.onSecondaryContainer,
                       ),
@@ -74,7 +78,7 @@ class HomeScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            store.checkedInToday
+                            metrics.checkedInToday
                                 ? l.checkInComplete
                                 : l.noActivity,
                             style: Theme.of(context).textTheme.titleMedium
@@ -85,6 +89,7 @@ class HomeScreen extends StatelessWidget {
                             latest == null
                                 ? l.anyMovement
                                 : '${l.activityName(latest.type)} · ${l.minutesValue(latest.minutes)}',
+                            key: const ValueKey('today-activity-detail'),
                             style: TextStyle(color: colors.onSurfaceVariant),
                           ),
                         ],
@@ -96,9 +101,11 @@ class HomeScreen extends StatelessWidget {
                 FilledButton.icon(
                   onPressed: onCheckIn,
                   icon: Icon(
-                    store.checkedInToday ? Icons.add : Icons.check_circle,
+                    metrics.checkedInToday ? Icons.add : Icons.check_circle,
                   ),
-                  label: Text(store.checkedInToday ? l.logAnother : l.checkIn),
+                  label: Text(
+                    metrics.checkedInToday ? l.logAnother : l.checkIn,
+                  ),
                 ),
               ],
             ),
@@ -111,42 +118,59 @@ class HomeScreen extends StatelessWidget {
               ?.copyWith(fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 12),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(18),
-            child: ConsistencyWeek(logs: store.logs),
-          ),
-        ),
-        const SizedBox(height: 16),
         Row(
           children: [
             MetricCard(
-              icon: Icons.local_fire_department_outlined,
-              value: '${store.streak}',
-              label: l.dayStreak,
+              key: const ValueKey('recent-active-days'),
+              icon: Icons.calendar_month_outlined,
+              value: '${metrics.activeDays}/7',
+              label: l.activeDays,
             ),
             const SizedBox(width: 12),
             MetricCard(
-              icon: Icons.stars_outlined,
-              value: '${store.points}',
-              label: l.steadyPoints,
+              key: const ValueKey('recent-active-minutes'),
+              icon: Icons.timer_outlined,
+              value: '${metrics.minutes}',
+              label: l.totalMovementMinutes,
             ),
           ],
         ),
-        const SizedBox(height: 22),
+        const SizedBox(height: 16),
+        Card(child: ActivityGoal(metrics: metrics)),
+        const SizedBox(height: 12),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: ConsistencyWeek(metrics: metrics),
+          ),
+        ),
+        const SizedBox(height: 16),
         Card(
           child: Padding(
             padding: const EdgeInsets.all(18),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.lightbulb_outline, color: colors.primary),
+                Icon(
+                  Icons.local_fire_department_outlined,
+                  color: colors.primary,
+                ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
-                    l.consistencyTip,
-                    style: Theme.of(context).textTheme.bodyMedium
-                        ?.copyWith(height: 1.45),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${metrics.streak} ${l.dayStreak}',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        l.streakRule,
+                        style: Theme.of(context).textTheme.bodyMedium
+                            ?.copyWith(height: 1.45),
+                      ),
+                    ],
                   ),
                 ),
               ],

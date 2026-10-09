@@ -29,6 +29,7 @@ class _SignInScreenState extends State<SignInScreen> {
   String? message;
   bool confirmation = false;
   bool browserOpened = false;
+  late Locale? selectedLocale = widget.locale;
 
   String failureMessage(Object error, String fallback) {
     if (error is TimeoutException || error is AuthRetryableFetchException) {
@@ -76,7 +77,25 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    widget.auth.addListener(authChanged);
+  }
+
+  bool returning = false;
+  void authChanged() {
+    if (!mounted || returning) return;
+    if (widget.auth.userId != null) {
+      returning = true;
+      Navigator.of(context).pop();
+    } else {
+      setState(() {});
+    }
+  }
+
+  @override
   void dispose() {
+    widget.auth.removeListener(authChanged);
     email.dispose();
     password.dispose();
     super.dispose();
@@ -135,6 +154,15 @@ class _SignInScreenState extends State<SignInScreen> {
       _ => l.authError,
     };
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          key: const ValueKey('auth-cancel'),
+          tooltip: l.cancel,
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const Icon(Icons.close),
+        ),
+        title: Text(l.signIn),
+      ),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -152,9 +180,9 @@ class _SignInScreenState extends State<SignInScreen> {
                 const SizedBox(height: 24),
                 DropdownButtonFormField<String>(
                   key: ValueKey(
-                    'auth-language-${widget.locale?.languageCode ?? 'system'}',
+                    'auth-language-${selectedLocale?.languageCode ?? 'system'}',
                   ),
-                  initialValue: widget.locale?.languageCode ?? 'system',
+                  initialValue: selectedLocale?.languageCode ?? 'system',
                   isExpanded: true,
                   decoration: InputDecoration(labelText: l.language),
                   items: [
@@ -170,9 +198,9 @@ class _SignInScreenState extends State<SignInScreen> {
                   ],
                   onChanged: (v) {
                     if (v != null) {
-                      widget.onLanguageChanged(
-                        v == 'system' ? null : Locale(v),
-                      );
+                      final value = v == 'system' ? null : Locale(v);
+                      setState(() => selectedLocale = value);
+                      widget.onLanguageChanged(value);
                     }
                   },
                 ),

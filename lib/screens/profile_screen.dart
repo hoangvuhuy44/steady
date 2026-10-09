@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../auth/auth_controller.dart';
 import '../l10n/formatters.dart';
-import '../widgets/screening_result_card.dart';
+import 'sign_in_screen.dart';
 import '../state/steady_store.dart';
+import '../widgets/activity_goal.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({
@@ -46,14 +47,16 @@ class ProfileScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        auth?.email ?? l.member,
+                        auth?.userId == null
+                            ? l.guest
+                            : (auth?.email ?? l.member),
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(l.memberGoal),
+                      Text(l.localActivityStorage),
                     ],
                   ),
                 ),
@@ -62,18 +65,25 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 18),
-        if (store.screeningEnforced) ...[
-          ScreeningResultCard(assessment: store.screeningAssessment),
-          const SizedBox(height: 12),
-          OutlinedButton.icon(
-            key: const ValueKey('profile-screening'),
-            onPressed: store.requestScreening,
-            icon: const Icon(Icons.assignment_outlined),
-            label: Text(l.screeningEdit),
+        if (auth?.connectionError == true) Text(l.authOffline),
+        if (auth != null && auth!.userId == null) ...[
+          FilledButton.icon(
+            key: const ValueKey('profile-sign-in'),
+            onPressed: () => Navigator.of(context).push<void>(
+              MaterialPageRoute(
+                builder: (_) => SignInScreen(
+                  auth: auth!,
+                  locale: locale,
+                  onLanguageChanged: onLanguageChanged,
+                ),
+              ),
+            ),
+            icon: const Icon(Icons.login),
+            label: Text(l.signIn),
           ),
           const SizedBox(height: 18),
         ],
-        if (auth != null) ...[
+        if (auth?.userId != null) ...[
           OutlinedButton.icon(
             key: const ValueKey('profile-sign-out'),
             onPressed: () async {
@@ -145,11 +155,7 @@ class ProfileScreen extends StatelessWidget {
         Card(
           child: Column(
             children: [
-              ListTile(
-                leading: const Icon(Icons.flag_outlined),
-                title: Text(l.weeklyTarget),
-                subtitle: Text(l.fiveDays),
-              ),
+              ActivityGoal(metrics: store.activityMetrics),
               const Divider(height: 1),
               ListTile(
                 leading: const Icon(Icons.notifications_none),

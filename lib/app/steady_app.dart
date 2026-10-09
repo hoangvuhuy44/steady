@@ -1,12 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../auth/auth_controller.dart';
-import '../auth/auth_gate.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/formatters.dart';
 import '../screens/check_in_screen.dart';
 import '../screens/home_screen.dart';
-import '../screens/meals_screen.dart';
+import '../screens/recipes_screen.dart';
 import '../screens/profile_screen.dart';
 import '../screens/rewards_screen.dart';
 import '../state/language_preferences.dart';
@@ -20,51 +21,70 @@ class SteadyApp extends StatefulWidget {
     this.languagePreferences,
     this.store,
     this.auth,
-    this.requireAuthentication = true,
   });
   final Locale? initialLocale;
   final LanguagePreferences? languagePreferences;
   final SteadyStore? store;
   final AuthController? auth;
 
-  /// Explicit opt-out for isolated UI previews and legacy component tests only.
-  final bool requireAuthentication;
   @override
   State<SteadyApp> createState() => _SteadyAppState();
 }
 
-class _SteadyAppState extends State<SteadyApp> {
+class _SteadyAppState extends State<SteadyApp> with WidgetsBindingObserver {
   late final SteadyStore store = widget.store ?? SteadyStore();
   late final AuthController auth = widget.auth ?? UnconfiguredAuthController();
   late final LanguagePreferences preferences =
       widget.languagePreferences ?? LanguagePreferences();
   late Locale? locale = widget.initialLocale;
+  final navigatorKey = GlobalKey<NavigatorState>();
   final messengerKey = GlobalKey<ScaffoldMessengerState>();
   Future<void> pendingSave = Future.value();
   int selectedIndex = 0;
   late int sessionRevision;
+  Timer? dayRefreshTimer;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    scheduleDayRefresh();
     sessionRevision = auth.sessionRevision;
-    auth.addListener(resetNavigationForSession);
-    store.addListener(openGeneratedPlan);
+    auth.addListener(syncSession);
+    unawaited(store.setActivityUser(auth.userId));
   }
 
-  bool wasScreeningRequired = false;
-  void openGeneratedPlan() {
-    final finished = wasScreeningRequired && !store.screeningRequired;
-    wasScreeningRequired = store.screeningRequired;
-    if (finished && store.nutritionProfile?.strategy != null && mounted) {
-      setState(() => selectedIndex = 2);
+  void scheduleDayRefresh() {
+    dayRefreshTimer?.cancel();
+    dayRefreshTimer = Timer(store.timeUntilNextDay, () {
+      store.refreshActivityDate();
+      scheduleDayRefresh();
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      store.refreshActivityDate();
+      scheduleDayRefresh();
+    } else {
+      dayRefreshTimer?.cancel();
     }
   }
 
-  void resetNavigationForSession() {
+  void syncSession() {
     if (sessionRevision != auth.sessionRevision) {
       sessionRevision = auth.sessionRevision;
-      setState(() => selectedIndex = 0);
+      store.beginSession();
+      unawaited(store.setActivityUser(auth.userId));
+      setState(() {});
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          navigatorKey.currentState?.popUntil((route) => route.isFirst);
+        }
+      });
+    } else {
+      setState(() {});
     }
   }
 
@@ -87,8 +107,9 @@ class _SteadyAppState extends State<SteadyApp> {
 
   @override
   void dispose() {
-    auth.removeListener(resetNavigationForSession);
-    store.removeListener(openGeneratedPlan);
+    dayRefreshTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    auth.removeListener(syncSession);
     if (widget.store == null) store.dispose();
     if (widget.auth == null) auth.dispose();
     super.dispose();
@@ -104,15 +125,8 @@ class _SteadyAppState extends State<SteadyApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       scaffoldMessengerKey: messengerKey,
-      home: widget.requireAuthentication
-          ? AuthGate(
-              auth: auth,
-              store: store,
-              locale: locale,
-              onLanguageChanged: changeLanguage,
-              child: appContent(),
-            )
-          : appContent(),
+      navigatorKey: navigatorKey,
+      home: appContent(),
     );
   }
 
@@ -129,13 +143,13 @@ class _SteadyAppState extends State<SteadyApp> {
           store: store,
           onSaved: () => setState(() => selectedIndex = 0),
         ),
-        MealsScreen(store: store),
+        const RecipesScreen(),
         RewardsScreen(store: store),
         ProfileScreen(
           store: store,
           locale: locale,
           onLanguageChanged: changeLanguage,
-          auth: widget.requireAuthentication ? auth : null,
+          auth: auth,
         ),
       ];
       return Scaffold(

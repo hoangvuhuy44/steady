@@ -10,6 +10,23 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
+  String get activityLoading => 'Đang tải nhật ký vận động…';
+
+  @override
+  String get activitySaving => 'Đang lưu…';
+
+  @override
+  String get activityLoadError =>
+      'Không thể tải nhật ký vận động. Dữ liệu đã lưu được giữ nguyên. Hãy thử lại trước khi ghi nhận hoạt động.';
+
+  @override
+  String get activitySaveError =>
+      'Không thể lưu hoạt động. Các lựa chọn được giữ nguyên. Nhấn Lưu hoạt động để thử lại.';
+
+  @override
+  String get activityRetry => 'Thử lại';
+
+  @override
   String get screeningNext => 'Tiếp tục';
 
   @override
@@ -39,7 +56,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get authIntro =>
-      'Đăng nhập để sàng lọc sức khoẻ và bắt đầu xây dựng thói quen cùng Steady.';
+      'Đăng nhập để dùng tài khoản. Bạn có thể huỷ và tiếp tục check-in với tư cách khách.';
 
   @override
   String get email => 'Email';
@@ -68,11 +85,11 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get authConfiguration =>
-      'Steady chưa được kết nối với dịch vụ đăng nhập. Cần thiết lập kết nối trước khi đăng nhập.';
+      'Dịch vụ đăng nhập chưa được cấu hình. Bạn vẫn có thể dùng Home và check-in với tư cách khách.';
 
   @override
   String get authInitializationError =>
-      'Không thể khởi động dịch vụ đăng nhập. Kiểm tra kết nối và mở lại Steady để thử lại.';
+      'Không thể khởi động dịch vụ đăng nhập. Bạn vẫn có thể dùng Home và check-in, hoặc mở lại Steady để thử đăng nhập.';
 
   @override
   String get continueWithGoogle => 'Tiếp tục với Google';
@@ -373,7 +390,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profile => 'Hồ sơ';
 
   @override
-  String get meals => 'Bữa ăn';
+  String get meals => 'Món ăn';
 
   @override
   String get movedToday => 'Hôm nay bạn đã vận động.';
@@ -402,7 +419,28 @@ class AppLocalizationsVi extends AppLocalizations {
   String get logAnother => 'Thêm hoạt động';
 
   @override
-  String get thisWeek => '7 ngày gần nhất';
+  String get thisWeek => '7 ngày gần nhất, gồm hôm nay';
+
+  @override
+  String get activeDays => 'Ngày vận động';
+
+  @override
+  String get totalMovementMinutes => 'Tổng phút vận động';
+
+  @override
+  String get activityTargetReached => 'Đã đạt mục tiêu';
+
+  @override
+  String get activityTargetInProgress => 'Tiếp tục nhé';
+
+  @override
+  String activeDaysProgress(int count) {
+    return '$count/5 ngày vận động';
+  }
+
+  @override
+  String get streakRule =>
+      'Streak tính các ngày vận động liên tiếp. Nếu hôm nay chưa ghi nhận, chuỗi kết thúc hôm qua được giữ đến hết hôm nay. Bỏ lỡ trọn một ngày sẽ đặt lại chuỗi. Mục tiêu 5/7 tính số ngày vận động, không phụ thuộc streak.';
 
   @override
   String get dayStreak => 'ngày liên tiếp';
@@ -483,7 +521,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get weeklyTarget => 'Mục tiêu tuần';
 
   @override
-  String get fiveDays => '5 ngày vận động';
+  String get fiveDays => '5 ngày hoạt động trong 7 ngày gần nhất';
 
   @override
   String get reminders => 'Nhắc nhở';
@@ -862,8 +900,8 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String activitySaved(String activity, int points) {
-    return 'Đã ghi nhận $activity. +$points điểm';
+  String activitySaved(String activity, int minutes) {
+    return 'Đã ghi nhận $activity · $minutes phút';
   }
 
   @override
@@ -1277,7 +1315,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get ketoEggRecipe =>
-      'Lu?c tr?ng ch?n k?. ?n c?ng b? qu? v? d?a chu?t, tr?n rau v?i to?n b? l??ng d?u ghi trong nguy?n li?u; kh?ng th?m mu?i.';
+      'Luộc trứng chín kỹ. Ăn cùng bơ quả và dưa chuột, trộn rau với toàn bộ lượng dầu ghi trong nguyên liệu; không thêm muối.';
 
   @override
   String get ketoChickenName => 'Salad gà và bơ';
@@ -1322,13 +1360,84 @@ class AppLocalizationsVi extends AppLocalizations {
       'Luộc trứng chín kỹ. Ăn cùng dưa chuột rửa sạch; không thêm muối.';
 
   @override
-  String get paleoChickenName => 'G?, khoai lang v? rau c?';
+  String get paleoChickenName => 'Gà, khoai lang và rau củ';
 
   @override
   String get paleoChickenRecipe =>
-      'N?u ch?n k? g?, h?p khoai v? rau. D?ng to?n b? l??ng d?u ghi trong nguy?n li?u ?? tr?n rau; kh?ng th?m mu?i.';
+      'Nấu chín kỹ gà, hấp khoai và rau. Dùng toàn bộ lượng dầu ghi trong nguyên liệu để trộn rau; không thêm muối.';
 
   @override
   String get authInvalidConfiguration =>
       'Cấu hình dịch vụ đăng nhập không hợp lệ hoặc key không thuộc project đang dùng. Hãy cập nhật cấu hình rồi khởi động lại ứng dụng.';
+
+  @override
+  String get mealsSetup => 'Thiết lập bữa ăn';
+
+  @override
+  String get guest => 'Khách';
+
+  @override
+  String get localActivityStorage =>
+      'Nhật ký được lưu trên thiết bị, tách riêng khách và từng tài khoản. Chưa có sao lưu hoặc đồng bộ server.';
+
+  @override
+  String get recipesTitle => 'Gợi ý món ăn';
+
+  @override
+  String get recipesIntro =>
+      'Xem công thức để nấu ăn hằng ngày. Không cần kê khai sức khoẻ hay đăng nhập.';
+
+  @override
+  String get recipesFilters => 'Bộ lọc công thức';
+
+  @override
+  String get recipesMealType => 'Loại bữa';
+
+  @override
+  String get recipesAll => 'Tất cả bữa';
+
+  @override
+  String get recipesCookingTime => 'Thời gian nấu ước tính';
+
+  @override
+  String get recipesAnyTime => 'Không giới hạn';
+
+  @override
+  String recipesWithinMinutes(int count) {
+    return 'Tối đa $count phút';
+  }
+
+  @override
+  String recipesEstimatedMinutes(int count) {
+    return 'Khoảng $count phút';
+  }
+
+  @override
+  String get recipesAllergyFilter => 'Tránh nhãn dị ứng';
+
+  @override
+  String get recipesAllergyLimit =>
+      'Bộ lọc chỉ loại công thức có nhãn đã chọn. Nhãn có thể chưa đầy đủ, không kiểm tra nguyên liệu thay thế, nước sốt hay nhiễm chéo. Kết quả không được xác nhận an toàn với dị ứng. Hãy tự kiểm tra nguyên liệu và nhãn sản phẩm.';
+
+  @override
+  String get recipesAvoidIngredients => 'Nguyên liệu muốn tránh';
+
+  @override
+  String get recipesClearFilters => 'Xoá bộ lọc';
+
+  @override
+  String recipesResultCount(int count) {
+    return '$count công thức';
+  }
+
+  @override
+  String get recipesEmptyTitle => 'Không có công thức phù hợp';
+
+  @override
+  String get recipesEmptyHelp =>
+      'Các bộ lọc của bạn vẫn được giữ. Đổi lựa chọn hoặc xoá bộ lọc để xem thêm công thức.';
+
+  @override
+  String get recipesSampleQuantities =>
+      'Định lượng thuộc công thức mẫu, không phải khuyến nghị khẩu phần cá nhân. Đậu ghi “chín” dùng khối lượng sau nấu; các nguyên liệu khác dùng khối lượng phần ăn được trước khi nấu.';
 }

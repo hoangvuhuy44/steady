@@ -98,6 +98,36 @@ abstract class AppLocalizations {
     Locale('vi'),
   ];
 
+  /// No description provided for @activityLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading activity history…'**
+  String get activityLoading;
+
+  /// No description provided for @activitySaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get activitySaving;
+
+  /// No description provided for @activityLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load activity history. Your saved data is kept. Try again before logging an activity.'**
+  String get activityLoadError;
+
+  /// No description provided for @activitySaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save this activity. Your choices are kept. Tap Save activity to try again.'**
+  String get activitySaveError;
+
+  /// No description provided for @activityRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get activityRetry;
+
   /// No description provided for @screeningNext.
   ///
   /// In en, this message translates to:
@@ -149,7 +179,7 @@ abstract class AppLocalizations {
   /// No description provided for @authIntro.
   ///
   /// In en, this message translates to:
-  /// **'Sign in to start your health screening and build your Steady routine.'**
+  /// **'Sign in to use your account. You can cancel and continue checking in as a guest.'**
   String get authIntro;
 
   /// No description provided for @email.
@@ -197,13 +227,13 @@ abstract class AppLocalizations {
   /// No description provided for @authConfiguration.
   ///
   /// In en, this message translates to:
-  /// **'Steady has not been connected to its sign-in service. Set up the connection before signing in.'**
+  /// **'Sign-in is not configured. Home and check-ins are available as a guest.'**
   String get authConfiguration;
 
   /// No description provided for @authInitializationError.
   ///
   /// In en, this message translates to:
-  /// **'Could not start the sign-in service. Check your connection and restart Steady to try again.'**
+  /// **'Could not start sign-in. You can continue using Home and check-ins, or restart Steady to retry sign-in.'**
   String get authInitializationError;
 
   /// No description provided for @continueWithGoogle.
@@ -737,7 +767,7 @@ abstract class AppLocalizations {
   /// No description provided for @meals.
   ///
   /// In en, this message translates to:
-  /// **'Meals'**
+  /// **'Recipes'**
   String get meals;
 
   /// No description provided for @movedToday.
@@ -791,8 +821,44 @@ abstract class AppLocalizations {
   /// No description provided for @thisWeek.
   ///
   /// In en, this message translates to:
-  /// **'Last 7 days'**
+  /// **'Last 7 days, including today'**
   String get thisWeek;
+
+  /// No description provided for @activeDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Active days'**
+  String get activeDays;
+
+  /// No description provided for @totalMovementMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Total active minutes'**
+  String get totalMovementMinutes;
+
+  /// No description provided for @activityTargetReached.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal reached'**
+  String get activityTargetReached;
+
+  /// No description provided for @activityTargetInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep going'**
+  String get activityTargetInProgress;
+
+  /// No description provided for @activeDaysProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}/5 active days'**
+  String activeDaysProgress(int count);
+
+  /// No description provided for @streakRule.
+  ///
+  /// In en, this message translates to:
+  /// **'A streak counts consecutive active days. If you have not logged today, a streak ending yesterday stays until the end of today. Missing a full day resets it. The 5/7 goal counts active days, regardless of your streak.'**
+  String get streakRule;
 
   /// No description provided for @dayStreak.
   ///
@@ -947,7 +1013,7 @@ abstract class AppLocalizations {
   /// No description provided for @fiveDays.
   ///
   /// In en, this message translates to:
-  /// **'5 active days'**
+  /// **'5 active days in the last 7 days'**
   String get fiveDays;
 
   /// No description provided for @reminders.
@@ -1661,8 +1727,8 @@ abstract class AppLocalizations {
   /// No description provided for @activitySaved.
   ///
   /// In en, this message translates to:
-  /// **'{activity} logged. +{points} points'**
-  String activitySaved(String activity, int points);
+  /// **'{activity} logged · {minutes} minutes'**
+  String activitySaved(String activity, int minutes);
 
   /// No description provided for @rangeError.
   ///
@@ -2491,6 +2557,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The sign-in service configuration is invalid, or the key belongs to a different project. Update the configuration and restart the app.'**
   String get authInvalidConfiguration;
+
+  /// No description provided for @mealsSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up meals'**
+  String get mealsSetup;
+
+  /// No description provided for @guest.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest'**
+  String get guest;
+
+  /// No description provided for @localActivityStorage.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity logs are saved on this device, separately for guests and each account. No server backup or sync is available.'**
+  String get localActivityStorage;
+
+  /// No description provided for @recipesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipe ideas'**
+  String get recipesTitle;
+
+  /// No description provided for @recipesIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse recipes for everyday cooking. No health details or sign-in needed.'**
+  String get recipesIntro;
+
+  /// No description provided for @recipesFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipe filters'**
+  String get recipesFilters;
+
+  /// No description provided for @recipesMealType.
+  ///
+  /// In en, this message translates to:
+  /// **'Meal type'**
+  String get recipesMealType;
+
+  /// No description provided for @recipesAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All meals'**
+  String get recipesAll;
+
+  /// No description provided for @recipesCookingTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated cooking time'**
+  String get recipesCookingTime;
+
+  /// No description provided for @recipesAnyTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Any time'**
+  String get recipesAnyTime;
+
+  /// No description provided for @recipesWithinMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to {count} min'**
+  String recipesWithinMinutes(int count);
+
+  /// No description provided for @recipesEstimatedMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'About {count} min'**
+  String recipesEstimatedMinutes(int count);
+
+  /// No description provided for @recipesAllergyFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Avoid allergy labels'**
+  String get recipesAllergyFilter;
+
+  /// No description provided for @recipesAllergyLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'This filter only excludes recipes with the selected labels. Labels may be incomplete and do not cover substitutions, sauces or cross-contact. Results are not confirmed safe for allergies. Check ingredients and product labels yourself.'**
+  String get recipesAllergyLimit;
+
+  /// No description provided for @recipesAvoidIngredients.
+  ///
+  /// In en, this message translates to:
+  /// **'Ingredients to avoid'**
+  String get recipesAvoidIngredients;
+
+  /// No description provided for @recipesClearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get recipesClearFilters;
+
+  /// No description provided for @recipesResultCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} recipes'**
+  String recipesResultCount(int count);
+
+  /// No description provided for @recipesEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching recipes'**
+  String get recipesEmptyTitle;
+
+  /// No description provided for @recipesEmptyHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Your filters are kept. Change a selection or clear the filters to browse more recipes.'**
+  String get recipesEmptyHelp;
+
+  /// No description provided for @recipesSampleQuantities.
+  ///
+  /// In en, this message translates to:
+  /// **'Amounts belong to this sample recipe, not a personal serving recommendation. Beans labelled “cooked” use cooked weight; other amounts refer to raw edible ingredients.'**
+  String get recipesSampleQuantities;
 }
 
 class _AppLocalizationsDelegate

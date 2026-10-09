@@ -11,6 +11,10 @@ import 'package:supabase_flutter/supabase_flutter.dart'
 
 import 'health_screening_test.dart' show screening, mealProfile;
 import 'widget_test.dart' show tapVisible;
+import 'helpers/fake_activity_repository.dart';
+import 'helpers/research_meals_harness.dart';
+
+import 'package:steady/research/research_meals_screen.dart';
 
 class FakeAuth extends AuthController {
   String? id;
@@ -75,24 +79,93 @@ Future<void> enterScreeningValue(
   await tester.pumpAndSettle();
 }
 
+Future<void> openSignIn(WidgetTester tester) async {
+  await tester.tap(find.byType(NavigationDestination).at(4));
+  await tester.pumpAndSettle();
+  await tapVisible(tester, find.byKey(const ValueKey('profile-sign-in')));
+}
+
+Future<void> openMealsSetup(WidgetTester tester) async {
+  // Research is explicitly mounted by tests, never through the MVP UI.
+  if (find.byType(NavigationBar).evaluate().isNotEmpty) {
+    final store = tester.widget<SteadyApp>(find.byType(SteadyApp)).store!;
+    final context = tester.element(find.byType(NavigationBar));
+    Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          body: SafeArea(
+            child: AnimatedBuilder(
+              animation: store,
+              builder: (_, _) => ResearchMealsScreen(store: store),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+  }
+  await tapVisible(tester, find.byKey(const ValueKey('meals-setup')));
+}
+
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
-  testWidgets('missing configuration cannot open home', (tester) async {
-    await tester.pumpWidget(const SteadyApp(initialLocale: Locale('vi')));
+  testWidgets(
+    'missing configuration opens Home and optional sign-in can cancel',
+    (tester) async {
+      final store = SteadyStore(activityRepository: FakeActivityRepository());
+      addTearDown(store.dispose);
+      await tester.pumpWidget(
+        SteadyApp(store: store, initialLocale: const Locale('en')),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(NavigationBar), findsOneWidget);
+      expect(find.byKey(const ValueKey('screening-age')), findsNothing);
+      expect(store.canLogActivity, isTrue);
+      await openSignIn(tester);
+      expect(find.byKey(const ValueKey('auth-unconfigured')), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.byKey(const ValueKey('auth-submit')),
+        250,
+        scrollable: find.byType(Scrollable).hitTestable().first,
+      );
+      expect(
+        tester
+            .widget<FilledButton>(find.byKey(const ValueKey('auth-submit')))
+            .onPressed,
+        isNull,
+      );
+      await tester.tap(find.byKey(const ValueKey('auth-cancel')));
+      await tester.pumpAndSettle();
+      expect(find.byType(NavigationBar), findsOneWidget);
+      expect(store.canLogActivity, isTrue);
+    },
+  );
+  testWidgets('auth initialization failure still permits guest check-ins', (
+    tester,
+  ) async {
+    final store = SteadyStore(activityRepository: FakeActivityRepository());
+    final auth = UnconfiguredAuthController(initializationFailed: true);
+    addTearDown(store.dispose);
+    addTearDown(auth.dispose);
+    await tester.pumpWidget(
+      SteadyApp(auth: auth, store: store, initialLocale: const Locale('en')),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+      0,
+    );
+    expect(store.canLogActivity, isTrue);
+    await tester.tap(find.byType(NavigationDestination).at(1));
+    await tester.pumpAndSettle();
+    await tapVisible(tester, find.byKey(const ValueKey('activity-save')));
+    expect(store.logs, hasLength(1));
+    await openSignIn(tester);
     expect(find.byKey(const ValueKey('auth-unconfigured')), findsOneWidget);
-    expect(find.byType(NavigationBar), findsNothing);
-    expect(
-      tester
-          .widget<FilledButton>(find.byKey(const ValueKey('auth-submit')))
-          .onPressed,
-      isNull,
-    );
-    expect(
-      tester
-          .widget<OutlinedButton>(find.byKey(const ValueKey('auth-google')))
-          .onPressed,
-      isNull,
-    );
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(store.logs, hasLength(1));
+    expect(store.canLogActivity, isTrue);
   });
   testWidgets('email remains available when social providers are disabled', (
     tester,
@@ -100,8 +173,18 @@ void main() {
     final auth = FakeAuth();
     addTearDown(auth.dispose);
     await tester.pumpWidget(
-      SteadyApp(auth: auth, initialLocale: const Locale('en')),
+      SteadyApp(
+        auth: auth,
+        store: SteadyStore(activityRepository: FakeActivityRepository()),
+        initialLocale: const Locale('en'),
+      ),
     );
+    await tester.pumpAndSettle();
+    if (auth.userId == null) {
+      await openSignIn(tester);
+    } else {
+      await openMealsSetup(tester);
+    }
     for (final provider in ['google', 'facebook']) {
       expect(
         tester
@@ -119,13 +202,23 @@ void main() {
   });
   for (final provider in SocialAuthProvider.values) {
     testWidgets(
-      '${provider.name} launches browser without bypassing screening',
+      '${provider.name} launches browser and keeps Profile on sign-in',
       (tester) async {
         final auth = FakeAuth()..providers = {provider};
         addTearDown(auth.dispose);
         await tester.pumpWidget(
-          SteadyApp(auth: auth, initialLocale: const Locale('en')),
+          SteadyApp(
+            auth: auth,
+            store: SteadyStore(activityRepository: FakeActivityRepository()),
+            initialLocale: const Locale('en'),
+          ),
         );
+        await tester.pumpAndSettle();
+        if (auth.userId == null) {
+          await openSignIn(tester);
+        } else {
+          await openMealsSetup(tester);
+        }
         await tapVisible(tester, find.byKey(ValueKey('auth-${provider.name}')));
         expect(auth.requestedProvider, provider);
         expect(find.byKey(const ValueKey('auth-browser')), findsOneWidget);
@@ -133,8 +226,8 @@ void main() {
         expect(find.byType(NavigationBar), findsNothing);
         auth.login('social-user');
         await tester.pumpAndSettle();
-        expect(find.byKey(const ValueKey('screening-age')), findsOneWidget);
-        expect(find.byType(NavigationBar), findsNothing);
+        expect(find.byKey(const ValueKey('screening-age')), findsNothing);
+        expect(find.byType(NavigationBar), findsOneWidget);
       },
     );
   }
@@ -146,8 +239,18 @@ void main() {
       ..fail = true;
     addTearDown(auth.dispose);
     await tester.pumpWidget(
-      SteadyApp(auth: auth, initialLocale: const Locale('en')),
+      SteadyApp(
+        auth: auth,
+        store: SteadyStore(activityRepository: FakeActivityRepository()),
+        initialLocale: const Locale('en'),
+      ),
     );
+    await tester.pumpAndSettle();
+    if (auth.userId == null) {
+      await openSignIn(tester);
+    } else {
+      await openMealsSetup(tester);
+    }
     await tapVisible(tester, find.byKey(const ValueKey('auth-google')));
     expect(find.byKey(const ValueKey('auth-browser')), findsNothing);
     expect(find.byKey(const ValueKey('auth-error')), findsOneWidget);
@@ -168,8 +271,18 @@ void main() {
     final auth = FakeAuth();
     addTearDown(auth.dispose);
     await tester.pumpWidget(
-      SteadyApp(auth: auth, initialLocale: const Locale('en')),
+      SteadyApp(
+        auth: auth,
+        store: SteadyStore(activityRepository: FakeActivityRepository()),
+        initialLocale: const Locale('en'),
+      ),
     );
+    await tester.pumpAndSettle();
+    if (auth.userId == null) {
+      await openSignIn(tester);
+    } else {
+      await openMealsSetup(tester);
+    }
     await tester.enterText(
       find.byKey(const ValueKey('auth-email')),
       'user@example.com',
@@ -205,8 +318,18 @@ void main() {
         final auth = FakeAuth();
         addTearDown(auth.dispose);
         await tester.pumpWidget(
-          SteadyApp(auth: auth, initialLocale: Locale(code)),
+          SteadyApp(
+            auth: auth,
+            store: SteadyStore(activityRepository: FakeActivityRepository()),
+            initialLocale: Locale(code),
+          ),
         );
+        await tester.pumpAndSettle();
+        if (auth.userId == null) {
+          await openSignIn(tester);
+        } else {
+          await openMealsSetup(tester);
+        }
         await tester.enterText(
           find.byKey(const ValueKey('auth-email')),
           'user@example.com',
@@ -257,20 +380,40 @@ void main() {
       final auth = FakeAuth()..providers = SocialAuthProvider.values.toSet();
       addTearDown(auth.dispose);
       await tester.pumpWidget(
-        SteadyApp(auth: auth, initialLocale: Locale(code)),
+        SteadyApp(
+          auth: auth,
+          store: SteadyStore(activityRepository: FakeActivityRepository()),
+          initialLocale: Locale(code),
+        ),
       );
+      await tester.pumpAndSettle();
+      if (auth.userId == null) {
+        await openSignIn(tester);
+      } else {
+        await openMealsSetup(tester);
+      }
       await tapVisible(tester, find.byKey(const ValueKey('auth-submit')));
       expect(tester.takeException(), isNull);
     });
   }
   testWidgets(
-    'login validates, handles failure, and gates home behind screening',
+    'login validates, handles failure, and keeps Profile without screening',
     (tester) async {
       final auth = FakeAuth();
       addTearDown(auth.dispose);
       await tester.pumpWidget(
-        SteadyApp(auth: auth, initialLocale: const Locale('en')),
+        SteadyApp(
+          auth: auth,
+          store: SteadyStore(activityRepository: FakeActivityRepository()),
+          initialLocale: const Locale('en'),
+        ),
       );
+      await tester.pumpAndSettle();
+      if (auth.userId == null) {
+        await openSignIn(tester);
+      } else {
+        await openMealsSetup(tester);
+      }
       await tapVisible(tester, find.byKey(const ValueKey('auth-submit')));
       expect(find.text('Enter a valid email address.'), findsOneWidget);
       await tester.enterText(
@@ -291,22 +434,28 @@ void main() {
       );
       auth.fail = false;
       await tapVisible(tester, find.byKey(const ValueKey('auth-submit')));
-      expect(find.byKey(const ValueKey('screening-age')), findsOneWidget);
-      expect(find.byType(NavigationBar), findsNothing);
-      await tapVisible(tester, find.byKey(const ValueKey('screening-next')));
-      expect(find.text('Enter a value from 1 to 120'), findsOneWidget);
+      expect(find.byKey(const ValueKey('screening-age')), findsNothing);
+      expect(find.byType(NavigationBar), findsOneWidget);
+      expect(
+        tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+        4,
+      );
     },
   );
   testWidgets(
     'five screening steps require consent and generate a personalized menu',
     (tester) async {
       final auth = FakeAuth()..login('first');
-      final store = SteadyStore();
+      final store = SteadyStore(activityRepository: FakeActivityRepository());
       addTearDown(auth.dispose);
       addTearDown(store.dispose);
-      await tester.pumpWidget(
-        SteadyApp(auth: auth, store: store, initialLocale: const Locale('en')),
-      );
+      await tester.pumpWidget(ResearchMealsHarness(store: store));
+      await tester.pumpAndSettle();
+      if (auth.userId == null) {
+        await openSignIn(tester);
+      } else {
+        await openMealsSetup(tester);
+      }
       await tester.enterText(find.byKey(const ValueKey('screening-age')), '35');
       await tester.enterText(
         find.byKey(const ValueKey('screening-height')),
@@ -346,7 +495,7 @@ void main() {
       await tapVisible(tester, find.byKey(const ValueKey('screening-next')));
       expect(store.healthScreening!.weight, 75.5);
       expect(store.healthScreening!.bodyFat, 20);
-      expect(find.byType(NavigationBar), findsOneWidget);
+      expect(find.byType(ResearchMealsScreen), findsOneWidget);
       expect(find.text('Your 7-day plan'), findsOneWidget);
       expect(store.mealPlan, hasLength(7));
       expect(store.nutritionProfile!.exclusions, contains('fish'));
@@ -363,15 +512,18 @@ void main() {
     tester,
   ) async {
     final auth = FakeAuth()..login('first');
-    final store = SteadyStore();
+    final store = SteadyStore(activityRepository: FakeActivityRepository());
     addTearDown(auth.dispose);
     addTearDown(store.dispose);
-    await tester.pumpWidget(
-      SteadyApp(auth: auth, store: store, initialLocale: const Locale('en')),
-    );
+    await tester.pumpWidget(ResearchMealsHarness(store: store));
+    await tester.pumpAndSettle();
+    if (auth.userId == null) {
+      await openSignIn(tester);
+    } else {
+      await openMealsSetup(tester);
+    }
     await tapVisible(tester, find.byKey(const ValueKey('screening-decline')));
-    expect(find.byType(NavigationBar), findsOneWidget);
-    await tester.tap(find.text('Meals'));
+    expect(find.byType(ResearchMealsScreen), findsOneWidget);
     await tester.pumpAndSettle();
     expect(find.text('Meal planning is paused'), findsWidgets);
     expect(find.byKey(const ValueKey('meal-next')), findsNothing);
@@ -380,12 +532,13 @@ void main() {
     'refresh preserves screening; new session and account switch clear it',
     (tester) async {
       final auth = FakeAuth()..login('first');
-      final store = SteadyStore();
+      final store = SteadyStore(activityRepository: FakeActivityRepository());
       addTearDown(auth.dispose);
       addTearDown(store.dispose);
       await tester.pumpWidget(
         SteadyApp(auth: auth, store: store, initialLocale: const Locale('en')),
       );
+      await tester.pumpAndSettle();
       store.completeScreening(screening());
       await tester.pumpAndSettle();
       store.setNutritionProfile(mealProfile);
@@ -399,18 +552,20 @@ void main() {
       expect(store.mealPlan, isEmpty);
       auth.login('second');
       await tester.pumpAndSettle();
-      expect(find.byKey(const ValueKey('screening-age')), findsOneWidget);
+      expect(find.byKey(const ValueKey('screening-age')), findsNothing);
       store.completeScreening(
         screening(conditions: {HealthCondition.kidneyDisease}),
       );
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Meals'));
+      await tester.tap(find.text('Recipes'));
       await tester.pumpAndSettle();
-      expect(find.text('Professional assessment needed'), findsOneWidget);
+      expect(find.text('Recipe ideas'), findsOneWidget);
+      expect(store.mealPlanningAllowed, isFalse);
+      expect(store.mealPlan, isEmpty);
       auth.login('third');
       await tester.pumpAndSettle();
       expect(store.healthScreening, isNull);
-      expect(find.byKey(const ValueKey('screening-age')), findsOneWidget);
+      expect(find.byKey(const ValueKey('screening-age')), findsNothing);
       expect(tester.takeException(), isNull);
     },
   );
@@ -420,8 +575,18 @@ void main() {
       final auth = FakeAuth();
       addTearDown(auth.dispose);
       await tester.pumpWidget(
-        SteadyApp(auth: auth, initialLocale: const Locale('en')),
+        SteadyApp(
+          auth: auth,
+          store: SteadyStore(activityRepository: FakeActivityRepository()),
+          initialLocale: const Locale('en'),
+        ),
       );
+      await tester.pumpAndSettle();
+      if (auth.userId == null) {
+        await openSignIn(tester);
+      } else {
+        await openMealsSetup(tester);
+      }
       await tapVisible(tester, find.text('New to Steady? Create an account'));
       await tester.enterText(
         find.byKey(const ValueKey('auth-email')),
@@ -454,8 +619,17 @@ void main() {
       final auth = FakeAuth()..login('first');
       addTearDown(auth.dispose);
       await tester.pumpWidget(
-        SteadyApp(auth: auth, initialLocale: Locale(code)),
+        ResearchMealsHarness(
+          store: SteadyStore(activityRepository: FakeActivityRepository()),
+          locale: Locale(code),
+        ),
       );
+      await tester.pumpAndSettle();
+      if (auth.userId == null) {
+        await openSignIn(tester);
+      } else {
+        await openMealsSetup(tester);
+      }
       await enterScreeningValue(tester, 'age', '35');
       await enterScreeningValue(tester, 'height', '170');
       await enterScreeningValue(tester, 'weight', '75');

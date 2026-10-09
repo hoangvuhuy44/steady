@@ -30,7 +30,7 @@ Future<void> main() async {
       );
     } catch (error) {
       debugPrint('Supabase initialization failed (${error.runtimeType}).');
-      // Fail closed. Configuration/network failures never bypass sign-in.
+      // Local Home and check-ins remain available without the auth service.
       auth = UnconfiguredAuthController(initializationFailed: true);
     }
   }

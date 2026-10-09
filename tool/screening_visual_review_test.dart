@@ -10,9 +10,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:steady/app/steady_app.dart';
 import 'package:steady/auth/auth_controller.dart';
 import 'package:steady/nutrition/nutrition_strategy.dart';
+import 'package:steady/state/steady_store.dart';
+
+import '../test/helpers/fake_activity_repository.dart';
 
 import '../test/auth_screening_widget_test.dart'
-    show FakeAuth, enterScreeningValue;
+    show FakeAuth, enterScreeningValue, openSignIn, openMealsSetup;
 import '../test/widget_test.dart' show tapVisible;
 
 void main() {
@@ -42,6 +45,7 @@ void main() {
           child: SteadyApp(
             key: UniqueKey(),
             auth: auth,
+            store: SteadyStore(activityRepository: FakeActivityRepository()),
             initialLocale: Locale(code),
           ),
         ),
@@ -61,9 +65,12 @@ void main() {
         });
       }
 
+      await tester.pumpAndSettle();
+      await openSignIn(tester);
       await capture('sign-in');
       auth.login('preview');
       await tester.pumpAndSettle();
+      await openMealsSetup(tester);
       await enterScreeningValue(tester, 'age', '35');
       await enterScreeningValue(tester, 'height', '170');
       await enterScreeningValue(tester, 'weight', '75');
