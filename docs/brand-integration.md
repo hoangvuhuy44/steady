@@ -149,12 +149,17 @@ Final verification on 2026-10-10 (Flutter 3.47.5 / Dart 3.13.4, Windows):
 | `dart format` | Passed |
 | `flutter analyze --no-pub` | Passed, no issues |
 | `flutter test --no-pub` | Passed, 137 tests, 1 pre-existing browser-only skip |
+| Separate `--platform chrome test/web_activity_widget_test.dart` | Inconclusive: headless Chrome launched, runner stayed at `loading` for several minutes without executing the test; canceled |
 | Real-font responsive/contrast/motion checks | Passed in full suite |
 | `flutter test tool/brand_visual_review_test.dart --no-pub` | Passed; 14 rendered snapshots |
 | `flutter build web --no-pub` | Passed; JS build and Wasm dry run succeeded |
 | Font cmap and source-file SHA-256 verification | Passed; Inter covers VI/EN; all 17 bundled source files byte-identical to ZIP |
 | Legacy colors / `ColorScheme.fromSeed` search in `lib/` | No matches |
 | `git diff --check` | Passed |
+
+The browser-only test was not counted as passed. Its guest save/remount behavior
+also has native widget/repository regression coverage, but the browser run still
+needs a working Flutter/Chrome test environment. This does not replace that run.
 
 Native
 iOS signing/device builds are unavailable on this Windows host. Android adaptive
