@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/formatters.dart';
 import '../models/activity_metrics.dart';
+import 'brand/steady_progress.dart';
 
 /// Shared goal wording and progress on Home and Profile.
 class ActivityGoal extends StatelessWidget {
@@ -13,7 +14,14 @@ class ActivityGoal extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = context.l10n;
     return ListTile(
-      leading: const Icon(Icons.flag_outlined),
+      leading: SteadyProgressRing(
+        value: (metrics.activeDays / ActivityMetrics.targetDays).clamp(0, 1),
+        semanticLabel: l.activeDaysProgress(metrics.activeDays),
+        child: Icon(
+          metrics.targetReached ? Icons.check_rounded : Icons.flag_outlined,
+          size: 20,
+        ),
+      ),
       title: Text(l.fiveDays),
       subtitle: Text(
         '${l.activeDaysProgress(metrics.activeDays)} · '

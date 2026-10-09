@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/steady_spacing.dart';
+
 import '../l10n/formatters.dart';
 
 import '../state/steady_store.dart';
@@ -7,6 +9,7 @@ import '../widgets/consistency_week.dart';
 import '../widgets/metric_card.dart';
 import '../widgets/activity_status.dart';
 import '../widgets/activity_goal.dart';
+import '../widgets/brand/steady_brand_header.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key, required this.store, required this.onCheckIn});
@@ -22,33 +25,26 @@ class HomeScreen extends StatelessWidget {
     final l = context.l10n;
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+      padding: SteadySpacing.screen,
       children: [
         ActivityStatus(store: store),
-        Text(
-          'Steady',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            color: colors.primary,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 0.4,
-          ),
-        ),
-        const SizedBox(height: 10),
+        const SteadyBrandHeader(),
+        const SizedBox(height: SteadySpacing.md),
         Text(
           metrics.checkedInToday ? l.movedToday : l.makeTodayCount,
           style: Theme.of(context).textTheme.headlineMedium
-              ?.copyWith(fontWeight: FontWeight.w900),
+              ?.copyWith(fontWeight: FontWeight.w700),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: SteadySpacing.sm),
         Text(
           metrics.checkedInToday ? l.consistencyMessage : l.movementMessage,
           style: Theme.of(context).textTheme.bodyLarge
               ?.copyWith(color: colors.onSurfaceVariant, height: 1.45),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: SteadySpacing.xl),
         Card(
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: SteadySpacing.card,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -72,7 +68,7 @@ class HomeScreen extends StatelessWidget {
                             : colors.onSecondaryContainer,
                       ),
                     ),
-                    const SizedBox(width: 14),
+                    const SizedBox(width: SteadySpacing.lg),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,9 +78,9 @@ class HomeScreen extends StatelessWidget {
                                 ? l.checkInComplete
                                 : l.noActivity,
                             style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.w800),
+                                ?.copyWith(fontWeight: FontWeight.w700),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: SteadySpacing.xs),
                           Text(
                             latest == null
                                 ? l.anyMovement
@@ -97,7 +93,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: SteadySpacing.lg),
                 FilledButton.icon(
                   onPressed: onCheckIn,
                   icon: Icon(
@@ -111,13 +107,13 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 22),
+        const SizedBox(height: SteadySpacing.xl),
         Text(
           l.thisWeek,
           style: Theme.of(context).textTheme.titleLarge
-              ?.copyWith(fontWeight: FontWeight.w800),
+              ?.copyWith(fontWeight: FontWeight.w700),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: SteadySpacing.md),
         Row(
           children: [
             MetricCard(
@@ -126,7 +122,7 @@ class HomeScreen extends StatelessWidget {
               value: '${metrics.activeDays}/7',
               label: l.activeDays,
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: SteadySpacing.md),
             MetricCard(
               key: const ValueKey('recent-active-minutes'),
               icon: Icons.timer_outlined,
@@ -135,19 +131,19 @@ class HomeScreen extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: SteadySpacing.lg),
         Card(child: ActivityGoal(metrics: metrics)),
-        const SizedBox(height: 12),
+        const SizedBox(height: SteadySpacing.md),
         Card(
           child: Padding(
-            padding: const EdgeInsets.all(18),
+            padding: SteadySpacing.card,
             child: ConsistencyWeek(metrics: metrics),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: SteadySpacing.lg),
         Card(
           child: Padding(
-            padding: const EdgeInsets.all(18),
+            padding: SteadySpacing.card,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -155,7 +151,7 @@ class HomeScreen extends StatelessWidget {
                   Icons.local_fire_department_outlined,
                   color: colors.primary,
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: SteadySpacing.md),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -164,7 +160,7 @@ class HomeScreen extends StatelessWidget {
                         '${metrics.streak} ${l.dayStreak}',
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: SteadySpacing.sm),
                       Text(
                         l.streakRule,
                         style: Theme.of(context).textTheme.bodyMedium

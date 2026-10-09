@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../theme/steady_spacing.dart';
+
 import '../auth/auth_controller.dart';
 import '../l10n/formatters.dart';
 import 'sign_in_screen.dart';
 import '../state/steady_store.dart';
 import '../widgets/activity_goal.dart';
+import '../widgets/brand/steady_section_header.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({
@@ -23,17 +26,16 @@ class ProfileScreen extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final l = context.l10n;
     return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+      padding: SteadySpacing.screen,
       children: [
-        Text(
-          l.profile,
-          style: Theme.of(context).textTheme.headlineMedium
-              ?.copyWith(fontWeight: FontWeight.w900),
+        SteadySectionHeader(
+          title: l.profile,
+          icon: SteadyBrandIcon.consistency,
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: SteadySpacing.xl),
         Card(
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: SteadySpacing.card,
             child: Row(
               children: [
                 CircleAvatar(
@@ -41,7 +43,7 @@ class ProfileScreen extends StatelessWidget {
                   backgroundColor: colors.primaryContainer,
                   child: Icon(Icons.person, color: colors.onPrimaryContainer),
                 ),
-                const SizedBox(width: 14),
+                const SizedBox(width: SteadySpacing.lg),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,12 +52,9 @@ class ProfileScreen extends StatelessWidget {
                         auth?.userId == null
                             ? l.guest
                             : (auth?.email ?? l.member),
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                        ),
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: SteadySpacing.xs),
                       Text(l.localActivityStorage),
                     ],
                   ),
@@ -64,7 +63,7 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: SteadySpacing.lg),
         if (auth?.connectionError == true) Text(l.authOffline),
         if (auth != null && auth!.userId == null) ...[
           FilledButton.icon(
@@ -81,7 +80,7 @@ class ProfileScreen extends StatelessWidget {
             icon: const Icon(Icons.login),
             label: Text(l.signIn),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: SteadySpacing.lg),
         ],
         if (auth?.userId != null) ...[
           OutlinedButton.icon(
@@ -100,18 +99,18 @@ class ProfileScreen extends StatelessWidget {
             icon: const Icon(Icons.logout),
             label: Text(l.signOut),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: SteadySpacing.lg),
         ],
         Card(
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: SteadySpacing.card,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Row(
                   children: [
                     const Icon(Icons.translate),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: SteadySpacing.md),
                     Expanded(
                       child: Text(
                         l.language,
@@ -120,9 +119,9 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: SteadySpacing.sm),
                 Text(l.languageHelp),
-                const SizedBox(height: 16),
+                const SizedBox(height: SteadySpacing.lg),
                 DropdownButtonFormField<String>(
                   key: ValueKey('language-${locale?.languageCode ?? 'system'}'),
                   initialValue: locale?.languageCode ?? 'system',
@@ -151,7 +150,7 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: SteadySpacing.lg),
         Card(
           child: Column(
             children: [

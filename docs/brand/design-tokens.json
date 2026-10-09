@@ -1,0 +1,35 @@
+{
+  "brand": {
+    "Fresh Mint": "#63E68D",
+    "Aqua Teal": "#20D0BE",
+    "Flow Cyan": "#1FB5F3",
+    "Momentum Blue": "#1976F8",
+    "Deep Core Blue": "#0D4FC8",
+    "Soft Cloud": "#F5F7FA"
+  },
+  "extensions": {
+    "Ink": "#101E32",
+    "Muted": "#52647C",
+    "White": "#FFFFFF",
+    "Border": "#DFE7EF"
+  },
+  "type": {
+    "heading": "Sora",
+    "body": "Inter"
+  },
+  "radius": {
+    "control": 12,
+    "card": 24,
+    "pill": 999
+  },
+  "spacing": [
+    4,
+    8,
+    12,
+    16,
+    24,
+    32,
+    48,
+    64
+  ]
+}
