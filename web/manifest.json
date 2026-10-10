@@ -1,11 +1,11 @@
 {
-    "name": "steady",
-    "short_name": "steady",
+    "name": "Steady",
+    "short_name": "Steady",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#F5F7FA",
+    "theme_color": "#0D4FC8",
+    "description": "Movement. Consistency. Progress.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

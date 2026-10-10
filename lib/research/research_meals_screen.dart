@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/brand/steady_progress.dart';
+
+import '../theme/steady_radii.dart';
+
+import '../theme/steady_spacing.dart';
+
 import '../l10n/formatters.dart';
 import '../l10n/nutrition_localizations.dart';
 import '../nutrition/meal_planner.dart';
@@ -118,15 +124,15 @@ class _MealsScreenState extends State<ResearchMealsScreen> {
     if (!widget.store.mealPlanningAllowed ||
         widget.store.nutritionProfile == null) {
       return ListView(
-        padding: const EdgeInsets.all(20),
+        padding: SteadySpacing.card,
         children: [
           Text(
             l.screeningPaused,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: SteadySpacing.lg),
           ScreeningResultCard(assessment: widget.store.screeningAssessment),
-          const SizedBox(height: 16),
+          const SizedBox(height: SteadySpacing.lg),
           OutlinedButton(
             key: const ValueKey('meals-setup'),
             onPressed: openSetup,
@@ -142,7 +148,13 @@ class _MealsScreenState extends State<ResearchMealsScreen> {
     final p = widget.store.nutritionProfile!;
     return ListView(
       controller: scroll,
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+      // Keep the final account action reachable above floating feedback.
+      padding: const EdgeInsets.fromLTRB(
+        SteadySpacing.xl,
+        SteadySpacing.lg,
+        SteadySpacing.xl,
+        SteadySpacing.display * 2,
+      ),
       children: [
         Row(
           children: [
@@ -150,24 +162,24 @@ class _MealsScreenState extends State<ResearchMealsScreen> {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: SteadyRadii.controlBorder,
               ),
               child: Icon(
                 Icons.restaurant_rounded,
                 color: Theme.of(context).colorScheme.primary,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: SteadySpacing.md),
             Expanded(
               child: Text(
                 l.mealsTitle,
                 style: Theme.of(context).textTheme.headlineSmall
-                    ?.copyWith(fontWeight: FontWeight.w800),
+                    ?.copyWith(fontWeight: FontWeight.w700),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: SteadySpacing.md),
         Text(
           l.mealsIntro,
           style: TextStyle(
@@ -175,7 +187,7 @@ class _MealsScreenState extends State<ResearchMealsScreen> {
             height: 1.5,
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: SteadySpacing.xl),
         ...plan(p),
       ],
     );
@@ -189,10 +201,10 @@ class _MealsScreenState extends State<ResearchMealsScreen> {
         Text(
           title,
           style: Theme.of(context).textTheme.titleMedium
-              ?.copyWith(fontWeight: FontWeight.w800),
+              ?.copyWith(fontWeight: FontWeight.w700),
         ),
         if (subtitle != null) ...[
-          const SizedBox(height: 6),
+          const SizedBox(height: SteadySpacing.sm),
           Text(
             subtitle,
             style: TextStyle(
@@ -213,26 +225,26 @@ class _MealsScreenState extends State<ResearchMealsScreen> {
       Card(
         color: colors.primaryContainer,
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: SteadySpacing.card,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 l.yourWeek,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w700,
                   color: colors.onPrimaryContainer,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: SteadySpacing.sm),
               Text(
                 '${l.preference(p.goal)} · ${l.preference(p.diet)}',
                 style: TextStyle(color: colors.onPrimaryContainer),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: SteadySpacing.lg),
               Wrap(
                 spacing: 16,
-                runSpacing: 10,
+                runSpacing: SteadySpacing.md,
                 children: [
                   Text(
                     '${l.dailyBudget}: ${l.money(p.budget)}',
@@ -244,7 +256,7 @@ class _MealsScreenState extends State<ResearchMealsScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: SteadySpacing.md),
               OutlinedButton.icon(
                 onPressed: edit,
                 icon: const Icon(Icons.tune),
@@ -254,10 +266,10 @@ class _MealsScreenState extends State<ResearchMealsScreen> {
           ),
         ),
       ),
-      const SizedBox(height: 24),
+      const SizedBox(height: SteadySpacing.xl),
       if (p.strategy != null) ...[
         NutritionSummaryCard(profile: p),
-        const SizedBox(height: 16),
+        const SizedBox(height: SteadySpacing.lg),
       ],
       if (!p.supported)
         emptyState(
@@ -291,10 +303,10 @@ class _MealsScreenState extends State<ResearchMealsScreen> {
             ),
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: SteadySpacing.xl),
         sectionTitle(l.estimatedDaily),
         totals(week[day], p),
-        const SizedBox(height: 20),
+        const SizedBox(height: SteadySpacing.xl),
         ...List.generate(
           week[day].length,
           (slot) => Padding(
@@ -311,14 +323,14 @@ class _MealsScreenState extends State<ResearchMealsScreen> {
             ),
             title: Text(
               l.groceriesWeek,
-              style: const TextStyle(fontWeight: FontWeight.w800),
+              style: const TextStyle(fontWeight: FontWeight.w700),
             ),
             subtitle: Text(l.itemsCount(MealPlanner.groceries(week).length)),
             trailing: const Icon(Icons.chevron_right),
             onTap: showGroceries,
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: SteadySpacing.lg),
       ],
       Card(
         child: ExpansionTile(
@@ -327,12 +339,12 @@ class _MealsScreenState extends State<ResearchMealsScreen> {
           childrenPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
           children: [
             Text(l.nutritionNote, style: const TextStyle(height: 1.5)),
-            const SizedBox(height: 12),
+            const SizedBox(height: SteadySpacing.md),
             Text(l.personalisationNote, style: const TextStyle(height: 1.5)),
           ],
         ),
       ),
-      const SizedBox(height: 20),
+      const SizedBox(height: SteadySpacing.xl),
       TextButton.icon(
         onPressed: delete,
         icon: const Icon(Icons.delete_outline),
@@ -346,24 +358,24 @@ class _MealsScreenState extends State<ResearchMealsScreen> {
     padding: const EdgeInsets.only(bottom: 20),
     child: Card(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: SteadySpacing.card,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Icon(icon, size: 40, color: Theme.of(context).colorScheme.primary),
-            const SizedBox(height: 16),
+            const SizedBox(height: SteadySpacing.lg),
             Text(
               title,
               style: Theme.of(context).textTheme.titleLarge,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: SteadySpacing.md),
             Text(
               message,
               style: const TextStyle(height: 1.5),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: SteadySpacing.xl),
             FilledButton(
               onPressed: edit,
               child: Text(context.l10n.editProfile),
@@ -411,8 +423,8 @@ class _MealsScreenState extends State<ResearchMealsScreen> {
                 ? 4
                 : 2;
             return Wrap(
-              spacing: 10,
-              runSpacing: 10,
+              spacing: SteadySpacing.md,
+              runSpacing: SteadySpacing.md,
               children: data
                   .map(
                     (item) => SizedBox(
@@ -426,9 +438,9 @@ class _MealsScreenState extends State<ResearchMealsScreen> {
                               Text(
                                 item.$2,
                                 style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(fontWeight: FontWeight.w800),
+                                    ?.copyWith(fontWeight: FontWeight.w700),
                               ),
-                              const SizedBox(height: 6),
+                              const SizedBox(height: SteadySpacing.sm),
                               Text(
                                 item.$1,
                                 style: TextStyle(
@@ -447,15 +459,13 @@ class _MealsScreenState extends State<ResearchMealsScreen> {
             );
           },
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: SteadySpacing.lg),
         Text('${l.estimatedCost}: ${l.money(cost)} / ${l.money(p.budget)}'),
-        const SizedBox(height: 8),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: LinearProgressIndicator(
-            value: (cost / p.budget).clamp(0, 1),
-            minHeight: 6,
-          ),
+        const SizedBox(height: SteadySpacing.sm),
+        SteadyProgressBar(
+          value: (cost / p.budget).clamp(0, 1),
+          semanticLabel:
+              '${l.estimatedCost}: ${l.money(cost)} / ${l.money(p.budget)}',
         ),
       ],
     );
@@ -490,7 +500,7 @@ class _MealsScreenState extends State<ResearchMealsScreen> {
                       color: colors.primary,
                       size: 20,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: SteadySpacing.sm),
                     Expanded(
                       child: Text(
                         '${l.mealSlot(meal.slot)}${p.strategy == null ? '' : ' · ${_mealTime(p.strategy!.timing, meal.slot)}'}',
@@ -502,13 +512,13 @@ class _MealsScreenState extends State<ResearchMealsScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: SteadySpacing.md),
                 Text(
                   l.mealName(meal),
                   style: Theme.of(context).textTheme.titleLarge
-                      ?.copyWith(fontWeight: FontWeight.w800),
+                      ?.copyWith(fontWeight: FontWeight.w700),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: SteadySpacing.md),
                 Wrap(
                   spacing: 12,
                   runSpacing: 8,
@@ -522,7 +532,7 @@ class _MealsScreenState extends State<ResearchMealsScreen> {
                       ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: SteadySpacing.md),
                 OutlinedButton.icon(
                   key: ValueKey('swap-$slot'),
                   onPressed: alternatives.isEmpty
@@ -552,13 +562,13 @@ class _MealsScreenState extends State<ResearchMealsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(child: Text(l.ingredient(e.key))),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: SteadySpacing.md),
                       Text(l.grams(e.value)),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: SteadySpacing.md),
               Align(
                 alignment: Alignment.centerLeft,
                 child: sectionTitle(l.preparation),
@@ -694,7 +704,7 @@ class _MealsScreenState extends State<ResearchMealsScreen> {
                           l.groceriesHelp,
                           style: const TextStyle(height: 1.5),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: SteadySpacing.md),
                         Text(
                           '${checkedGroceries.length}/${items.length} · ${l.itemsCount(items.length)}',
                         ),

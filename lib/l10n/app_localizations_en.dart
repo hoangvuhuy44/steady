@@ -10,6 +10,9 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get brandSlogan => 'Movement. Consistency. Progress.';
+
+  @override
   String get activityLoading => 'Loading activity history…';
 
   @override

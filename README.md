@@ -1,5 +1,12 @@
 # Steady
 
+## Android APK testing
+
+See [Android installation and device testing](docs/ANDROID_APK_TESTING.md) and
+[the APK build report](docs/ANDROID_APK_BUILD_REPORT.md). Test APKs are delivered
+in the ignored `dist/` directory. Keep the same application ID and signing key
+when installing updates to preserve the local activity journal.
+
 Ứng dụng Flutter ghi nhật ký vận động và **Gợi ý món ăn**, ưu tiên Android và iOS.
 Giao diện hỗ trợ tiếng Việt và tiếng Anh, gồm công thức, nguyên liệu và cách nấu.
 Home là màn hình mặc định; đăng nhập không tự chuyển tab hay mở khai báo sức khoẻ.
