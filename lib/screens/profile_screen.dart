@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../theme/steady_spacing.dart';
+import '../reminders/reminder_controller.dart';
+import '../reminders/reminder_screen.dart';
+import '../personalization/menu_controller.dart';
+import '../personalization/daily_menu_screen.dart';
+import '../personalization/food_strings.dart';
 
 import '../auth/auth_controller.dart';
 import '../l10n/formatters.dart';
@@ -16,11 +21,15 @@ class ProfileScreen extends StatelessWidget {
     required this.locale,
     required this.onLanguageChanged,
     this.auth,
+    this.reminders,
+    this.dailyMenu,
   });
   final SteadyStore store;
   final Locale? locale;
   final ValueChanged<Locale?> onLanguageChanged;
   final AuthController? auth;
+  final ReminderController? reminders;
+  final DailyMenuController? dailyMenu;
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
@@ -87,6 +96,7 @@ class ProfileScreen extends StatelessWidget {
             key: const ValueKey('profile-sign-out'),
             onPressed: () async {
               try {
+                await reminders?.detach();
                 await auth!.signOut();
               } catch (_) {
                 if (context.mounted) {
@@ -159,7 +169,38 @@ class ProfileScreen extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.notifications_none),
                 title: Text(l.reminders),
-                subtitle: Text(l.notConnected),
+                subtitle: Text(
+                  Localizations.localeOf(context).languageCode == 'vi'
+                      ? 'Hằng ngày · 07:00 và 18:30 · Có thể chỉnh'
+                      : 'Daily · 07:00 and 18:30 · Customizable',
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(context).push<void>(
+                  MaterialPageRoute(
+                    builder: (_) => ReminderScreen(controller: reminders),
+                  ),
+                ),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                key: const ValueKey('profile-food-preferences'),
+                leading: const Icon(Icons.restaurant_menu),
+                title: Text(
+                  foodText(
+                    context,
+                    'Hồ sơ ăn uống và thực đơn',
+                    'Food preferences and daily menu',
+                  ),
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: dailyMenu == null
+                    ? null
+                    : () => Navigator.of(context).push<void>(
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              DailyMenuScreen(controller: dailyMenu!),
+                        ),
+                      ),
               ),
               const Divider(height: 1),
               ListTile(

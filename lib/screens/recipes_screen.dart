@@ -8,7 +8,8 @@ import '../recipes/recipe_filter.dart';
 import '../widgets/brand/steady_section_header.dart';
 
 class RecipesScreen extends StatefulWidget {
-  const RecipesScreen({super.key});
+  const RecipesScreen({super.key, this.onDailyMenu});
+  final VoidCallback? onDailyMenu;
 
   @override
   State<RecipesScreen> createState() => _RecipesScreenState();
@@ -51,6 +52,17 @@ class _RecipesScreenState extends State<RecipesScreen> {
           icon: SteadyBrandIcon.wellness,
         ),
         const SizedBox(height: SteadySpacing.lg),
+        if (widget.onDailyMenu != null)
+          FilledButton.icon(
+            key: const ValueKey('open-daily-menu'),
+            onPressed: widget.onDailyMenu,
+            icon: const Icon(Icons.today),
+            label: Text(
+              Localizations.localeOf(context).languageCode == 'vi'
+                  ? 'Thực đơn cá nhân: Sáng · Trưa · Tối'
+                  : 'My daily menu: Breakfast · Lunch · Dinner',
+            ),
+          ),
         Card(
           child: ExpansionTile(
             key: const ValueKey('recipe-filters'),

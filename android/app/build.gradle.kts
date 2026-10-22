@@ -4,6 +4,12 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Without native resources FCM cannot initialize when Android starts a killed
+// process for a notification. Keep unconfigured local builds usable.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+}
+
 android {
     namespace = "com.example.steady"
     compileSdk = flutter.compileSdkVersion
