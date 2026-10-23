@@ -1,25 +1,43 @@
 # Steady
 
+## Android APK testing
+
+See [Android installation and device testing](docs/ANDROID_APK_TESTING.md) and
+[the APK build report](docs/ANDROID_APK_BUILD_REPORT.md). Test APKs are delivered
+in the ignored `dist/` directory. Keep the same application ID and signing key
+when installing updates to preserve the local activity journal.
+
 Ứng dụng Flutter ghi nhật ký vận động và **Gợi ý món ăn**, ưu tiên Android và iOS.
 Giao diện hỗ trợ tiếng Việt và tiếng Anh, gồm công thức, nguyên liệu và cách nấu.
 Home là màn hình mặc định; đăng nhập không tự chuyển tab hay mở khai báo sức khoẻ.
 
 ## Phạm vi MVP
 
+- **Thực đơn cá nhân** có questionnaire 5 bước, lưu hồ sơ, ba bữa mỗi ngày,
+  đổi món và phản hồi. Khách lưu riêng trên thiết bị; tài khoản dùng Supabase
+  với RLS và revision chống ghi đè. Xem [triển khai và giới hạn dữ liệu](docs/personalized-daily-menu.md).
+  Cần áp dụng migration mới để dùng lưu trữ tài khoản. Kho hiện có chưa đủ
+  dữ liệu xác minh để gợi ý cho người có dị ứng hoặc chế độ kiêng bắt buộc.
 - Nhật ký lưu bằng SQLite trên thiết bị, tách khách và từng tài khoản. Home tính
   chỉ số từ nhật ký thật. Đăng nhập không gộp hoặc xoá nhật ký khách.
-- Tab **Món ăn / Recipes** dùng kho `meals` hiện có. Mỗi món có loại bữa, thời
-  gian nấu ước tính và trang chi tiết nguyên liệu, định lượng, cách nấu.
+- Tab **Món ăn / Recipes** dùng kho `meals` hiện có; sau thiết lập hiển thị
+  thực đơn Sáng/Trưa/Tối. Kho công thức tham khảo vẫn có trang chi tiết nguyên
+  liệu, định lượng và cách nấu riêng.
 - Kết hợp lọc loại bữa, thời gian tối đa, nhãn dị ứng và nguyên liệu muốn tránh.
   Khi rỗng vẫn giữ bộ lọc; người dùng tự đổi lựa chọn hoặc xoá bộ lọc.
-- Dị ứng chỉ đối chiếu nhãn công thức, có giải thích giới hạn ngay trong phần
-  lọc. Kết quả không xác nhận an toàn với dị ứng, không kiểm tra nhiễm chéo.
+- Bộ lọc kho tham khảo chỉ đối chiếu nhãn công thức và giải thích giới hạn.
+  Thực đơn cá nhân dùng bộ lọc bắt buộc riêng, đối chiếu cây thành phần và chặn
+  dữ liệu chưa xác minh. Không xác nhận an toàn dị ứng hay kiểm tra nhiễm chéo.
 - Định lượng là công thức mẫu, không phải khuyến nghị khẩu phần cá nhân.
-- UI MVP ẩn giá, ngân sách, calorie, macro, tổng dinh dưỡng và toàn bộ kê khai
-  cơ thể/bệnh nền, Keto/bulk/16:8, sinh thực đơn cá nhân.
+- Thực đơn cá nhân hiển thị chi phí ước tính mẫu, ngân sách và thời gian ưu tiên;
+  dinh dưỡng chỉ hiển thị khi có nguồn đáng tin cậy. Không thu thập cơ thể/bệnh
+  nền, không mở lại Keto/bulk/16:8 hay planner nghiên cứu.
 
 Xem [phạm vi sản phẩm](docs/product-scope.md) và [lưu nhật ký](docs/activity-storage.md).
-Nhắc nhở, dữ liệu sức khoẻ, đồng bộ server và đổi thưởng chưa được tích hợp.
+Nhắc tập Android/iOS dùng Supabase + FCM đã có code MVP, cần cấu hình backend
+và Firebase để nhận push thật. Xem [thiết lập và checklist nhắc tập](docs/workout-reminders.md)
+và [báo cáo kiểm chứng](docs/WORKOUT_REMINDERS_REPORT.md).
+Screening sức khỏe nghiên cứu, đồng bộ nhật ký server và đổi thưởng chưa được tích hợp.
 
 ## Đăng nhập tuỳ chọn
 

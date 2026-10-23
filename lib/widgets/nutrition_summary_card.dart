@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/steady_spacing.dart';
+
 import '../l10n/formatters.dart';
 import '../l10n/nutrition_localizations.dart';
 import '../nutrition/nutrition_profile.dart';
@@ -17,7 +19,7 @@ class NutritionSummaryCard extends StatelessWidget {
     final reason = NutritionTargets.unavailableReason(profile);
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: SteadySpacing.card,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -25,7 +27,7 @@ class NutritionSummaryCard extends StatelessWidget {
               l.nutritionConfiguration,
               style: Theme.of(context).textTheme.titleLarge,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: SteadySpacing.md),
             Wrap(
               spacing: 8,
               runSpacing: 4,
@@ -41,7 +43,7 @@ class NutritionSummaryCard extends StatelessWidget {
                   Chip(label: Text(l.nutritionOption(option))),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: SteadySpacing.md),
             Text(
               '${l.height}: ${l.number(profile.height)} cm · ${l.weight}: ${l.number(profile.weight)} kg',
             ),
@@ -49,12 +51,12 @@ class NutritionSummaryCard extends StatelessWidget {
               '${l.nutritionBodyFat}: ${profile.bodyFat == null ? l.unknown : '${l.number(profile.bodyFat!)}%'}',
             ),
             if (t == null) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: SteadySpacing.md),
               Text(
                 l.nutritionMessage(reason ?? 'nutritionEstimateUnavailable'),
               ),
             ] else ...[
-              const SizedBox(height: 16),
+              const SizedBox(height: SteadySpacing.lg),
               Text(
                 '${l.nutritionMaintenanceEstimate}: ~${l.number(t.maintenance.round())} kcal',
               ),
@@ -70,7 +72,7 @@ class NutritionSummaryCard extends StatelessWidget {
               Text(
                 '${l.saturatedFat}: ≤${l.grams(t.saturatedFatLimit.round())}',
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: SteadySpacing.sm),
               for (final note in t.notes)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/steady_spacing.dart';
+
 import '../l10n/formatters.dart';
 import '../state/steady_store.dart';
 
@@ -17,7 +19,7 @@ class ActivityStatus extends StatelessWidget {
         child: Column(
           children: [
             const LinearProgressIndicator(),
-            const SizedBox(height: 8),
+            const SizedBox(height: SteadySpacing.sm),
             Text(l.activityLoading),
           ],
         ),

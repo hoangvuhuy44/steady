@@ -10,6 +10,9 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
+  String get brandSlogan => 'Vận động. Bền bỉ. Tiến bộ.';
+
+  @override
   String get activityLoading => 'Đang tải nhật ký vận động…';
 
   @override

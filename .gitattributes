@@ -1,0 +1,2 @@
+# Keep upstream font licenses verbatim, including their original whitespace.
+assets/licenses/*.txt -text -whitespace

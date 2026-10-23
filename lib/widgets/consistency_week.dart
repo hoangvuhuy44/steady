@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/steady_spacing.dart';
+
 import '../l10n/formatters.dart';
 import '../models/activity_metrics.dart';
 
@@ -20,13 +22,14 @@ class ConsistencyWeek extends StatelessWidget {
       return labels[date.weekday - 1];
     });
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: List.generate(7, (index) {
-        final done = completed[index];
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final scaledDayWidth = MediaQuery.textScalerOf(context).scale(36);
+        final wrap = constraints.maxWidth / 7 < scaledDayWidth;
+        final children = List.generate(7, (index) {
+          final done = completed[index];
 
-        return Expanded(
-          child: Semantics(
+          final day = Semantics(
             label:
                 '${dayNames[index]}: ${done ? context.l10n.completed : context.l10n.notCompleted}',
             child: Column(
@@ -36,7 +39,7 @@ class ConsistencyWeek extends StatelessWidget {
                   style: Theme.of(context).textTheme.labelMedium
                       ?.copyWith(color: colors.onSurfaceVariant),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: SteadySpacing.sm),
                 Container(
                   width: 36,
                   height: 36,
@@ -54,9 +57,22 @@ class ConsistencyWeek extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-        );
-      }),
+          );
+          return wrap
+              ? SizedBox(width: scaledDayWidth, child: day)
+              : Expanded(child: day);
+        });
+        return wrap
+            ? Wrap(
+                spacing: SteadySpacing.sm,
+                runSpacing: SteadySpacing.lg,
+                children: children,
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: children,
+              );
+      },
     );
   }
 }

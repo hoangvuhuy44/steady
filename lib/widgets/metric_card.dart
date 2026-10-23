@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/steady_spacing.dart';
+
 class MetricCard extends StatelessWidget {
   const MetricCard({
     super.key,
@@ -24,13 +26,13 @@ class MetricCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(icon, color: colors.primary),
-              const SizedBox(height: 14),
+              const SizedBox(height: SteadySpacing.lg),
               Text(
                 value,
                 style: Theme.of(context).textTheme.headlineSmall
-                    ?.copyWith(fontWeight: FontWeight.w800),
+                    ?.copyWith(fontWeight: FontWeight.w700),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: SteadySpacing.xs),
               Text(
                 label,
                 style: Theme.of(context).textTheme.bodyMedium

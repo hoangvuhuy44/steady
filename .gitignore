@@ -1,4 +1,15 @@
 # Miscellaneous
+.env
+.env.*
+!.env.example
+supabase/.env
+supabase/.env.*
+!supabase/.env.example
+reminder-config.json
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+**/service-account*.json
+supabase/.temp/
 *.class
 *.log
 *.pyc
@@ -32,6 +43,7 @@ migrate_working_dir/
 .pub/
 /build/
 /coverage/
+/dist/
 
 # Symbolication related
 app.*.symbols
