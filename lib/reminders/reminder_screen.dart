@@ -20,7 +20,8 @@ class _ReminderScreenState extends State<ReminderScreen> {
     text: widget.controller?.settings.timezone ?? 'Asia/Ho_Chi_Minh',
   );
   bool get vi => Localizations.localeOf(context).languageCode == 'vi';
-  String t(String vietnamese, String english) => vi ? vietnamese : english;
+  String t(String vn, String en) => vi ? vn : en;
+  ReminderSettings? _lastSettings;
   ReminderSettings get draft => ReminderSettings(
     morning: morning.text,
     evening: evening.text,
@@ -29,15 +30,20 @@ class _ReminderScreenState extends State<ReminderScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.controller?.busy == true) {
-      widget.controller!.addListener(initialLoaded);
-    }
+    _lastSettings = widget.controller?.settings;
+    widget.controller?.addListener(loaded);
   }
 
-  void initialLoaded() {
+  void loaded() {
     final c = widget.controller!;
     if (c.busy) return;
-    c.removeListener(initialLoaded);
+    final last = _lastSettings;
+    _lastSettings = c.settings;
+    if (last?.morning == c.settings.morning &&
+        last?.evening == c.settings.evening &&
+        last?.timezone == c.settings.timezone) {
+      return;
+    }
     morning.text = c.settings.morning;
     evening.text = c.settings.evening;
     timezone.text = c.settings.timezone;
@@ -45,34 +51,55 @@ class _ReminderScreenState extends State<ReminderScreen> {
 
   @override
   void dispose() {
-    widget.controller?.removeListener(initialLoaded);
+    widget.controller?.removeListener(loaded);
     morning.dispose();
     evening.dispose();
     timezone.dispose();
     super.dispose();
   }
 
-  Future<void> test(bool demo) async {
-    final queued = await widget.controller!.test(demo: demo);
-    if (mounted && queued) {
+  Future<void> test() async {
+    final shown = await widget.controller!.test();
+    if (mounted && shown) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            demo
-                ? t(
-                    'Đã đặt hai lượt thử sau 1 và 3 phút trên thiết bị này.',
-                    'Two tests scheduled for this device in 1 and 3 minutes.',
-                  )
-                : t(
-                    'Đã xếp hàng gửi thử. Chờ scheduler chạy (khoảng 1 phút).',
-                    'Test queued. Allow about a minute for the scheduler.',
-                  ),
+            t(
+              'Đã yêu cầu hệ điều hành hiển thị thông báo thử.',
+              'Local test sent to the operating system.',
+            ),
           ),
         ),
       );
     }
   }
 
+  String errorText(String code) => switch (code) {
+    'invalid' => t(
+      'Nhập hai giờ HH:mm hợp lệ, khác nhau và múi giờ IANA hợp lệ.',
+      'Enter valid, distinct HH:mm times and an IANA timezone.',
+    ),
+    'permission' => t(
+      'Chưa được cấp quyền thông báo. Bật quyền trong Cài đặt hệ thống rồi thử lại.',
+      'Notification permission denied. Enable notifications in system settings and retry.',
+    ),
+    'cache' => t(
+      'Không lưu được trên máy. Kiểm tra dung lượng và thử lại.',
+      'Could not save on this device. Check storage and retry.',
+    ),
+    'sync' => t(
+      'Chưa đồng bộ được Supabase. Lịch trên máy vẫn dùng được; ứng dụng sẽ thử lại.',
+      'Supabase sync failed. Local reminders remain available; sync will retry.',
+    ),
+    'unsupported' => t(
+      'Thông báo cục bộ hỗ trợ Android và iOS.',
+      'Local notifications support Android and iOS.',
+    ),
+    _ => t(
+      'Không hẹn/hiển thị được thông báo trên máy. Thử lại và kiểm tra cài đặt hệ thống.',
+      'Could not schedule/show local notifications. Retry and check system settings.',
+    ),
+  };
   @override
   Widget build(BuildContext context) {
     final c = widget.controller;
@@ -83,147 +110,104 @@ class _ReminderScreenState extends State<ReminderScreen> {
               padding: const EdgeInsets.all(24),
               child: Text(
                 t(
-                  'Đăng nhập để lưu lịch nhắc tập. Push hỗ trợ app Android/iOS đã cấu hình Firebase; bản web chưa hỗ trợ.',
-                  'Sign in to save reminders. Push requires a configured Android/iOS app; web is not supported.',
+                  'Đăng nhập để lưu lịch nhắc tập. Thông báo cục bộ hỗ trợ Android/iOS.',
+                  'Sign in to save reminders. Local notifications support Android/iOS.',
                 ),
               ),
             )
           : AnimatedBuilder(
               animation: c,
-              builder: (context, _) {
-                final status = switch (c.permission) {
-                  ReminderPermission.unsupported => t(
-                    'Thiết bị không hỗ trợ hoặc chưa cấu hình FCM.',
-                    'Device unsupported or FCM is not configured.',
-                  ),
-                  ReminderPermission.denied => t(
-                    'Bị từ chối. Bấm bật để thử lại hoặc mở Cài đặt thông báo của hệ thống.',
-                    'Permission denied. Try enabling again or open system notification settings.',
-                  ),
-                  ReminderPermission.unknown => t(
-                    'Chưa cấp quyền thông báo.',
-                    'Notification permission not granted yet.',
-                  ),
-                  ReminderPermission.granted =>
-                    c.settings.enabled && c.registered
+              builder: (context, _) => ListView(
+                padding: const EdgeInsets.all(24),
+                children: [
+                  Text(
+                    c.registered
                         ? t(
                             'Đã bật trên thiết bị này.',
                             'Enabled on this device.',
                           )
+                        : c.settings.enabled
+                        ? t(
+                            'Lịch yêu cầu bật; chưa hẹn thành công trên máy này.',
+                            'Reminders requested; this device is not scheduled.',
+                          )
+                        : t('Nhắc tập đang tắt.', 'Reminders are off.'),
+                    key: const ValueKey('reminder-status'),
+                  ),
+                  Text(
+                    c.pendingSync
+                        ? t(
+                            'Có thay đổi đang chờ đồng bộ.',
+                            'Changes pending synchronization.',
+                          )
                         : t(
-                            'Đã cấp quyền; nhắc tập đang tắt hoặc thiết bị chưa đăng ký.',
-                            'Permission granted; reminders are off or this device is not registered.',
+                            'Không có thay đổi cục bộ chờ gửi.',
+                            'No local changes pending upload.',
                           ),
-                };
-                return ListView(
-                  padding: const EdgeInsets.all(24),
-                  children: [
+                    key: const ValueKey('reminder-sync'),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    t(
+                      'Lịch đã hẹn hoạt động khi offline hoặc app chạy nền. Android có thể nhắc muộn khi tiết kiệm pin. Thay đổi từ máy khác áp dụng sau đồng bộ.',
+                      'Scheduled reminders work offline and in the background. Android may delay delivery during battery saving. Changes from other devices apply after synchronization.',
+                    ),
+                  ),
+                  TextField(
+                    controller: morning,
+                    enabled: !c.busy,
+                    keyboardType: TextInputType.datetime,
+                    decoration: InputDecoration(
+                      labelText: t('Giờ sáng (HH:mm)', 'Morning (HH:mm)'),
+                    ),
+                  ),
+                  TextField(
+                    controller: evening,
+                    enabled: !c.busy,
+                    keyboardType: TextInputType.datetime,
+                    decoration: InputDecoration(
+                      labelText: t('Giờ chiều tối (HH:mm)', 'Evening (HH:mm)'),
+                    ),
+                  ),
+                  TextField(
+                    controller: timezone,
+                    enabled: !c.busy,
+                    autocorrect: false,
+                    decoration: InputDecoration(
+                      labelText: t('Múi giờ IANA', 'IANA timezone'),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  if (c.error != null)
                     Text(
-                      status,
-                      key: const ValueKey('reminder-status'),
-                      style: Theme.of(context).textTheme.titleMedium,
+                      errorText(c.error!),
+                      key: const ValueKey('reminder-error'),
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      t(
-                        'Nhắc hằng ngày theo múi giờ đã chọn. Hai giờ phải khác nhau. Tắt nhắc sẽ tắt trên mọi thiết bị của tài khoản.',
-                        'Daily in the selected timezone. Choose two different times. Turning reminders off applies to all your devices.',
-                      ),
+                  if (c.busy) const LinearProgressIndicator(),
+                  FilledButton(
+                    onPressed: c.busy ? null : () => c.enable(draft),
+                    child: Text(t('Bật nhắc tập', 'Enable workout reminders')),
+                  ),
+                  OutlinedButton(
+                    onPressed: c.busy ? null : () => c.save(draft),
+                    child: Text(t('Lưu giờ nhắc', 'Save reminder times')),
+                  ),
+                  OutlinedButton(
+                    onPressed: c.busy ? null : c.disable,
+                    child: Text(t('Tắt nhắc tập', 'Turn reminders off')),
+                  ),
+                  OutlinedButton(
+                    onPressed: c.busy ? null : test,
+                    child: Text(
+                      t('Gửi thông báo thử', 'Send test notification'),
                     ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: morning,
-                      enabled: !c.busy,
-                      keyboardType: TextInputType.datetime,
-                      decoration: InputDecoration(
-                        labelText: t('Giờ sáng (HH:mm)', 'Morning (HH:mm)'),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: evening,
-                      enabled: !c.busy,
-                      keyboardType: TextInputType.datetime,
-                      decoration: InputDecoration(
-                        labelText: t(
-                          'Giờ chiều tối (HH:mm)',
-                          'After work (HH:mm)',
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: timezone,
-                      enabled: !c.busy,
-                      autocorrect: false,
-                      decoration: InputDecoration(
-                        labelText: t('Múi giờ IANA', 'IANA timezone'),
-                        hintText: 'Asia/Ho_Chi_Minh',
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    if (c.error != null)
-                      Text(
-                        c.error == 'invalid'
-                            ? t(
-                                'Nhập giờ HH:mm hợp lệ, hai giờ khác nhau và múi giờ IANA.',
-                                'Enter valid, distinct HH:mm times and an IANA timezone.',
-                              )
-                            : t(
-                                'Chưa lưu/gửi được. Kiểm tra mạng, migration backend, cấu hình FCM và múi giờ. Lượt thử cách nhau ít nhất 60 giây.',
-                                'Could not save/send. Check connectivity, backend migration, FCM configuration and timezone. Tests require a 60-second gap.',
-                              ),
-                        key: const ValueKey('reminder-error'),
-                      ),
-                    if (c.busy) const LinearProgressIndicator(),
-                    FilledButton(
-                      onPressed:
-                          c.busy ||
-                              c.permission == ReminderPermission.unsupported
-                          ? null
-                          : () => c.enable(draft),
-                      child: Text(
-                        t('Bật nhắc tập', 'Enable workout reminders'),
-                      ),
-                    ),
-                    OutlinedButton(
-                      onPressed: c.busy ? null : () => c.save(draft),
-                      child: Text(t('Lưu giờ nhắc', 'Save reminder times')),
-                    ),
-                    if (c.settings.enabled)
-                      OutlinedButton(
-                        onPressed: c.busy ? null : c.disable,
-                        child: Text(t('Tắt nhắc tập', 'Turn reminders off')),
-                      ),
-                    OutlinedButton(
-                      onPressed: c.busy || !c.registered
-                          ? null
-                          : () => test(false),
-                      child: Text(
-                        t('Gửi thông báo thử', 'Send test notification'),
-                      ),
-                    ),
-                    OutlinedButton(
-                      onPressed: c.busy || !c.registered
-                          ? null
-                          : () => test(true),
-                      child: Text(
-                        t(
-                          'Demo: sau 1 phút và 3 phút',
-                          'Demo: in 1 and 3 minutes',
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      t(
-                        'Thông báo mở màn hình ghi nhận buổi tập. Lượt đã xếp hàng chưa có nghĩa điện thoại đã hiển thị. Cần mạng và cho phép thông báo trong hệ thống.',
-                        'Notifications open workout check-in. Queued does not mean displayed. Connectivity and system notification permission are required.',
-                      ),
-                    ),
-                  ],
-                );
-              },
+                  ),
+                  OutlinedButton(
+                    onPressed: c.busy ? null : c.refresh,
+                    child: Text(t('Đồng bộ ngay', 'Sync now')),
+                  ),
+                ],
+              ),
             ),
     );
   }

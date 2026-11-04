@@ -34,8 +34,8 @@ Home là màn hình mặc định; đăng nhập không tự chuyển tab hay m�
   nền, không mở lại Keto/bulk/16:8 hay planner nghiên cứu.
 
 Xem [phạm vi sản phẩm](docs/product-scope.md) và [lưu nhật ký](docs/activity-storage.md).
-Nhắc tập Android/iOS dùng Supabase + FCM đã có code MVP, cần cấu hình backend
-và Firebase để nhận push thật. Xem [thiết lập và checklist nhắc tập](docs/workout-reminders.md)
+Workout reminders use local Android/iOS notifications and Supabase account synchronization.
+See [setup and device testing](docs/workout-reminders.md).
 và [báo cáo kiểm chứng](docs/WORKOUT_REMINDERS_REPORT.md).
 Screening sức khỏe nghiên cứu, đồng bộ nhật ký server và đổi thưởng chưa được tích hợp.
 

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../auth/auth_controller.dart';
 import '../l10n/app_localizations.dart';
@@ -54,8 +53,6 @@ class _SteadyAppState extends State<SteadyApp> with WidgetsBindingObserver {
   late int sessionRevision;
   Timer? dayRefreshTimer;
   ReminderController? reminders;
-  StreamSubscription<RemoteMessage>? pushOpened, pushForeground;
-  StreamSubscription<String>? pushToken;
   int reminderRevision = 0;
   DailyMenuController? dailyMenu;
 
@@ -87,40 +84,9 @@ class _SteadyAppState extends State<SteadyApp> with WidgetsBindingObserver {
     configureDailyMenu();
     unawaited(store.setActivityUser(auth.userId));
     unawaited(configureReminders());
-    final messaging = widget.reminderDevice?.messaging;
-    if (messaging != null) {
-      pushOpened = FirebaseMessaging.onMessageOpenedApp.listen(openWorkout);
-      pushForeground = FirebaseMessaging.onMessage.listen((message) {
-        if (message.data['user_id'] != auth.userId) return;
-        messengerKey.currentState?.showSnackBar(
-          SnackBar(
-            content: Text(message.notification?.body ?? 'Steady'),
-            action: SnackBarAction(
-              label: 'Steady →',
-              onPressed: () => openWorkout(message),
-            ),
-          ),
-        );
-      });
-      // HTTP v1 targets registration tokens. Migrate both ends together to FID.
-      // ignore: deprecated_member_use
-      pushToken = messaging.onTokenRefresh.listen(
-        (_) {
-          if (reminders?.busy == false) unawaited(reminders!.refresh());
-        },
-        onError: (Object _) {
-          /* Retry registration on next resume. */
-        },
-      );
-      unawaited(
-        messaging
-            .getInitialMessage()
-            .then((message) {
-              if (message != null) openWorkout(message);
-            })
-            .catchError((Object _) {}),
-      );
-    }
+    widget.reminderDevice?.onTap = openWorkout;
+    final payload = widget.reminderDevice?.initialPayload;
+    if (payload != null) openWorkout(payload);
   }
 
   Future<void> configureReminders() async {
@@ -128,12 +94,20 @@ class _SteadyAppState extends State<SteadyApp> with WidgetsBindingObserver {
     final previous = reminders;
     reminders = null;
     previous?.dispose();
-    if (previous != null) {
-      try {
-        await widget.reminderDevice?.stop();
-      } catch (_) {
-        /* Token expiry is also handled by worker. */
-      }
+    try {
+      await widget.reminderDevice?.stop();
+    } catch (_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || revision != reminderRevision) return;
+        messengerKey.currentState?.showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Could not cancel previous workout reminders. Reopen the app to retry.',
+            ),
+          ),
+        );
+      });
+      return;
     }
     if (!mounted || revision != reminderRevision) return;
     if (auth is SupabaseAuthController &&
@@ -145,19 +119,19 @@ class _SteadyAppState extends State<SteadyApp> with WidgetsBindingObserver {
           auth.userId!,
         ),
         device: widget.reminderDevice!,
+        cache: PreferencesReminderCache(auth.userId!),
+        isOwner: () => mounted && revision == reminderRevision,
       );
       setState(() => reminders = controller);
       await controller.refresh();
     }
   }
 
-  void openWorkout(RemoteMessage message) {
-    if (message.data['screen'] != 'check-in' ||
-        message.data['user_id'] != auth.userId) {
-      return;
-    }
+  void openWorkout(String? payload) {
+    if (payload != 'check-in' || auth.userId == null) return;
+    final revision = reminderRevision;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || message.data['user_id'] != auth.userId) return;
+      if (!mounted || revision != reminderRevision) return;
       navigatorKey.currentState?.popUntil((route) => route.isFirst);
       setState(() => selectedIndex = 1);
     });
@@ -228,9 +202,7 @@ class _SteadyAppState extends State<SteadyApp> with WidgetsBindingObserver {
     dailyMenu?.dispose();
     ++reminderRevision;
     reminders?.dispose();
-    unawaited(pushOpened?.cancel());
-    unawaited(pushForeground?.cancel());
-    unawaited(pushToken?.cancel());
+    widget.reminderDevice?.onTap = null;
     WidgetsBinding.instance.removeObserver(this);
     auth.removeListener(syncSession);
     if (widget.store == null) store.dispose();

@@ -1,5 +1,3 @@
-import { handle, run } from "./worker.ts";
-
-// Edge Runtime entry point. Unit tests import worker.ts without starting HTTP.
-if (Deno.args.includes("--once")) console.log(await run());
-else Deno.serve(handle);
+// Retired entry point. Deploy only after reviewing the target project's rollout.
+// Archived worker.ts/fcm.ts remain for auditing older deployments and tests.
+Deno.serve(() => new Response("Workout reminders use local notifications", { status: 410 }));

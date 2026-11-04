@@ -1,80 +1,44 @@
-# Workout reminders MVP — verification report
+# Workout reminders: local notifications + Supabase
 
-Date: 22 October 2026, Asia/Bangkok.
+Ngày kiểm tra: 25/10/2026. Flutter 3.47.5, Dart 3.13.4, Windows/Android SDK.
 
-## Implemented
+## Đã triển khai
 
-- Flutter Android/iOS settings under Profile; daily morning/evening times,
-  editable IANA timezone, account-wide enable/disable and device registration.
-- Explicit notification permission request only on Enable; current-device test
-  and two demo events at +1/+3 minutes; foreground banner and notification tap
-  routing to the existing workout check-in tab.
-- Supabase migration with private tables/RLS, owner-only user RPCs and
-  service-role-only planner/worker RPCs. No new authentication system.
-- FCM HTTP v1 worker, minute-cron example, unique logical events, device fan-out,
-  atomic claims/lease fencing, bounded attempts, token expiry and 10-minute TTL.
-- Native manifests, Android Google Services configuration hook, iOS APNs
-  entitlements; sample public app configuration and backend-only env template.
-- README/setup guide with commands and the physical-device checklist.
+- Giữ màn hình Workout reminders trong Hồ sơ → Nhắc nhở; không có ảnh tham chiếu và không tìm thấy AGENTS.md trong repository hoặc các thư mục cha liên quan.
+- Hẹn local Android/iOS bằng flutter_local_notifications 19.5.0 và timezone 0.10.1, mặc định 07:00/18:30 Asia/Ho_Chi_Minh, ID ổn định, gửi thử hoàn toàn local, hủy lịch khi tắt/đổi tài khoản.
+- Xin quyền khi bật/gửi thử, kiểm tra cả quyền ứng dụng và notification channel. Lỗi quyền, lưu cache, sync và hẹn lịch được hiển thị riêng. Không báo thành công trên máy khi hẹn lỗi.
+- Cache riêng tài khoản, pending được lưu bền, áp dụng offline trước khi sync. Sync startup/foreground/thủ công và retry 30 giây khi tiến trình còn chạy. Pending ghi trước khi đọc server; lần ghi server nhận sau cùng thắng.
+- Chặn phản hồi muộn bằng kiểm tra phiên và hàng đợi native; đăng xuất không phải đợi request mạng cũ hoàn tất.
+- Migration bảng public.workout_reminders, RLS sở hữu và UPDATE USING/WITH CHECK, validation server, sao chép lịch cũ. Cutover theo tài khoản hủy các lượt FCM cũ chưa gửi khi sync/ghi thành công.
+- Bỏ Firebase dependencies, Dart listeners/token, Gradle Google Services, manifest metadata và iOS push entitlement. Worker entry point trong source trả HTTP 410; không thay đổi production.
+- Android channel/icon/desugaring/boot receivers và giữ resource icon; iOS notification delegate. InexactAllowWhileIdle có thể trễ do tiết kiệm pin.
 
-## Executed checks
+## Kiểm tra
 
-| Check | Result |
-| --- | --- |
-| Repository/parent `AGENTS.md` discovery | No file found in checked locations |
-| `flutter pub add firebase_core firebase_messaging` | Completed; dependencies pinned and lockfile updated |
-| `flutter analyze` | Passed, **No issues found** |
-| `flutter test` | **143 passed, 1 skipped** |
-| Focused reminder controller/widget tests after final lifecycle changes | **6 passed** |
-| `deno task --config supabase/deno.json check` | Worker entry point/type checking passed |
-| `deno task --config supabase/deno.json test` | **3 worker tests + database suite with 11 steps passed** |
-| Migration execution | Applied to isolated PostgreSQL WASM/PGlite 0.5.10; functional queries passed |
-| `git diff --check` | Passed; line-ending normalization warnings only |
-| Supabase local advisors and migration history | Attempted; unavailable because local Postgres/Docker is not running |
-| `flutter build apk --debug` | Passed; initial build 719.1 seconds, final incremental build 51.1 seconds |
+Các file chính đã sửa:
 
-The skipped Flutter test is the existing browser-only guest persistence test.
-PGlite runs the real SQL migration and PL/pgSQL functions with a test-only Auth
-schema/UID fixture. It is a single-connection PostgreSQL engine; exclusive claim
-state and stale claim rejection are tested, but actual concurrent sessions and
-Supabase PostgREST/JWT integration still need the development-stack test.
+- `lib/reminders/reminder_controller.dart`, `native_reminders.dart`, `reminder_screen.dart`: cache/sync, lịch local và UI.
+- `lib/app/steady_app.dart`, `lib/screens/profile_screen.dart`: startup/foreground, thay tài khoản, mở thông báo, đăng xuất.
+- `pubspec.yaml`, `pubspec.lock`: thay Firebase bằng local notifications/timezone; các registrant/plugin list được Flutter tạo lại trong macos/windows.
+- `android/app/build.gradle.kts`, `android/settings.gradle.kts`, `android/app/src/main/AndroidManifest.xml`, `android/app/src/main/res/raw/keep.xml`: desugaring, receiver, icon và bỏ Google Services.
+- `ios/Runner/AppDelegate.swift`, `Info.plist`, `Runner.entitlements`, `ios/Runner.xcodeproj/project.pbxproj`: local delegate và bỏ cấu hình remote push.
+- `supabase/migrations/20261025094420_local_workout_notifications.sql`, `supabase/functions/reminder-worker/index.ts`, `supabase/schedule.example.sql`: schema/RLS/cutover và nghỉ worker.
+- `test/reminder_controller_test.dart`, `test/native_reminders_test.dart`, `test/widget_test.dart`, `tool/verify_local_reminder_sql.mjs`: kiểm thử.
+- `docs/workout-reminders.md`, báo cáo này, `README.md`, `reminder-config.example.json`, `.gitignore`: hướng dẫn/cấu hình mẫu và bỏ qua build cache Kotlin.
 
-Database coverage: IANA/local date, previous day near midnight, DST gap/overlap,
-two daily slots/two devices, repeated planner/claim, unchanged settings, changing
-an unsent schedule, preserving an attempted/sent slot, disabling pending/demo
-jobs, +1/+3-minute offsets, per-user test cooldown, ownership, expired FCM token,
-bounded retry, lease recovery and stale-claim fencing. Provider classification
-tests distinguish accepted, UNREGISTERED, permanent rejection and retry.
+- `flutter pub get`: thành công, cập nhật pubspec.lock.
+- `flutter analyze`: No issues found.
+- `flutter test --concurrency=2`: **172 passed, 1 skipped**, không có lỗi. Test bị bỏ qua là web_activity_widget_test, chỉ chạy trên web (`skip: !kIsWeb`). Test khởi động đã mock đăng ký plugin native mới; không gọi FCM.
+- Test nhắc tập: đổi giờ/múi giờ, giờ sai/trùng, quyền bị từ chối, lỗi hẹn, offline/pending/retry, cache tách tài khoản, logout và owner change khi sync đến muộn, native queue khi logout giữa await, gửi thử không gọi server.
+- `node tool/verify_local_reminder_sql.mjs`: **25 kiểm tra** trên PostgreSQL nhúng qua cả migration cũ và mới; RLS, chặn đổi chủ, validation, quyền anon và cutover theo tài khoản khi pull/upsert. Không kết nối production. Docker daemon chưa chạy nên không chạy được Supabase local đầy đủ/advisors.
+- `flutter build apk --debug --dart-define-from-file=supabase-config.json`: thành công. APK: `build/app/outputs/flutter-apk/app-debug.apk`. Gradle có cảnh báo native-access của JDK; build vẫn hoàn tất.
+- `git diff --check`: không có lỗi whitespace.
 
-## Not verified with real services/devices
+## Còn cần thực hiện
 
-- No Firebase service-account/APNs credentials or native Firebase config were
-  supplied. **No real remote push was sent or observed.**
-- No schema, Edge Function, Vault secret or cron was deployed to a hosted
-  Supabase project. Existing production/Auth data was not modified.
-- FCM/APNs acceptance, Android/iPhone background display and cold-start tap
-  routing require a configured build on physical devices.
-- iOS compilation/signing/provisioning requires macOS/Xcode and Apple setup.
-- Actual parallel PostgreSQL workers, runtime RLS through PostgREST, Supabase
-  advisors and local migration history require a running development stack.
-- OS notification permission, DND/battery restrictions and network availability
-  affect display. An accepted provider ID is not proof of device display;
-  exactly-once delivery is not guaranteed.
+1. Áp dụng migration lên đúng Supabase project và kiểm tra API/RLS với hai tài khoản thật. Chưa áp dụng migration hoặc thay đổi job production trong phiên này.
+2. Kiểm tra phạm vi cron steady-workout-reminders, reminder-worker và scheduler ngoài; ngừng job/triển khai entry point nghỉ hoạt động sau khi xác nhận rollout. Client cũ có thể đăng ký FCM lại, cần cập nhật thiết bị hoặc dừng worker đã xác định phạm vi. Push đã gửi không thể thu hồi.
+3. Cài APK lên điện thoại, kiểm tra cấp/từ chối quyền, background, offline, reboot, đổi giờ, tắt, hai thiết bị và đăng xuất. Chưa kiểm thử điện thoại thật; fake plugin không chứng minh OS đã hiển thị.
+4. iOS cần macOS/Xcode và thiết bị iOS để build/kiểm tra. Khi phát hành Android cần signing key chính thức; cấu hình release cũ vẫn đang dùng debug signing.
 
-## Android build result
-
-Built `build/app/outputs/flutter-apk/app-debug.apk` successfully with the existing
-application ID `com.example.steady`. This debug build uses no Firebase app
-credentials, so it verifies plugin/native compilation only; push remains
-unavailable until the files described in the setup guide are supplied.
-The final incremental build includes the latest Dart changes; its generated
-kernel timestamp was checked to be newer than the reminder source files.
-
-Gradle downloaded the Android 34 platform required by dependencies. It emitted
-warnings about the Firebase Core plugin's Kotlin Gradle Plugin compatibility
-with future Flutter versions, old SDK XML tooling, Java native access and
-deprecated native APIs. These did not fail the current build. No Android device
-installation or runtime push test was performed. No iOS build was run.
-
-See [setup and phone checklist](workout-reminders.md). The previously delivered
-release APK in `dist/` predates this feature and has not been replaced.
+Hướng dẫn SQL, build/cài và checklist điện thoại: [workout-reminders.md](workout-reminders.md).

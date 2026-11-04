@@ -97,6 +97,21 @@ class ProfileScreen extends StatelessWidget {
             onPressed: () async {
               try {
                 await reminders?.detach();
+              } catch (_) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        Localizations.localeOf(context).languageCode == 'vi'
+                            ? 'Không hủy được lịch nhắc trên máy. Thử đăng xuất lại.'
+                            : 'Could not cancel local reminders. Retry signing out.',
+                      ),
+                    ),
+                  );
+                }
+                return;
+              }
+              try {
                 await auth!.signOut();
               } catch (_) {
                 if (context.mounted) {

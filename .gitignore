@@ -10,6 +10,7 @@ android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
 **/service-account*.json
 supabase/.temp/
+android/.kotlin/
 *.class
 *.log
 *.pyc
