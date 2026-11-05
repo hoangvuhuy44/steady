@@ -1,5 +1,8 @@
 # Steady Android APK build report
 
+> Historical result, not verification of the November 2026 PR0 HEAD.
+> PR0 base uses version 1.1.0+3. See [current verification](mvp/verification.md).
+
 Date: **10 October 2026 (Asia/Bangkok)**.
 
 ## Build result: SUCCESS
