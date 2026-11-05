@@ -15,6 +15,9 @@ abstract class ActivityRepository {
   Future<void> close();
 }
 
+/// The Android beta journal is authoritative on this installation's SQLite DB.
+/// Auth only selects an owner partition; it never selects a remote repository.
+/// Keep the existing Preferences adapter for web/desktop compatibility.
 ActivityRepository createActivityRepository() =>
     kIsWeb ||
         defaultTargetPlatform == TargetPlatform.windows ||

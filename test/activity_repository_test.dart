@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as path;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -24,6 +25,66 @@ void main() {
     await repo.close();
     await directory.delete(recursive: true);
   });
+
+  test('Android selects SQLite as the journal source of truth', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    addTearDown(() => debugDefaultTargetPlatformOverride = null);
+    final repository = createActivityRepository();
+    expect(repository, isA<SqliteActivityRepository>());
+    await repository.close();
+  });
+
+  test(
+    'same account on two installations keeps independent local journals',
+    () async {
+      SqliteActivityRepository openSecond() => SqliteActivityRepository(
+        factory: databaseFactoryFfi,
+        databasePath: path.join(directory.path, 'second-installation.db'),
+      );
+      var second = openSecond();
+      final firstStore = SteadyStore(activityRepository: repo);
+      final secondStore = SteadyStore(activityRepository: second);
+      try {
+        final firstGuest = await repo.guestOwnerId();
+        final secondGuest = await second.guestOwnerId();
+        expect(firstGuest, isNot(secondGuest));
+        // No Auth client or network service is needed to persist the journal.
+        await firstStore.setActivityUser('same-account');
+        await secondStore.setActivityUser('same-account');
+        await firstStore.logActivity(ActivityType.walk, 20);
+        await secondStore.reloadActivities();
+        expect(firstStore.logs.single.type, ActivityType.walk);
+        expect(secondStore.logs, isEmpty);
+        await secondStore.logActivity(ActivityType.swim, 30);
+        await firstStore.reloadActivities();
+        expect(firstStore.logs.single.type, ActivityType.walk);
+        expect(secondStore.logs.single.type, ActivityType.swim);
+
+        await firstStore.setActivityUser(null);
+        expect(firstStore.logs, isEmpty);
+        await firstStore.setActivityUser('same-account');
+        expect(firstStore.logs.single.type, ActivityType.walk);
+        await repo.close();
+        await second.close();
+        repo = openRepository();
+        second = openSecond();
+        expect(
+          (await repo.load('same-account')).single.type,
+          ActivityType.walk,
+        );
+        expect(
+          (await second.load('same-account')).single.type,
+          ActivityType.swim,
+        );
+        expect(await repo.guestOwnerId(), firstGuest);
+        expect(await second.guestOwnerId(), secondGuest);
+      } finally {
+        firstStore.dispose();
+        secondStore.dispose();
+        await second.close();
+      }
+    },
+  );
 
   test(
     'guest identity and history persist independently of accounts',
