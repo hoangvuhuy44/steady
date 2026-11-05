@@ -165,6 +165,7 @@ class _SteadyAppState extends State<SteadyApp> with WidgetsBindingObserver {
     if (sessionRevision != auth.sessionRevision) {
       sessionRevision = auth.sessionRevision;
       store.beginSession();
+      if (selectedIndex >= 3) selectedIndex = 2;
       configureDailyMenu();
       unawaited(store.setActivityUser(auth.userId));
       unawaited(configureReminders());
@@ -238,8 +239,18 @@ class _SteadyAppState extends State<SteadyApp> with WidgetsBindingObserver {
           store: store,
           onSaved: () => setState(() => selectedIndex = 0),
         ),
+        ProfileScreen(
+          store: store,
+          locale: locale,
+          onLanguageChanged: changeLanguage,
+          auth: auth,
+          reminders: reminders,
+          dailyMenu: dailyMenu,
+          onMeals: () => setState(() => selectedIndex = 3),
+          onRewards: () => setState(() => selectedIndex = 4),
+        ),
         if (dailyMenu?.profile != null)
-          DailyMenuScreen(controller: dailyMenu!)
+          DailyMenuScreen(controller: dailyMenu!, showAppBar: false)
         else
           RecipesScreen(
             onDailyMenu: dailyMenu == null
@@ -251,58 +262,55 @@ class _SteadyAppState extends State<SteadyApp> with WidgetsBindingObserver {
                   ),
           ),
         RewardsScreen(store: store),
-        ProfileScreen(
-          store: store,
-          locale: locale,
-          onLanguageChanged: changeLanguage,
-          auth: auth,
-          reminders: reminders,
-          dailyMenu: dailyMenu,
-        ),
       ];
-      return Scaffold(
-        key: ValueKey('app-session-${auth.sessionRevision}'),
-        body: SafeArea(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 880),
-              child: IndexedStack(index: selectedIndex, children: screens),
+      final secondary = selectedIndex >= 3;
+      return PopScope(
+        canPop: !secondary,
+        onPopInvokedWithResult: (didPop, result) {
+          if (!didPop && secondary) setState(() => selectedIndex = 2);
+        },
+        child: Scaffold(
+          appBar: secondary
+              ? AppBar(
+                  leading: BackButton(
+                    onPressed: () => setState(() => selectedIndex = 2),
+                  ),
+                  title: Text(selectedIndex == 3 ? l.meals : l.rewards),
+                )
+              : null,
+          key: ValueKey('app-session-${auth.sessionRevision}'),
+          body: SafeArea(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 880),
+                child: IndexedStack(index: selectedIndex, children: screens),
+              ),
             ),
           ),
-        ),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: selectedIndex,
-          onDestinationSelected: (index) {
-            FocusManager.instance.primaryFocus?.unfocus();
-            setState(() => selectedIndex = index);
-          },
-          destinations: [
-            NavigationDestination(
-              icon: const Icon(Icons.home_outlined),
-              selectedIcon: const Icon(Icons.home),
-              label: l.today,
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.add_circle_outline),
-              selectedIcon: const Icon(Icons.add_circle),
-              label: l.checkIn,
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.restaurant_outlined),
-              selectedIcon: const Icon(Icons.restaurant),
-              label: l.meals,
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.emoji_events_outlined),
-              selectedIcon: const Icon(Icons.emoji_events),
-              label: l.rewards,
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.person_outline),
-              selectedIcon: const Icon(Icons.person),
-              label: l.profile,
-            ),
-          ],
+          bottomNavigationBar: NavigationBar(
+            selectedIndex: secondary ? 2 : selectedIndex,
+            onDestinationSelected: (index) {
+              FocusManager.instance.primaryFocus?.unfocus();
+              setState(() => selectedIndex = index);
+            },
+            destinations: [
+              NavigationDestination(
+                icon: const Icon(Icons.home_outlined),
+                selectedIcon: const Icon(Icons.home),
+                label: l.today,
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.add_circle_outline),
+                selectedIcon: const Icon(Icons.add_circle),
+                label: l.checkIn,
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.person_outline),
+                selectedIcon: const Icon(Icons.person),
+                label: l.profile,
+              ),
+            ],
+          ),
         ),
       );
     },

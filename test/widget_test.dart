@@ -11,6 +11,7 @@ import 'package:steady/main.dart' as app;
 import 'package:steady/nutrition/meal_planner.dart';
 import 'package:steady/state/language_preferences.dart';
 import 'package:steady/state/steady_store.dart';
+import 'package:steady/screens/rewards_screen.dart';
 
 import 'health_screening_test.dart' show screening;
 import 'helpers/fake_activity_repository.dart';
@@ -122,7 +123,17 @@ void main() {
         tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
         0,
       );
-      await tester.tap(find.text('Recipes'));
+      final destinations = tester.widgetList<NavigationDestination>(
+        find.byType(NavigationDestination),
+      );
+      expect(destinations.map((d) => d.label), [
+        'Today',
+        'Check in',
+        'Profile',
+      ]);
+      await tester.tap(find.byType(NavigationDestination).at(2));
+      await tester.pumpAndSettle();
+      await tapVisible(tester, find.byKey(const ValueKey('profile-meals')));
       await tester.pumpAndSettle();
       expect(find.text('Recipe ideas'), findsOneWidget);
       expect(find.byKey(const ValueKey('screening-age')), findsNothing);
@@ -156,7 +167,7 @@ void main() {
         tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
         0,
       );
-      await tester.tap(find.byType(NavigationDestination).at(4));
+      await tester.tap(find.byType(NavigationDestination).at(2));
       await tester.pumpAndSettle();
       expect(find.text('Guest'), findsOneWidget);
       await setLanguage(tester, 'English');
@@ -235,10 +246,28 @@ void main() {
       await tester.pumpWidget(
         SteadyApp(store: store, initialLocale: Locale(code)),
       );
-      for (var i = 0; i < 5; i++) {
+      for (var i = 0; i < 3; i++) {
         await tester.tap(find.byType(NavigationDestination).at(i));
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull, reason: 'Tab $i in $code');
+      }
+      for (final section in ['meals', 'rewards']) {
+        await tapVisible(tester, find.byKey(ValueKey('profile-$section')));
+        expect(find.byType(NavigationDestination), findsNWidgets(3));
+        expect(find.byKey(const ValueKey('screening-age')), findsNothing);
+        if (section == 'rewards') {
+          expect(find.byType(RewardsScreen), findsOneWidget);
+        }
+        expect(tester.takeException(), isNull, reason: '$section in $code');
+        await tester.binding.handlePopRoute();
+        await tester.pumpAndSettle();
+        expect(find.byType(AppBar), findsNothing);
+        expect(
+          tester
+              .widget<NavigationBar>(find.byType(NavigationBar))
+              .selectedIndex,
+          2,
+        );
       }
     });
   }
