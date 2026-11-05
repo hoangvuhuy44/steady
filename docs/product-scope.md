@@ -1,6 +1,9 @@
 # Phạm vi sản phẩm Steady MVP
 
-Cập nhật 22/10/2026. Nền tảng ưu tiên: Android và iOS.
+Cập nhật định hướng 05/11/2026: [PR0 MVP architecture gate](mvp/README.md) đề xuất
+Android-first, Weekly Commitment và Missed-session Recovery là core. PR0 chỉ là
+tài liệu chờ duyệt, chưa đổi navigation hoặc dữ liệu. Phần dưới ghi lại sản phẩm
+hiện hữu từ 22/10/2026; không phải backlog mở rộng meal planning trong roadmap mới.
 
 **Bổ sung mới:** [Thực đơn cá nhân hằng ngày](personalized-daily-menu.md) đã có
 questionnaire tối giản, ba bữa, đổi món, phản hồi và lưu hồ sơ/menu riêng theo
@@ -8,9 +11,11 @@ ngày/múi giờ. Luồng này tách khỏi screening/planner nghiên cứu. Kho
 chưa xác minh; hồ sơ có dị ứng hoặc kiêng bắt buộc được chặn gợi ý thay vì
 tự nới giới hạn. Lưu trữ tài khoản cần triển khai migration mới.
 
-Nhắc tập native đã có code MVP dùng Supabase Postgres + FCM, cần cấu hình backend
-và Firebase/APNs. [Hướng dẫn nhắc tập](workout-reminders.md) có lịch hằng ngày,
-demo 1/3 phút, lệnh chạy worker và checklist điện thoại thật.
+App hiện gọi local native notifications với hai giờ lặp hằng ngày, payload check-in;
+Supabase lưu cài đặt tài khoản. Legacy FCM worker còn trong repo; migration cutover
+retire push theo owner không chứng minh đã deploy hay cron đã dừng.
+[Hướng dẫn nhắc tập](workout-reminders.md) và [source verification](mvp/verification.md)
+phân biệt adapter hiện tại với session-aware reminders sẽ thiết kế sau gate.
 
 ## Trong MVP
 
