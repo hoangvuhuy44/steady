@@ -85,7 +85,7 @@ void main() {
         false,
         false,
       ]);
-      await tester.tap(find.byType(NavigationDestination).at(4));
+      await tester.tap(find.byType(NavigationDestination).at(2));
       await tester.pumpAndSettle();
       expect(find.text(l.fiveDays), findsOneWidget);
       expect(find.text(progress), findsOneWidget);

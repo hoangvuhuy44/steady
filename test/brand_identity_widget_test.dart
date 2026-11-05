@@ -136,7 +136,7 @@ void main() {
             await tester.pumpAndSettle();
           }
 
-          for (var tab = 0; tab < 5; tab++) {
+          for (var tab = 0; tab < 3; tab++) {
             await tester.tap(find.byType(NavigationDestination).at(tab));
             await tester.pumpAndSettle();
             expect(tester.takeException(), isNull);

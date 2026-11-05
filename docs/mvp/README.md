@@ -27,7 +27,9 @@ Các tỷ lệ ưu tiên 37.5/37.5/12.5/12.5 là trọng tâm sản phẩm, khô
 
 ## Checklist quyết định cần chủ sản phẩm xác nhận
 
-Mọi mục còn **pending**. Không coi im lặng, việc tạo PR hay test xanh là phê duyệt.
+**D02 được người dùng yêu cầu triển khai riêng ngày 05/11/2026.** Xem
+[phạm vi triển khai D02](d02-navigation.md). D01 và D03–D13 vẫn **pending**;
+không coi phê duyệt D02, việc tạo PR hay test xanh là duyệt toàn bộ kiến trúc.
 
 | ID | Mặc định đề xuất | Tradeoff / phương án khác |
 |---|---|---|

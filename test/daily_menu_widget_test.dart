@@ -98,7 +98,7 @@ void main() {
   }
 
   testWidgets(
-    'saved profile opens daily tab; account switch closes private routes',
+    'saved profile opens meals from Profile; account switch closes private routes',
     (tester) async {
       final repo = MemoryMenuRepository();
       final initial = DailyMenuController(repository: repo);
@@ -120,7 +120,9 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byType(NavigationDestination).at(2));
       await tester.pumpAndSettle();
+      await foodTap(tester, find.byKey(const ValueKey('profile-meals')));
       expect(find.byType(DailyMenuScreen), findsOneWidget);
+      expect(find.byType(AppBar), findsOneWidget);
       await foodTap(tester, find.byKey(const ValueKey('food-profile-edit')));
       expect(find.byType(FoodQuestionnaire), findsOneWidget);
       auth.login('new');

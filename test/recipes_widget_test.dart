@@ -16,6 +16,7 @@ import 'widget_test.dart' show tapVisible, setLanguage;
 Future<void> openRecipes(WidgetTester tester) async {
   await tester.tap(find.byType(NavigationDestination).at(2));
   await tester.pumpAndSettle();
+  await tapVisible(tester, find.byKey(const ValueKey('profile-meals')));
 }
 
 Future<void> expectCount(WidgetTester tester, int count, String code) async {
@@ -222,6 +223,7 @@ void main() {
         tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
         2,
       );
+      await openRecipes(tester);
       await expectCount(tester, meals.length, 'en');
       expect(store.mealPlanningAllowed, isFalse);
       expect(store.mealPlan, isEmpty);
@@ -231,6 +233,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(store.mealPlanningAllowed, isFalse);
       expect(store.screeningRequired, isTrue);
+      await openRecipes(tester);
       await expectCount(tester, meals.length, 'en');
       await openSignIn(tester);
       await tester.enterText(
@@ -244,7 +247,7 @@ void main() {
       await tapVisible(tester, find.byKey(const ValueKey('auth-submit')));
       expect(
         tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
-        4,
+        2,
       );
       expect(find.byKey(const ValueKey('screening-age')), findsNothing);
     },
@@ -262,7 +265,7 @@ void main() {
     await tapVisible(tester, find.byKey(const ValueKey('recipe-slot-Tối')));
     await tapVisible(tester, find.byKey(const ValueKey('recipe-time-20')));
     await expectCount(tester, 3, 'en');
-    await tester.tap(find.byType(NavigationDestination).at(4));
+    await tester.tap(find.byType(NavigationDestination).at(2));
     await tester.pumpAndSettle();
     await setLanguage(tester, 'Tiếng Việt');
     await openRecipes(tester);

@@ -23,6 +23,8 @@ class ProfileScreen extends StatelessWidget {
     this.auth,
     this.reminders,
     this.dailyMenu,
+    this.onMeals,
+    this.onRewards,
   });
   final SteadyStore store;
   final Locale? locale;
@@ -30,6 +32,8 @@ class ProfileScreen extends StatelessWidget {
   final AuthController? auth;
   final ReminderController? reminders;
   final DailyMenuController? dailyMenu;
+  final VoidCallback? onMeals;
+  final VoidCallback? onRewards;
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
@@ -176,6 +180,33 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: SteadySpacing.lg),
+        if (onMeals != null || onRewards != null) ...[
+          Card(
+            child: Column(
+              children: [
+                if (onMeals != null)
+                  ListTile(
+                    key: const ValueKey('profile-meals'),
+                    leading: const Icon(Icons.restaurant_outlined),
+                    title: Text(l.meals),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: onMeals,
+                  ),
+                if (onMeals != null && onRewards != null)
+                  const Divider(height: 1),
+                if (onRewards != null)
+                  ListTile(
+                    key: const ValueKey('profile-rewards'),
+                    leading: const Icon(Icons.emoji_events_outlined),
+                    title: Text(l.rewards),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: onRewards,
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(height: SteadySpacing.lg),
+        ],
         Card(
           child: Column(
             children: [

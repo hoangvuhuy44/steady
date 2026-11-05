@@ -80,7 +80,7 @@ Future<void> enterScreeningValue(
 }
 
 Future<void> openSignIn(WidgetTester tester) async {
-  await tester.tap(find.byType(NavigationDestination).at(4));
+  await tester.tap(find.byType(NavigationDestination).at(2));
   await tester.pumpAndSettle();
   await tapVisible(tester, find.byKey(const ValueKey('profile-sign-in')));
 }
@@ -438,7 +438,7 @@ void main() {
       expect(find.byType(NavigationBar), findsOneWidget);
       expect(
         tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
-        4,
+        2,
       );
     },
   );
@@ -557,7 +557,9 @@ void main() {
         screening(conditions: {HealthCondition.kidneyDisease}),
       );
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Recipes'));
+      await tester.tap(find.byType(NavigationDestination).at(2));
+      await tester.pumpAndSettle();
+      await tapVisible(tester, find.byKey(const ValueKey('profile-meals')));
       await tester.pumpAndSettle();
       expect(find.text('Recipe ideas'), findsOneWidget);
       expect(store.mealPlanningAllowed, isFalse);
