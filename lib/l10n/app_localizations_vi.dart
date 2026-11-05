@@ -59,7 +59,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get authIntro =>
-      'Đăng nhập để dùng tài khoản. Bạn có thể huỷ và tiếp tục check-in với tư cách khách.';
+      'Đăng nhập để sử dụng tài khoản. Nhật ký vận động vẫn lưu trên máy này; đăng nhập không đồng bộ nhật ký sang thiết bị khác. Bạn vẫn có thể ghi nhận với tư cách khách.';
 
   @override
   String get email => 'Email';
@@ -1381,7 +1381,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get localActivityStorage =>
-      'Nhật ký được lưu trên thiết bị, tách riêng khách và từng tài khoản. Chưa có sao lưu hoặc đồng bộ server.';
+      'Nhật ký vận động được lưu trên máy này, tách riêng khách và từng tài khoản. Steady không sao lưu hay đồng bộ nhật ký sang thiết bị khác. Gỡ ứng dụng hoặc xóa dữ liệu ứng dụng có thể làm mất nhật ký vĩnh viễn.';
 
   @override
   String get recipesTitle => 'Gợi ý món ăn';

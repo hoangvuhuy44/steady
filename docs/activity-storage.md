@@ -1,5 +1,17 @@
 # Activity storage
 
+## D01 decision — 5 November 2026
+
+Android beta uses the existing SQLite v2 journal as its local source of truth.
+Signing into the same account on another installation does not transfer or sync
+activity logs. Steady provides no journal server backup/restore; uninstalling or
+clearing app data may permanently lose local history. OS-level restore behavior
+is outside this guarantee and was not tested here. See [D01](mvp/d01-local-first.md).
+
+Factory selection and two independent SQLite databases with the same account are
+covered in `test/activity_repository_test.dart`. No schema migration is added.
+The details and October verification below describe the existing baseline.
+
 Android and iOS use `sqflite` with a versioned `steady_activities.db` in the
 platform database directory. `ActivityRepository` is injectable for tests.
 There is no in-memory fallback that reports a successful save.
@@ -77,12 +89,13 @@ No physical Android/iOS run or live account login was performed for this change.
 - Switch between two real Supabase accounts, sign out, and sign back in; check
   that each account and the guest see only their own activities. Repeat after
   terminating the app, including while a write is pending.
-- Enter Meals without automatic navigation. Only its setup button opens health
-  and nutrition screening. Cancel back to Meals and use the Home tab. Complete
-  screening to return to Meals; check that unassessed/ineligible cases cannot
-  create or swap plans. Signing in must return to Home without screening.
+- Open Meals through Profile (D02); verify saved daily-menu data remains accessible.
+  Research screening is not routed from the app. Signing in preserves the primary
+  tab and closes private routes; it does not upload or merge the journal.
 - Verify saving/loading UI on device, including a storage write failure and retry.
 - Check recording around local midnight and after changing the device timezone.
 
-Browser and Windows production SQLite backends are outside this change. If the
-native plugin is unavailable, the load error is shown and saving stays disabled.
+Web, Windows and Linux currently use PreferencesActivityRepository; Android/iOS
+use SQLite. D01 does not change these platform adapters. On SQLite platforms an
+unavailable native plugin produces a load error and saving stays disabled; it does
+not silently fall back to an ephemeral journal.

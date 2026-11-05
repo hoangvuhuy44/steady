@@ -185,7 +185,7 @@ abstract class AppLocalizations {
   /// No description provided for @authIntro.
   ///
   /// In en, this message translates to:
-  /// **'Sign in to use your account. You can cancel and continue checking in as a guest.'**
+  /// **'Sign in to use your account. Your activity journal stays on this device; signing in does not sync it to another device. You can continue checking in as a guest.'**
   String get authIntro;
 
   /// No description provided for @email.
@@ -2579,7 +2579,7 @@ abstract class AppLocalizations {
   /// No description provided for @localActivityStorage.
   ///
   /// In en, this message translates to:
-  /// **'Activity logs are saved on this device, separately for guests and each account. No server backup or sync is available.'**
+  /// **'Your activity journal is saved on this device, separately for guests and each account. Steady does not back it up or sync it to other devices. Uninstalling the app or clearing app data may permanently erase it.'**
   String get localActivityStorage;
 
   /// No description provided for @recipesTitle.
