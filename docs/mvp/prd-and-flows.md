@@ -30,7 +30,8 @@ ChangeNotifier, test clocks/fakes; không đổi framework state.
 1. **Vào app:** đọc owner, dữ liệu local; lỗi mở DB có retry, không hiện progress 0
    thay cho lỗi. Native reminder lỗi vẫn phải cho vào core ở PR5.
 2. **Thiết lập:** chọn guest/account tùy ý; consent analytics tách khỏi sử dụng app.
-   Chọn timezone, 1–7 buổi, nhiều môn; xem tuần hiện tại là partial nếu có.
+   Lấy và hiển thị timezone IANA của thiết bị để khởi tạo chuỗi (D03); chọn 1–7 buổi,
+   nhiều môn; xem tuần hiện tại là partial nếu có (D04 còn pending).
    Persist commitment rồi mới báo thành công. Lỗi ghi giữ draft, retry cùng command ID.
 3. **Lên lịch:** planner cho thêm/sửa/xem/hủy buổi. Target không đổi khi số lịch đổi.
    Có thể lên nhiều buổi/ngày; không ép đủ lịch ngay. Kiểm tra giờ kết thúc trong tuần.
@@ -47,7 +48,8 @@ ChangeNotifier, test clocks/fakes; không đổi framework state.
    pending correction riêng. Không biến rest thành thất bại đạo đức. Nếu chưa có
    commitment, hiển thị nhật ký lịch sử, không tự suy diễn target.
 8. **Tuần tiếp:** người dùng xác nhận repeat hoặc đổi target/môn/lịch. Pending target
-   chỉ áp dụng tuần mới; unique owner + week chống repeat hai lần. Nếu bỏ qua nhiều
+   chỉ áp dụng tuần mới; unique owner + series + period_sequence chống repeat hai lần
+   (D03 có kỳ chuyển tiếp nên không dùng local Monday làm khóa). Nếu bỏ qua nhiều
    tuần, không tự dựng commitments lịch sử từ logs; hiển thị khoảng trống.
 
 ## Guest / account / offline / bất đồng bộ
@@ -63,6 +65,11 @@ ChangeNotifier, test clocks/fakes; không đổi framework state.
 | Notification bị từ chối | Planner/recovery trong app vẫn dùng; không hỏi lại mỗi resume; mở settings chỉ theo thao tác người dùng |
 | Health rest | Dừng nhắc vận động ở owner hiện tại kể cả buổi tương lai; người dùng chủ động resume, không tự bật lại vì rollover |
 | Web/Windows/Linux | Giữ Preferences activity flow hiện hữu; không tạo commitment đa bảng qua các key rời rạc |
+| Timezone thiết bị thay đổi | Giữ lịch kỳ hiện tại, preview zone mới và kỳ chuyển tiếp; xác nhận áp dụng ở kỳ kế, không rewrite logs; chi tiết D03 |
+
+Quy tắc thời gian được chốt riêng tại [D03](d03-schedule-timezone.md). Preview phải
+nói rõ kỳ chuyển tiếp ngắn (ví dụ Bangkok → Berlin có thể chỉ 6 giờ), không gọi đó
+là tuần đầy đủ hoặc tự giảm target. Chưa có màn hình Schedule/preview chạy trong app.
 
 Ví dụ: target 3, đã hoàn thành 1, dời buổi thứ hai sang thứ Sáu: vẫn 1/3.
 Hoàn thành phiên ngắn hợp lệ của buổi đó: 2/3. Chọn nghỉ buổi thứ ba: vẫn 2/3.

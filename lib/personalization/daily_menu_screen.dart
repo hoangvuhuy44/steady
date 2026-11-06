@@ -11,8 +11,13 @@ import 'food_strings.dart';
 import 'menu_controller.dart';
 
 class DailyMenuScreen extends StatelessWidget {
-  const DailyMenuScreen({super.key, required this.controller});
+  const DailyMenuScreen({
+    super.key,
+    required this.controller,
+    this.showAppBar = true,
+  });
   final DailyMenuController controller;
+  final bool showAppBar;
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
@@ -25,7 +30,9 @@ class DailyMenuScreen extends StatelessWidget {
       final completeCost = day.every((r) => r?.estimatedCost != null);
       final cost = day.fold<int>(0, (sum, r) => sum + (r?.estimatedCost ?? 0));
       return Scaffold(
-        appBar: AppBar(title: Text(t('Thực đơn hôm nay', 'Today’s menu'))),
+        appBar: showAppBar
+            ? AppBar(title: Text(t('Thực đơn hôm nay', 'Today’s menu')))
+            : null,
         body: ListView(
           key: const ValueKey('daily-menu'),
           padding: SteadySpacing.screen,

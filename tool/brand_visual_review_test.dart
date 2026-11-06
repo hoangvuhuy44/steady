@@ -13,6 +13,7 @@ import 'package:steady/state/steady_store.dart';
 import '../test/helpers/brand_fonts.dart';
 import '../test/helpers/fake_activity_repository.dart';
 import '../test/auth_screening_widget_test.dart' show FakeAuth, openSignIn;
+import '../test/widget_test.dart' show tapVisible;
 import '../test/health_screening_test.dart' show screening;
 
 void main() {
@@ -77,11 +78,27 @@ void main() {
         );
       });
       await tester.pumpAndSettle();
-      for (var index = 0; index < 5; index++) {
+      for (var index = 0; index < 3; index++) {
         await tester.tap(find.byType(NavigationDestination).at(index));
-        await capture(
-          ['home', 'check-in', 'meals', 'rewards', 'profile'][index],
-        );
+        await capture(['home', 'check-in', 'profile'][index]);
+      }
+      for (final section in ['meals', 'rewards']) {
+        if (section == 'meals') {
+          await tester.scrollUntilVisible(
+            find.byKey(const ValueKey('profile-meals')),
+            250,
+            scrollable: find.byType(Scrollable).hitTestable().first,
+          );
+          await Scrollable.ensureVisible(
+            tester.element(find.byKey(const ValueKey('profile-meals'))),
+            alignment: 0.4,
+          );
+          await capture('profile-shortcuts');
+        }
+        await tapVisible(tester, find.byKey(ValueKey('profile-$section')));
+        await capture(section);
+        await tester.tap(find.byType(BackButton));
+        await tester.pumpAndSettle();
       }
       await openSignIn(tester);
       await capture('sign-in');

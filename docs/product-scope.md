@@ -1,5 +1,10 @@
 # Phạm vi sản phẩm Steady MVP
 
+**D02 đã triển khai trên branch riêng:** navigation beta có Home/Check-in/Profile;
+Meals và Rewards mở qua mục phụ Profile, dữ liệu cũ được giữ nguyên. Research tiếp
+tục ẩn. Xem [phạm vi D02](mvp/d02-navigation.md). Những phần bên dưới về tab Meals
+là mô tả trước D02; logic menu/catalogue vẫn giữ nguyên.
+
 Cập nhật định hướng 05/11/2026: [PR0 MVP architecture gate](mvp/README.md) đề xuất
 Android-first, Weekly Commitment và Missed-session Recovery là core. PR0 chỉ là
 tài liệu chờ duyệt, chưa đổi navigation hoặc dữ liệu. Phần dưới ghi lại sản phẩm

@@ -1,7 +1,8 @@
 # Acceptance matrix và delivery plan
 
 Tất cả test core mới dưới đây là **planned, chưa chạy**. Test cũ không chứng nhận
-Commitment/Recovery. Gate D01–D13 phải được duyệt trước PR1. Không merge/deploy tự động.
+Commitment/Recovery. D01–D03 đã được chốt riêng, D04–D13 cần duyệt trước PR1.
+Không merge/deploy tự động.
 
 ## Acceptance matrix
 
@@ -47,6 +48,26 @@ và freeze denominator trước chạy acceptance. Tỷ lệ ≥95% = passed / t
 critical đã freeze; failed/skipped/blocked đều không pass. 100% cases bảo toàn dữ liệu,
 owner isolation, idempotency, rest safety phải pass dù tổng ≥95%. AC28 là usability
 thực tế, không thay bằng widget test. PR0 không claim matrix này đã đạt.
+
+## D03 — Phân rã AC09 thành ca nghiệm thu thời gian
+
+Status: planned/not run trên app; chỉ các số giờ của ví dụ đã được tính độc lập bằng
+Python zoneinfo. Đây là thiết kế nghiệm thu cho PR2–3, không phải tests đang pass.
+
+| ID | Input / expected outcome |
+|---|---|
+| D03-T01 | Device Europe/Berlin + locale vi: chain khởi tạo Europe/Berlin, không chọn zone theo ngôn ngữ |
+| D03-T02 | Bangkok 09/11/2026 00:00 → 16/11 00:00: 168h; instant end không thuộc kỳ cũ |
+| D03-T03 | New York 02/03 → 09/03/2026: 167h; vẫn tuần bình thường, không transition |
+| D03-T04 | New York 26/10 → 02/11/2026: 169h; không cộng cứng 168h |
+| D03-T05 | Máy đổi Bangkok → Berlin giữa tuần: persisted zone/start/end/session UTC kỳ hiện tại giữ nguyên, candidate có preview |
+| D03-T06 | Xác nhận đổi Bangkok → Berlin tại boundary 16/11/2026 00:00 Bangkok: kỳ chuyển tiếp [15/11 17:00Z, 15/11 23:00Z), 6h; preview nói rõ, không tự cộng tuần hay prorate target |
+| D03-T07 | Bangkok → Tokyo cùng boundary: [15/11 17:00Z, 22/11 15:00Z), 166h; kỳ sau Monday–Monday Tokyo |
+| D03-T08 | Start trùng Monday 00:00 zone mới: end là Monday kế tiếp, không kỳ 0h; alias ID không làm thay đổi instants |
+| D03-T09 | Hủy pending hoặc device đổi lần nữa: kỳ hiện tại không đổi; preview stale không được xác nhận vào revision mới |
+| D03-T10 | App restart qua effective boundary: reconcile bằng boundary đã lưu, không dùng now; apply idempotent, không tạo commitment tuần vắng khi D04 chưa cho phép |
+| D03-T11 | Invalid/unavailable IANA: giữ chain cũ; chuỗi mới giữ draft/retry, không fallback âm thầm; journal vẫn dùng được |
+| D03-T12 | DST wall time trùng/không tồn tại, tzdb update, account switch hoặc confirm sau rollover: resolve/preview theo ADR, không sửa lịch cũ hoặc áp preview sang owner/kỳ khác |
 
 ## PR dependency và rollback
 
