@@ -1,7 +1,8 @@
 # D01 — Android beta local-first SQLite
 
 Accepted ngày 05/11/2026 theo yêu cầu trực tiếp của chủ sản phẩm. Base triển khai
-là D02 `1128d7c`. D03–D13 còn chờ duyệt; đây không phải PR1/PR2 hay toàn bộ architecture gate.
+là D02 `1128d7c`. Tại thời điểm PR D01, D03–D13 còn chờ duyệt; trạng thái mới nhất
+xem [gate](README.md). Đây không phải PR1/PR2 hay toàn bộ architecture gate.
 
 ## Hợp đồng đã xác nhận
 

@@ -14,6 +14,13 @@ nullable theo event, `entity_revision`, `consent_generation`, allowlisted proper
 Không gửi raw owner/auth user UUID trong payload. Entity IDs opaque, không chứa email.
 Experiment assignment persist một lần theo subject, không re-randomize mỗi app mở.
 
+D03: week boundaries dùng UTC snapshot của commitment, không suy lại từ device zone
+hay received_at. `commitment_created`/`commitment_week_finalized` dự kiến thêm opaque
+`series_id`, `period_sequence`, `period_kind`; transition_week phải khớp period_kind.
+Không cần gửi raw device timezone để đo adherence/retention. Thay đổi schema event,
+consent và cách loại transition khỏi KPI vẫn thuộc D11/D13 chờ duyệt. Ví dụ kỳ chuyển
+tiếp 6 giờ trong [D03](d03-schedule-timezone.md) không được âm thầm đưa vào full-week mean.
+
 Consent mặc định off, lựa chọn rõ ràng và không cản core. Trước consent không queue
 analytics và không backfill lịch sử; local domain audit vẫn phục vụ integrity.
 Consent on tạo subject nếu cần, ghi `analytics_consent_granted` và context hiện tại;

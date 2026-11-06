@@ -29,14 +29,17 @@ Các tỷ lệ ưu tiên 37.5/37.5/12.5/12.5 là trọng tâm sản phẩm, khô
 
 **D01 và D02 được người dùng yêu cầu triển khai riêng ngày 05/11/2026.** Xem
 [hợp đồng local-first D01](d01-local-first.md) và [triển khai D02](d02-navigation.md).
-D03–D13 vẫn **pending**; không coi phê duyệt D01/D02, việc tạo PR hay test xanh
-là duyệt toàn bộ kiến trúc hoặc cho phép triển khai Commitment/Recovery.
+**D03 được xác nhận ngày 06/11/2026**, gồm timezone IANA lấy từ thiết bị rồi cố
+định theo chuỗi commitment, đổi ở kỳ kế có preview, và kỳ chuyển tiếp liền mạch.
+Xem [quy tắc D03](d03-schedule-timezone.md). D04–D13 vẫn **pending**; không coi
+phê duyệt D01–D03, việc tạo PR hay test xanh là duyệt toàn bộ kiến trúc hoặc cho
+phép triển khai Commitment/Recovery.
 
 | ID | Mặc định đề xuất | Tradeoff / phương án khác |
 |---|---|---|
 | D01 | Android beta local-first SQLite, không sync journal đa thiết bị | Dùng offline tốt, ít rủi ro migration; mất dữ liệu khi uninstall/clear storage. Cloud-authoritative tăng chi phí sync và conflict nhưng hỗ trợ nhiều thiết bị |
 | D02 | Giữ Home/Check-in/Profile/Auth; ẩn Meals/Rewards khỏi navigation beta, vẫn cho mở dữ liệu cũ qua mục phụ Profile; research tiếp tục ẩn | Core tập trung hơn; thay vị trí tính năng quen thuộc. Không xóa dữ liệu/code |
-| D03 | Tuần thứ Hai 00:00 đến thứ Hai kế, timezone IANA cố định theo chuỗi commitment; đổi timezone có hiệu lực kỳ kế, có preview | Dễ so sánh; khi đi du lịch giờ địa phương có thể khác giờ kế hoạch |
+| D03 — Accepted 06/11 | Tuần thứ Hai 00:00 đến thứ Hai kế; IANA lấy từ thiết bị khi bắt đầu chuỗi và snapshot cho từng kỳ. Đổi timezone chỉ ở kỳ kế có preview; kỳ chuyển tiếp nối ngay sau kỳ cũ và kết thúc ở thứ Hai 00:00 đầu tiên sau đó trong zone mới | Kỳ chuyển tiếp có thể rất ngắn; preview bắt buộc ghi thời lượng, không tự giảm target. Chi tiết tại D03 |
 | D04 | Tuần đầu là partial, target người dùng chọn giữ nguyên, loại khỏi KPI full-week; repeat cần xác nhận, không tự tạo tuần thiếu tương tác | Không tự áp cam kết; báo riêng tỷ lệ không tạo tuần tiếp thay vì che churn |
 | D05 | Buổi hợp lệ ≥10 phút; phiên ngắn recovery ≥5 phút chỉ khi chọn trước khi tập; nhiều buổi/ngày hợp lệ nếu thực sự khác nhau | Đây là định nghĩa sản phẩm để duyệt, không là khuyến nghị y tế; threshold khác sẽ đổi KPI/policy version |
 | D06 | Grace 2 giờ sau giờ kết thúc dự kiến; nhắc recovery tối đa một lần mỗi episode, tối đa một/ngày, giờ yên lặng 21:00–08:00 | Ít làm phiền; detection trên máy có thể muộn khi app tắt |
