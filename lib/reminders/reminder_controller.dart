@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:timezone/data/latest.dart' as data;
 import 'package:timezone/timezone.dart' as tz;
+
+import '../time/iana_data.dart' as data;
 
 enum ReminderPermission { unknown, granted, denied, unsupported }
 

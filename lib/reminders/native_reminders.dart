@@ -4,9 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:timezone/data/latest.dart' as data;
 import 'package:timezone/timezone.dart' as tz;
 
+import '../time/iana_data.dart' as data;
 import 'reminder_controller.dart';
 
 class NativeReminderDevice implements ReminderDevice {
