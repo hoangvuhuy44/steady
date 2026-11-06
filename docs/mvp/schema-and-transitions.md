@@ -13,6 +13,8 @@ Không hard-delete activity/commitment trong luồng correction.
 ```mermaid
 erDiagram
   WeeklyCommitment ||--|{ CommitmentSport : includes
+  CommitmentSeries ||--o{ WeeklyCommitment : owns
+  CommitmentSeries ||--o{ TimezoneChange : previews
   WeeklyCommitment ||--o{ PlannedSession : plans
   WeeklyCommitment ||--o{ CompletionCredit : counts
   PlannedSession o|--o| CompletionCredit : receives
@@ -27,7 +29,9 @@ metadata revisions. Notification/outbox không là nguồn tính progress.
 
 | Entity | Trường đặc thù | Cardinality / constraints |
 |---|---|---|
-| WeeklyCommitment | id, local_week_start, timezone_iana, starts_at_utc, ends_at_utc, target_at_start, policy_version, partial_week, transition_week, status, next_target, next_sports, finalized_at | Một owner nhiều tuần; unique owner + local_week_start; transaction không cho UTC periods overlap; end > start; target và next_target 1–7; snapshot immutable; status active/closed |
+| CommitmentSeries (D03 draft) | id, initial_device_timezone_iana, active_timezone_iana, timezone_policy_version, revision | Owner có nhiều chuỗi lịch sử, tối đa một chuỗi active theo thiết kế MVP; initial zone lấy từ thiết bị, không suy locale/offset; đổi active zone chỉ từ effective boundary đã xác nhận |
+| TimezoneChange (D03 draft) | id, series_id, source_commitment_id, old/new_timezone_iana, effective_at_utc, preview_start/end_utc, expected_series_revision, confirmed_at, status pending/applied/cancelled | Composite FK cùng owner; tối đa một pending/series; effective_at bằng source commitment end; replay cùng ID không áp hai lần; preview đổi thì phải xác nhận lại |
+| WeeklyCommitment | id, series_id, period_sequence, local_period_start, timezone_iana, starts_at_utc, ends_at_utc, target_at_start, policy_version, partial_week, transition_week, period_kind, timezone_change_id nullable, status, next_target, next_sports, finalized_at | Unique owner + series + period_sequence; không dùng local Monday làm identity vì transition có thể bắt đầu CN; transaction không cho UTC periods overlap ở owner; end > start; target và next_target 1–7; snapshot immutable; status active/closed; period_kind regular/timezone_transition |
 | CommitmentSport | commitment_id, sport_code | Một commitment có 1..8 môn, unique owner + commitment + sport; sport code dùng enum hiện hữu |
 | PlannedSession | id, commitment_id, credit_root_id, sport_code, planned_start/end_utc, local_scheduled_time, timezone, resolved_offset, schedule_revision, state, mode, carried_from_session_id, last_missed_episode_id | Commitment 0..N sessions (không ép N = target); unique root/session; thời gian trong kỳ; mode normal/short; carried_from FK cùng owner, cấm vòng lặp |
 | ActivityLog v2 | id, owner_id, activity_type, minutes, created_at_utc, local_date | Giữ nguyên toàn bộ trường và semantics cũ; minutes >0; id PK; không đổi localDate cũ khi travel |
@@ -45,6 +49,13 @@ Một completed activity độc lập với planned session. Không tạo Activi
 schedule/rest. Một session dùng nguyên ID/root khi đổi giờ hoặc chọn short; “replacement”
 là mode/revision thay thế nội dung dự kiến, không nhân bản session. Qua tuần mới là
 session/root khác và không bù tuần cũ.
+
+D03: `timezone_iana` và UTC boundaries của kỳ đã persist không đổi theo timezone
+máy. Kỳ chuyển tiếp có start = kỳ trước end, end = Monday 00:00 đầu tiên sau start
+trong zone mới; `transition_week` phải tương đương `period_kind=timezone_transition`.
+Các FK/constraints mới chỉ là dự thảo, chưa có migration. Pending timezone change
+không tự materialize commitment tuần tiếp (D04 còn pending). PlannedSession mặc định
+lấy zone từ commitment, không lấy trực tiếp từ thiết bị mỗi lần render.
 
 Credit allocation: validate owner → load commitment/policy → check command receipt →
 check expected revision → validate interval/threshold → insert ActivityLog và metadata →
