@@ -98,6 +98,12 @@ abstract class AppLocalizations {
     Locale('vi'),
   ];
 
+  /// No description provided for @brandSlogan.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement. Consistency. Progress.'**
+  String get brandSlogan;
+
   /// No description provided for @activityLoading.
   ///
   /// In en, this message translates to:

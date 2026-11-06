@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/steady_spacing.dart';
+
 import '../l10n/formatters.dart';
 import '../l10n/screening_localizations.dart';
 import '../screening/health_screening.dart';
@@ -13,7 +15,7 @@ class ScreeningResultCard extends StatelessWidget {
     final a = assessment;
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: SteadySpacing.card,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -23,12 +25,12 @@ class ScreeningResultCard extends StatelessWidget {
                   : Icons.health_and_safety_outlined,
               size: 36,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: SteadySpacing.md),
             Text(
               a == null ? l.screeningPaused : l.decisionName(a.decision),
               style: Theme.of(context).textTheme.titleLarge,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: SteadySpacing.md),
             if (a == null)
               Text(l.screeningDeclined)
             else
@@ -37,13 +39,13 @@ class ScreeningResultCard extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 10),
                   child: Text(l.screeningReason(reason)),
                 ),
-            const SizedBox(height: 8),
+            const SizedBox(height: SteadySpacing.sm),
             if (a != null && a.guidance.isNotEmpty) ...[
               Text(
                 l.screeningGuidance,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: SteadySpacing.md),
               for (final tip in a.guidance)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12),
@@ -55,7 +57,7 @@ class ScreeningResultCard extends StatelessWidget {
                             ? l.screeningTipDiabetes
                             : l.screeningTipSodium,
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: SteadySpacing.sm),
                       SelectableText(
                         tip == 'diabetes'
                             ? 'NIDDK: https://www.niddk.nih.gov/health-information/diabetes/overview/healthy-living-with-diabetes'
@@ -66,7 +68,7 @@ class ScreeningResultCard extends StatelessWidget {
                   ),
                 ),
               Text(l.screeningSources),
-              const SizedBox(height: 12),
+              const SizedBox(height: SteadySpacing.md),
             ],
             Text(l.screeningNote),
           ],

@@ -1,6 +1,21 @@
 # Phạm vi sản phẩm Steady MVP
 
-Cập nhật 09/10/2026. Nền tảng ưu tiên: Android và iOS.
+Cập nhật định hướng 05/11/2026: [PR0 MVP architecture gate](mvp/README.md) đề xuất
+Android-first, Weekly Commitment và Missed-session Recovery là core. PR0 chỉ là
+tài liệu chờ duyệt, chưa đổi navigation hoặc dữ liệu. Phần dưới ghi lại sản phẩm
+hiện hữu từ 22/10/2026; không phải backlog mở rộng meal planning trong roadmap mới.
+
+**Bổ sung mới:** [Thực đơn cá nhân hằng ngày](personalized-daily-menu.md) đã có
+questionnaire tối giản, ba bữa, đổi món, phản hồi và lưu hồ sơ/menu riêng theo
+ngày/múi giờ. Luồng này tách khỏi screening/planner nghiên cứu. Kho hiện có vẫn
+chưa xác minh; hồ sơ có dị ứng hoặc kiêng bắt buộc được chặn gợi ý thay vì
+tự nới giới hạn. Lưu trữ tài khoản cần triển khai migration mới.
+
+App hiện gọi local native notifications với hai giờ lặp hằng ngày, payload check-in;
+Supabase lưu cài đặt tài khoản. Legacy FCM worker còn trong repo; migration cutover
+retire push theo owner không chứng minh đã deploy hay cron đã dừng.
+[Hướng dẫn nhắc tập](workout-reminders.md) và [source verification](mvp/verification.md)
+phân biệt adapter hiện tại với session-aware reminders sẽ thiết kế sau gate.
 
 ## Trong MVP
 
@@ -9,7 +24,9 @@ Home mở mặc định, tính chỉ số từ lịch sử hoạt động thật
 Đăng nhập là tuỳ chọn ở Hồ sơ. Đăng nhập hoặc đổi tài khoản giữ tab hiện tại,
 đóng route của phiên trước và chuyển vùng nhật ký, không mở screening.
 
-**Món ăn / Recipes** là danh mục **Gợi ý món ăn / Recipe ideas**:
+**Món ăn / Recipes** hiển thị thực đơn cá nhân sau thiết lập. Trước thiết lập
+có nút vào questionnaire; kho **Gợi ý món ăn / Recipe ideas** vẫn có thể mở
+riêng. Các quy tắc dưới đây áp dụng cho kho tham khảo:
 
 - Dùng mọi công thức trong kho `meals`, giữ định lượng gốc, không scale theo người.
 - Thẻ món: tên đã dịch, loại bữa, thời gian nấu ước tính. Chi tiết: nguyên liệu,
@@ -29,9 +46,10 @@ Home mở mặc định, tính chỉ số từ lịch sử hoạt động thật
 
 ## Ngoài giao diện MVP
 
-Ẩn giá, ngân sách, calorie, protein, fibre, macro, tổng dinh dưỡng và mua sắm tuần.
-Không có kê khai tuổi, chiều cao, cân nặng, body fat, bệnh nền/thuốc; không có
-Keto, bulk, 16:8, sinh thực đơn cá nhân, scale khẩu phần hay đổi món trong thực đơn.
+Kho tham khảo tiếp tục ẩn giá và dinh dưỡng. Thực đơn cá nhân có ngân sách,
+chi phí mẫu và đổi món; chỉ hiện dinh dưỡng có nguồn đáng tin cậy (kho hiện tại
+chưa có). Không có kê khai tuổi, chiều cao, cân nặng, body fat, bệnh nền/thuốc;
+không có Keto, bulk, 16:8, scale khẩu phần cá nhân hay mua sắm tuần.
 ID một số món có nguồn từ thử nghiệm planner nhưng UI chỉ hiển thị tên món và cách nấu.
 
 `RecipesScreen`, `RecipeDetailScreen` chỉ đọc công thức và `RecipeFilter`; không

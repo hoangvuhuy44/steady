@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show Supabase;
@@ -54,6 +56,23 @@ Future<void> setLanguage(WidgetTester tester, String name) async {
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
   testWidgets('startup restores saved language', (tester) async {
+    // Native plugins are registered by the Android embedding on a device.
+    AndroidFlutterLocalNotificationsPlugin.registerWith();
+    const channel = MethodChannel('dexterous.com/flutter/local_notifications');
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      channel,
+      (call) async => switch (call.method) {
+        'initialize' => true,
+        'getNotificationAppLaunchDetails' => {'notificationLaunchedApp': false},
+        _ => null,
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        channel,
+        null,
+      ),
+    );
     SharedPreferences.setMockInitialValues({LanguagePreferences.key: 'vi'});
     await tester.runAsync(app.main);
     try {

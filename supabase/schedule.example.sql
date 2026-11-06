@@ -1,0 +1,8 @@
+-- RETIRED: workout reminders are now scheduled locally by Android/iOS.
+-- Do not create a new cron job for reminder-worker.
+-- Inspect the intended project before retiring an existing deployment:
+-- select jobid, jobname, schedule, active, command from cron.job
+-- where jobname = 'steady-workout-reminders';
+-- After verifying its scope, an operator may run:
+-- select cron.unschedule('steady-workout-reminders');
+-- No production scheduler is changed by this file.

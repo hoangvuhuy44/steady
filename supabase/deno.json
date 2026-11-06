@@ -1,0 +1,7 @@
+{
+  "lock": true,
+  "tasks": {
+    "test": "deno test --allow-read --allow-env tests/ functions/reminder-worker/",
+    "check": "deno check functions/reminder-worker/index.ts"
+  }
+}

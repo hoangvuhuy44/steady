@@ -5,6 +5,7 @@ import 'app/steady_app.dart';
 import 'auth/auth_configuration.dart';
 import 'auth/auth_controller.dart';
 import 'state/language_preferences.dart';
+import 'reminders/native_reminders.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,6 +40,7 @@ Future<void> main() async {
       initialLocale: locale,
       languagePreferences: preferences,
       auth: auth,
+      reminderDevice: await NativeReminderDevice.initialize(),
     ),
   );
 }

@@ -1,0 +1,4 @@
+project_id = "steady"
+
+[functions.reminder-worker]
+verify_jwt = false

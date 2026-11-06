@@ -1,11 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
+import '../theme/steady_spacing.dart';
+
 import 'package:supabase_flutter/supabase_flutter.dart'
     show AuthException, AuthRetryableFetchException;
 
 import '../auth/auth_controller.dart';
 import '../l10n/formatters.dart';
+import '../widgets/brand/steady_brand_header.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({
@@ -167,222 +171,229 @@ class _SignInScreenState extends State<SignInScreen> {
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 480),
-            child: ListView(
-              shrinkWrap: true,
-              padding: const EdgeInsets.all(24),
-              children: [
-                Text(
-                  'Steady',
-                  style: Theme.of(context).textTheme.headlineLarge,
-                ),
-                const SizedBox(height: 12),
-                Text(l.authIntro),
-                const SizedBox(height: 24),
-                DropdownButtonFormField<String>(
-                  key: ValueKey(
-                    'auth-language-${selectedLocale?.languageCode ?? 'system'}',
+            child: SingleChildScrollView(
+              padding: SteadySpacing.card,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SteadyBrandHeader(),
+                  const SizedBox(height: SteadySpacing.md),
+                  Text(l.authIntro),
+                  const SizedBox(height: SteadySpacing.xl),
+                  DropdownButtonFormField<String>(
+                    key: ValueKey(
+                      'auth-language-${selectedLocale?.languageCode ?? 'system'}',
+                    ),
+                    initialValue: selectedLocale?.languageCode ?? 'system',
+                    isExpanded: true,
+                    decoration: InputDecoration(labelText: l.language),
+                    items: [
+                      DropdownMenuItem(
+                        value: 'system',
+                        child: Text(l.systemLanguage),
+                      ),
+                      const DropdownMenuItem(
+                        value: 'vi',
+                        child: Text('Tiếng Việt'),
+                      ),
+                      const DropdownMenuItem(
+                        value: 'en',
+                        child: Text('English'),
+                      ),
+                    ],
+                    onChanged: (v) {
+                      if (v != null) {
+                        final value = v == 'system' ? null : Locale(v);
+                        setState(() => selectedLocale = value);
+                        widget.onLanguageChanged(value);
+                      }
+                    },
                   ),
-                  initialValue: selectedLocale?.languageCode ?? 'system',
-                  isExpanded: true,
-                  decoration: InputDecoration(labelText: l.language),
-                  items: [
-                    DropdownMenuItem(
-                      value: 'system',
-                      child: Text(l.systemLanguage),
+                  const SizedBox(height: SteadySpacing.xl),
+                  if (!widget.auth.configured) ...[
+                    const Icon(Icons.settings_outlined, size: 44),
+                    const SizedBox(height: SteadySpacing.lg),
+                    Text(
+                      widget.auth.initializationFailed
+                          ? l.authInitializationError
+                          : l.authConfiguration,
+                      key: const ValueKey('auth-unconfigured'),
                     ),
-                    const DropdownMenuItem(
-                      value: 'vi',
-                      child: Text('Tiếng Việt'),
-                    ),
-                    const DropdownMenuItem(value: 'en', child: Text('English')),
+                    const SizedBox(height: SteadySpacing.xl),
                   ],
-                  onChanged: (v) {
-                    if (v != null) {
-                      final value = v == 'system' ? null : Locale(v);
-                      setState(() => selectedLocale = value);
-                      widget.onLanguageChanged(value);
-                    }
-                  },
-                ),
-                const SizedBox(height: 24),
-                if (!widget.auth.configured) ...[
-                  const Icon(Icons.settings_outlined, size: 44),
-                  const SizedBox(height: 16),
-                  Text(
-                    widget.auth.initializationFailed
-                        ? l.authInitializationError
-                        : l.authConfiguration,
-                    key: const ValueKey('auth-unconfigured'),
+                  OutlinedButton.icon(
+                    key: const ValueKey('auth-google'),
+                    onPressed:
+                        enabled &&
+                            widget.auth.socialProviders.contains(
+                              SocialAuthProvider.google,
+                            )
+                        ? () => signInWithProvider(SocialAuthProvider.google)
+                        : null,
+                    icon: const Icon(Icons.account_circle_outlined),
+                    label: Text(l.continueWithGoogle),
                   ),
-                  const SizedBox(height: 24),
-                ],
-                OutlinedButton.icon(
-                  key: const ValueKey('auth-google'),
-                  onPressed:
-                      enabled &&
-                          widget.auth.socialProviders.contains(
-                            SocialAuthProvider.google,
-                          )
-                      ? () => signInWithProvider(SocialAuthProvider.google)
-                      : null,
-                  icon: const Icon(Icons.account_circle_outlined),
-                  label: Text(l.continueWithGoogle),
-                ),
-                const SizedBox(height: 8),
-                OutlinedButton.icon(
-                  key: const ValueKey('auth-facebook'),
-                  onPressed:
-                      enabled &&
-                          widget.auth.socialProviders.contains(
-                            SocialAuthProvider.facebook,
-                          )
-                      ? () => signInWithProvider(SocialAuthProvider.facebook)
-                      : null,
-                  icon: const Icon(Icons.facebook),
-                  label: Text(l.continueWithFacebook),
-                ),
-                if (widget.auth.configured &&
-                    widget.auth.socialProviders.length < 2) ...[
-                  const SizedBox(height: 8),
-                  Text(l.authProvidersUnavailable),
-                ],
-                if (browserOpened) ...[
-                  const SizedBox(height: 12),
-                  Text(
-                    l.authBrowserOpened,
-                    key: const ValueKey('auth-browser'),
+                  const SizedBox(height: SteadySpacing.sm),
+                  OutlinedButton.icon(
+                    key: const ValueKey('auth-facebook'),
+                    onPressed:
+                        enabled &&
+                            widget.auth.socialProviders.contains(
+                              SocialAuthProvider.facebook,
+                            )
+                        ? () => signInWithProvider(SocialAuthProvider.facebook)
+                        : null,
+                    icon: const Icon(Icons.facebook),
+                    label: Text(l.continueWithFacebook),
                   ),
-                ],
-                if (widget.auth.connectionError) ...[
-                  const SizedBox(height: 12),
-                  Text(l.authNetworkError),
-                ],
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    const Expanded(child: Divider()),
-                    Flexible(
-                      flex: 3,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Text(l.authOrEmail, textAlign: TextAlign.center),
+                  if (widget.auth.configured &&
+                      widget.auth.socialProviders.length < 2) ...[
+                    const SizedBox(height: SteadySpacing.sm),
+                    Text(l.authProvidersUnavailable),
+                  ],
+                  if (browserOpened) ...[
+                    const SizedBox(height: SteadySpacing.md),
+                    Text(
+                      l.authBrowserOpened,
+                      key: const ValueKey('auth-browser'),
+                    ),
+                  ],
+                  if (widget.auth.connectionError) ...[
+                    const SizedBox(height: SteadySpacing.md),
+                    Text(l.authNetworkError),
+                  ],
+                  const SizedBox(height: SteadySpacing.lg),
+                  Row(
+                    children: [
+                      const Expanded(child: Divider()),
+                      Flexible(
+                        flex: 3,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Text(
+                            l.authOrEmail,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      const Expanded(child: Divider()),
+                    ],
+                  ),
+                  const SizedBox(height: SteadySpacing.lg),
+                  Form(
+                    key: form,
+                    child: AutofillGroup(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            registering ? l.signUp : l.signIn,
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          const SizedBox(height: SteadySpacing.lg),
+                          TextFormField(
+                            key: const ValueKey('auth-email'),
+                            controller: email,
+                            enabled: enabled,
+                            keyboardType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.next,
+                            autofillHints: const [AutofillHints.email],
+                            decoration: InputDecoration(
+                              labelText: l.email,
+                              errorMaxLines: 3,
+                            ),
+                            validator: (v) =>
+                                RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
+                                    .hasMatch((v ?? '').trim())
+                                ? null
+                                : l.emailError,
+                          ),
+                          const SizedBox(height: SteadySpacing.lg),
+                          TextFormField(
+                            key: const ValueKey('auth-password'),
+                            controller: password,
+                            enabled: enabled,
+                            obscureText: obscure,
+                            autofillHints: [
+                              registering
+                                  ? AutofillHints.newPassword
+                                  : AutofillHints.password,
+                            ],
+                            onFieldSubmitted: (_) => submit(),
+                            decoration: InputDecoration(
+                              labelText: l.password,
+                              errorMaxLines: 3,
+                              suffixIcon: IconButton(
+                                tooltip: l.password,
+                                onPressed: enabled
+                                    ? () => setState(() => obscure = !obscure)
+                                    : null,
+                                icon: Icon(
+                                  obscure
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined,
+                                ),
+                              ),
+                            ),
+                            validator: (v) =>
+                                (v ?? '').isEmpty ||
+                                    (registering && v!.length < 8)
+                                ? l.passwordError
+                                : null,
+                          ),
+                          const SizedBox(height: SteadySpacing.lg),
+                          if (confirmation)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: Text(l.authConfirmEmail),
+                            ),
+                          if (message != null)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: Text(
+                                errorText,
+                                key: const ValueKey('auth-error'),
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                              ),
+                            ),
+                          FilledButton(
+                            key: const ValueKey('auth-submit'),
+                            onPressed: enabled ? submit : null,
+                            child: busy
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Text(registering ? l.signUp : l.signIn),
+                          ),
+                          TextButton(
+                            onPressed: !enabled
+                                ? null
+                                : () {
+                                    setState(() {
+                                      registering = !registering;
+                                      message = null;
+                                      confirmation = false;
+                                      browserOpened = false;
+                                    });
+                                  },
+                            child: Text(
+                              registering
+                                  ? l.alreadyHaveAccount
+                                  : l.needAccount,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const Expanded(child: Divider()),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Form(
-                  key: form,
-                  child: AutofillGroup(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          registering ? l.signUp : l.signIn,
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          key: const ValueKey('auth-email'),
-                          controller: email,
-                          enabled: enabled,
-                          keyboardType: TextInputType.emailAddress,
-                          textInputAction: TextInputAction.next,
-                          autofillHints: const [AutofillHints.email],
-                          decoration: InputDecoration(
-                            labelText: l.email,
-                            errorMaxLines: 3,
-                          ),
-                          validator: (v) =>
-                              RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
-                                  .hasMatch((v ?? '').trim())
-                              ? null
-                              : l.emailError,
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          key: const ValueKey('auth-password'),
-                          controller: password,
-                          enabled: enabled,
-                          obscureText: obscure,
-                          autofillHints: [
-                            registering
-                                ? AutofillHints.newPassword
-                                : AutofillHints.password,
-                          ],
-                          onFieldSubmitted: (_) => submit(),
-                          decoration: InputDecoration(
-                            labelText: l.password,
-                            errorMaxLines: 3,
-                            suffixIcon: IconButton(
-                              tooltip: l.password,
-                              onPressed: enabled
-                                  ? () => setState(() => obscure = !obscure)
-                                  : null,
-                              icon: Icon(
-                                obscure
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
-                              ),
-                            ),
-                          ),
-                          validator: (v) =>
-                              (v ?? '').isEmpty ||
-                                  (registering && v!.length < 8)
-                              ? l.passwordError
-                              : null,
-                        ),
-                        const SizedBox(height: 16),
-                        if (confirmation)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: Text(l.authConfirmEmail),
-                          ),
-                        if (message != null)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: Text(
-                              errorText,
-                              key: const ValueKey('auth-error'),
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.error,
-                              ),
-                            ),
-                          ),
-                        FilledButton(
-                          key: const ValueKey('auth-submit'),
-                          onPressed: enabled ? submit : null,
-                          child: busy
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : Text(registering ? l.signUp : l.signIn),
-                        ),
-                        TextButton(
-                          onPressed: !enabled
-                              ? null
-                              : () {
-                                  setState(() {
-                                    registering = !registering;
-                                    message = null;
-                                    confirmation = false;
-                                    browserOpened = false;
-                                  });
-                                },
-                          child: Text(
-                            registering ? l.alreadyHaveAccount : l.needAccount,
-                          ),
-                        ),
-                      ],
-                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

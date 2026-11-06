@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/brand/steady_progress.dart';
+import '../widgets/brand/steady_section_header.dart';
+
+import '../theme/steady_spacing.dart';
+
 import '../l10n/formatters.dart';
 import '../l10n/nutrition_localizations.dart';
 import '../l10n/screening_localizations.dart';
@@ -267,7 +272,7 @@ class _ScreeningScreenState extends State<ScreeningScreen> {
     return switch (step) {
       0 => [
         Text(l.screeningPrivacy),
-        const SizedBox(height: 24),
+        const SizedBox(height: SteadySpacing.xl),
         number('age', l.age, 1, 120),
         number('height', l.height, 50, 250),
         number('weight', l.weight, 10, 400),
@@ -283,7 +288,7 @@ class _ScreeningScreenState extends State<ScreeningScreen> {
       ],
       1 => [
         Text(l.screeningConditionsHelp),
-        const SizedBox(height: 12),
+        const SizedBox(height: SteadySpacing.md),
         check(
           'screening-conditions-known',
           l.screeningConditionsKnown,
@@ -308,7 +313,7 @@ class _ScreeningScreenState extends State<ScreeningScreen> {
               ),
           ],
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: SteadySpacing.xl),
         Text(l.screeningTreatmentHelp),
         check(
           'screening-treatment-known',
@@ -326,7 +331,7 @@ class _ScreeningScreenState extends State<ScreeningScreen> {
               selected ? flags.add(flag) : flags.remove(flag);
             },
           ),
-        const SizedBox(height: 16),
+        const SizedBox(height: SteadySpacing.lg),
         note('medications', l.screeningMedications),
         note('orders', l.screeningOrders),
         if (conditions.contains(HealthCondition.kidneyDisease))
@@ -336,7 +341,7 @@ class _ScreeningScreenState extends State<ScreeningScreen> {
       ],
       2 => [
         Text(l.nutritionPreferenceHelp),
-        const SizedBox(height: 16),
+        const SizedBox(height: SteadySpacing.lg),
         Text(l.allergens, style: Theme.of(context).textTheme.titleMedium),
         check(
           'screening-allergies-known',
@@ -362,7 +367,7 @@ class _ScreeningScreenState extends State<ScreeningScreen> {
               ),
           ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: SteadySpacing.lg),
         note('otherAllergies', l.screeningOtherAllergies),
         Text(l.dislikes, style: Theme.of(context).textTheme.titleMedium),
         Wrap(
@@ -387,7 +392,7 @@ class _ScreeningScreenState extends State<ScreeningScreen> {
               ),
           ],
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: SteadySpacing.xl),
         choice(
           'source',
           l.nutritionFoodSource,
@@ -439,7 +444,7 @@ class _ScreeningScreenState extends State<ScreeningScreen> {
         ),
         if (strategy.energy == EnergyStrategy.aggressiveBulk)
           Text(l.nutritionBulkTradeoff),
-        const SizedBox(height: 16),
+        const SizedBox(height: SteadySpacing.lg),
         DropdownButtonFormField<String>(
           key: ValueKey('screening-activity-$activity'),
           initialValue: activity,
@@ -462,7 +467,7 @@ class _ScreeningScreenState extends State<ScreeningScreen> {
                   .toList(),
           onChanged: (value) => setState(() => activity = value!),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: SteadySpacing.lg),
         number('sessions', l.nutritionTrainingSessions, 0, 7),
         choice(
           'experience',
@@ -474,9 +479,9 @@ class _ScreeningScreenState extends State<ScreeningScreen> {
       ],
       _ => [
         ScreeningResultCard(assessment: ScreeningRules.assess(profile)),
-        const SizedBox(height: 16),
+        const SizedBox(height: SteadySpacing.lg),
         NutritionSummaryCard(profile: nutritionProfile),
-        const SizedBox(height: 20),
+        const SizedBox(height: SteadySpacing.xl),
         Text(l.screeningPrivacy),
         check(
           'screening-consent',
@@ -489,7 +494,7 @@ class _ScreeningScreenState extends State<ScreeningScreen> {
             l.screeningConsentError,
             style: TextStyle(color: Theme.of(context).colorScheme.error),
           ),
-        const SizedBox(height: 12),
+        const SizedBox(height: SteadySpacing.md),
         ExpansionTile(
           title: Text(l.screeningSources),
           children: const [
@@ -528,52 +533,57 @@ class _ScreeningScreenState extends State<ScreeningScreen> {
               constraints: const BoxConstraints(maxWidth: 720),
               child: Form(
                 key: form,
-                child: ListView(
+                child: SingleChildScrollView(
                   key: ValueKey('screening-step-$step'),
                   controller: scroll,
-                  padding: const EdgeInsets.all(24),
-                  children: [
-                    Text(
-                      l.screeningTitle,
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                    const SizedBox(height: 12),
-                    Text(l.screeningIntro),
-                    const SizedBox(height: 20),
-                    LinearProgressIndicator(value: (step + 1) / 5),
-                    const SizedBox(height: 12),
-                    Text(l.screeningProgress(step + 1)),
-                    const SizedBox(height: 8),
-                    Text(
-                      titles[step],
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 20),
-                    ...content(),
-                    const SizedBox(height: 24),
-                    FilledButton(
-                      key: const ValueKey('screening-next'),
-                      onPressed: next,
-                      child: Text(
-                        step == 4
-                            ? (ScreeningRules.assess(profile).allowsSamplePlan
-                                  ? l.nutritionGenerate
-                                  : l.screeningContinue)
-                            : l.screeningNext,
+                  padding: SteadySpacing.card,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SteadySectionHeader(
+                        title: l.screeningTitle,
+                        subtitle: l.screeningIntro,
+                        icon: SteadyBrandIcon.wellness,
                       ),
-                    ),
-                    if (step > 0)
+                      const SizedBox(height: SteadySpacing.xl),
+                      SteadyProgressBar(
+                        value: (step + 1) / 5,
+                        semanticLabel: l.screeningProgress(step + 1),
+                      ),
+                      const SizedBox(height: SteadySpacing.md),
+                      Text(l.screeningProgress(step + 1)),
+                      const SizedBox(height: SteadySpacing.sm),
+                      Text(
+                        titles[step],
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: SteadySpacing.xl),
+                      ...content(),
+                      const SizedBox(height: SteadySpacing.xl),
+                      FilledButton(
+                        key: const ValueKey('screening-next'),
+                        onPressed: next,
+                        child: Text(
+                          step == 4
+                              ? (ScreeningRules.assess(profile).allowsSamplePlan
+                                    ? l.nutritionGenerate
+                                    : l.screeningContinue)
+                              : l.screeningNext,
+                        ),
+                      ),
+                      if (step > 0)
+                        TextButton(
+                          onPressed: () => move(step - 1),
+                          child: Text(l.back),
+                        ),
+                      const SizedBox(height: SteadySpacing.sm),
                       TextButton(
-                        onPressed: () => move(step - 1),
-                        child: Text(l.back),
+                        key: const ValueKey('screening-decline'),
+                        onPressed: widget.onDeclined,
+                        child: Text(l.screeningDecline),
                       ),
-                    const SizedBox(height: 8),
-                    TextButton(
-                      key: const ValueKey('screening-decline'),
-                      onPressed: widget.onDeclined,
-                      child: Text(l.screeningDecline),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
