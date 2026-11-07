@@ -248,15 +248,25 @@ void main() {
       MaterialApp(home: ReminderScreen(controller: controller)),
     );
     await tester.enterText(find.byType(TextField).first, '08:55');
-    await tester.ensureVisible(find.text('Send test notification'));
+    final morningDraft = tester
+        .widget<TextField>(find.byType(TextField).first)
+        .controller!;
+    await tester.scrollUntilVisible(
+      find.text('Send test notification'),
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byType(ListView),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Send test notification'));
     await tester.pumpAndSettle();
     expect(device.tests, 1);
     expect(api.saves, 0);
-    expect(
-      tester.widget<TextField>(find.byType(TextField).first).controller!.text,
-      '08:55',
-    );
+    expect(morningDraft.text, '08:55');
     await tester.pumpWidget(const SizedBox.shrink());
   });
 }

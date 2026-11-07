@@ -48,6 +48,26 @@ class FakeNotifications implements FlutterLocalNotificationsPlugin {
 }
 
 void main() {
+  test('selected zones schedule local wall times across continents', () async {
+    final plugin = FakeNotifications();
+    final device = NativeReminderDevice.testing(plugin);
+    for (final zone in [
+      'America/New_York',
+      'Europe/Berlin',
+      'Asia/Tokyo',
+      'Asia/Kathmandu',
+      'Australia/Sydney',
+    ]) {
+      await device.schedule(
+        ReminderSettings(enabled: true, timezone: zone),
+        () => true,
+      );
+      expect(plugin.active[71001]!.location.name, zone);
+      expect(plugin.active[71001]!.hour, 7);
+      expect(plugin.active[71002]!.hour, 18);
+      expect(plugin.active[71002]!.minute, 30);
+    }
+  });
   test(
     'two stable IDs, daily IANA times, inexact mode; edits replace old times',
     () async {

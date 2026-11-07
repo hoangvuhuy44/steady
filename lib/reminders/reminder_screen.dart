@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'reminder_controller.dart';
+import 'timezone_selector.dart';
 
 class ReminderScreen extends StatefulWidget {
   const ReminderScreen({super.key, this.controller});
@@ -169,13 +170,9 @@ class _ReminderScreenState extends State<ReminderScreen> {
                       labelText: t('Giờ chiều tối (HH:mm)', 'Evening (HH:mm)'),
                     ),
                   ),
-                  TextField(
+                  TimezoneSelector(
                     controller: timezone,
                     enabled: !c.busy,
-                    autocorrect: false,
-                    decoration: InputDecoration(
-                      labelText: t('Múi giờ IANA', 'IANA timezone'),
-                    ),
                   ),
                   const SizedBox(height: 16),
                   if (c.error != null)
